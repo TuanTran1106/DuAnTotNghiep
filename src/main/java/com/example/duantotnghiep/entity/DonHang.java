@@ -1,12 +1,20 @@
 package com.example.duantotnghiep.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "don_hang")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class DonHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
