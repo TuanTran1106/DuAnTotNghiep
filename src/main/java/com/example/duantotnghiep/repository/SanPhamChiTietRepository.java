@@ -1,10 +1,10 @@
-
 package com.example.duantotnghiep.repository;
 
-import com.example.duantotnghiep.entity.Voucher;
+import com.example.duantotnghiep.entity.SanPhamChiTiet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
+public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, Integer> {
+
 }
