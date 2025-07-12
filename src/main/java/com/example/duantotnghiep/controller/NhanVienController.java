@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/nhan-vien")
 public class NhanVienController {
@@ -43,5 +45,17 @@ public class NhanVienController {
     public String deleteNhanVien(@PathVariable int id) {
         nhanVienService.deleteNhanVien(id);
         return "redirect:/nhan-vien";
+    }
+    @GetMapping("/search")
+    public String searchNhanVien(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+        List<NhanVien> danhSachNhanVien;
+        if (keyword != null && !keyword.isEmpty()) {
+            danhSachNhanVien = nhanVienService.searchNhanVien(keyword);
+        } else {
+            danhSachNhanVien = nhanVienService.getAllNhanVien();
+        }
+        model.addAttribute("listNhanVien", danhSachNhanVien);
+        model.addAttribute("keyword", keyword);
+        return "/quantri/nhan-vien";
     }
 }

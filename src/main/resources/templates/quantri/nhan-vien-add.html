@@ -76,7 +76,6 @@
 <div class="container">
 <h1>Thêm nhân viên mới</h1>
 <form th:action="@{/nhan-vien/save}" th:object="${nhanVien}" method="post">
-    Mã nhân viên: <input type="text" th:field="*{maNhanVien}" /><br/>
     Họ tên: <input type="text" th:field="*{hoTen}" /><br/>
     Giới tính:
     <select th:field="*{gioiTinh}">

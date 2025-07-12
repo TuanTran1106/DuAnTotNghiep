@@ -1,6 +1,7 @@
 package com.example.duantotnghiep.controller;
 
 import com.example.duantotnghiep.entity.NguoiDung;
+import com.example.duantotnghiep.entity.NhanVien;
 import com.example.duantotnghiep.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Controller
 @RequestMapping("/nguoi-dung")
@@ -30,11 +32,11 @@ public class NguoiDungController {
         return "/quantri/nguoi-dung";
     }
 
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        model.addAttribute("nguoiDung", new NguoiDung());
-        return "/quantri/nguoi-dung-add";
-    }
+//    @GetMapping("/add")
+//    public String showAddForm(Model model) {
+//        model.addAttribute("nguoiDung", new NguoiDung());
+//        return "/quantri/nguoi-dung-add";
+//    }
 
     @PostMapping("/save")
     public String saveNguoiDung(@ModelAttribute("nguoiDung") NguoiDung nguoiDung,
@@ -67,6 +69,18 @@ public class NguoiDungController {
     public String deleteNguoiDung(@PathVariable int id) {
         nguoiDungService.deleteNguoiDung(id);
         return "redirect:/nguoi-dung";
+    }
+    @GetMapping("/search")
+    public String searchNguoiDung(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+        List<NguoiDung> danhSachNguoiDung;
+        if (keyword != null && !keyword.isEmpty()) {
+            danhSachNguoiDung = nguoiDungService.searchNguoiDung(keyword);
+        } else {
+            danhSachNguoiDung = nguoiDungService.getAllNguoiDung();
+        }
+        model.addAttribute("listNguoiDung", danhSachNguoiDung);
+        model.addAttribute("keyword", keyword);
+        return "/quantri/nguoi-dung";
     }
 
     @GetMapping("/uploads/{fileName:.+}")

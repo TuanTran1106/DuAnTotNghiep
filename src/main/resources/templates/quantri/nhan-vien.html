@@ -388,16 +388,109 @@
     }
     a i.fa-pen {
         color: #007bff;
+    } .search-form {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 20px;
+      }
+
+    .search-form input[type="text"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        width: 250px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
     }
+
+    .search-form input[type="text"]:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .search-form button {
+        padding: 10px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 14px;
+    }
+
+    .search-form button:hover {
+        background-color: #0056b3;
+    }
+    .search-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .search-form input[type="text"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        width: 250px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+    }
+
+    .search-form input[type="text"]:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .search-form button {
+        padding: 10px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 14px;
+    }
+
+    .search-form button:hover {
+        background-color: #0056b3;
+    }
+
+    .reset-button {
+        padding: 10px 16px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+        font-size: 14px;
+    }
+
+    .reset-button:hover {
+        background-color: #5a6268;
+    }
+
+
 
 </style>
 <body>
 <div class="content-body">
 <h1>Danh sách nhân viên</h1>
 <a th:href="@{/nhan-vien/add}"><i class="fa-solid fa-plus"></i></a>
-<table border="1">
+    <form th:action="@{/nhan-vien/search}" method="get" class="search-form">
+        <input type="text" name="keyword" placeholder="Nhập tên hoặc số điện thoại"
+               th:value="${keyword}" />
+        <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <a th:href="@{/nhan-vien}" class="reset-button"><i class="fa-solid fa-rotate"></i></a>
+    </form>
+
+    <table border="1">
     <thead>
     <tr>
+        <th>STT</th>
         <th>ID</th>
         <th>Mã Nhân Viên</th>
         <th>Họ tên</th>
@@ -410,7 +503,9 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="nv : ${listNhanVien}">
+    <tr th:each="nv, index : ${listNhanVien}">
+
+        <td th:text="${index.count}"></td>
         <td th:text="${nv.id}"></td>
         <td th:text="${nv.maNhanVien}"></td>
         <td th:text="${nv.hoTen}"></td>

@@ -9,4 +9,5 @@ public interface NhanVienService {
     NhanVien saveNhanVien(NhanVien nhanVien);
     NhanVien getNhanVienById(int id);
     void deleteNhanVien(int id);
+    List<NhanVien> searchNhanVien(String keyword);
 }

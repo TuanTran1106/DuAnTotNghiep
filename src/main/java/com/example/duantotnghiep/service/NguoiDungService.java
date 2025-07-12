@@ -1,6 +1,7 @@
 package com.example.duantotnghiep.service;
 
 import com.example.duantotnghiep.entity.NguoiDung;
+import com.example.duantotnghiep.entity.NhanVien;
 
 import java.util.List;
 
@@ -9,4 +10,5 @@ public interface NguoiDungService {
     NguoiDung saveNguoiDung(NguoiDung nguoiDung);
     NguoiDung getNguoiDungById(int id);
     void deleteNguoiDung(int id);
+    List<NguoiDung> searchNguoiDung(String keyword);
 }

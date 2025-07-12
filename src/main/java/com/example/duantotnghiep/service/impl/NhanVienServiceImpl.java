@@ -20,7 +20,12 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public NhanVien saveNhanVien(NhanVien nhanVien) {
-        return nhanVienRepository.save(nhanVien);
+
+        nhanVienRepository.save(nhanVien);
+
+        nhanVien.setMaNhanVien("NV" + nhanVien.getId());
+
+       return nhanVienRepository.save(nhanVien);
     }
 
     @Override
@@ -31,5 +36,10 @@ public class NhanVienServiceImpl implements NhanVienService {
     @Override
     public void deleteNhanVien(int id) {
         nhanVienRepository.deleteById(id);
+    }
+
+    @Override
+    public List<NhanVien> searchNhanVien(String keyword) {
+        return nhanVienRepository.searchNhanVien(keyword);
     }
 }

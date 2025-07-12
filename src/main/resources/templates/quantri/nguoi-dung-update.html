@@ -12,7 +12,7 @@
 <form th:action="@{/nguoi-dung/save}" th:object="${nguoiDung}" method="post"  enctype="multipart/form-data">
     <input type="hidden" th:field="*{id}" />
     Mã nhân viên: <input type="text" th:field="*{maNguoiDung}" /><br/>
-    Hình ảnh: <input type="text" th:field="*{hinhAnh}"  name="file"/><br/>
+    Hình ảnh: <input type="file" th:field="*{hinhAnh}"  name="file"/><br/>
     Họ tên: <input type="text" th:field="*{hoTen}" /><br/>
     Giới tính:
     <select th:field="*{gioiTinh}">
