@@ -50,11 +50,17 @@ public class DonHangServiceImpl implements DonHangService {
                 break;
             }
         }
-        if (idx == -1 || idx == allStatus.size() - 1) return false;
-        TrangThaiDonHang next = allStatus.get(idx + 1);
-        donHang.setTrangThaiDonHang(next);
-        donHangRepository.save(donHang);
-        return true;
+        if (idx == -1) return false;
+        if (idx < allStatus.size() - 1) {
+            TrangThaiDonHang next = allStatus.get(idx + 1);
+            if ("Đ? h?y".equalsIgnoreCase(next.getTenTrangThai())) {
+                return false;
+            }
+            donHang.setTrangThaiDonHang(next);
+            donHangRepository.save(donHang);
+            return true;
+        }
+        return false;
     }
 
 }

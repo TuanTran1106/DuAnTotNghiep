@@ -22,18 +22,24 @@ public class HomeQuanLyController {
     public String L(Model model) {
         return "quan-tri/home-quan-ly";
     }
+    @GetMapping("/thong-ke-doanh-thu")
+    public String thongKeDoanhThu(Model model) {
+        return "quan-tri/thong-ke-doanh-thu";
+    }
 
+//    -------------------------------------------------
     @GetMapping("/don-hang")
     public String quanLyDonHang(Model model) {
         List<DonHangDto> orders = donHangService.getAllOrders();
         model.addAttribute("orders", orders);
         return "quan-tri/quan-ly-don-hang";
     }
-    
+
     @GetMapping("/api/don-hang/{id}/san-pham")
     @ResponseBody
     public List<DonHangChiTietDto> getOrderProducts(@PathVariable Integer id) {
         return donHangService.getOrderProducts(id);
     }
+//    --------------------------------------------------------
 
 }

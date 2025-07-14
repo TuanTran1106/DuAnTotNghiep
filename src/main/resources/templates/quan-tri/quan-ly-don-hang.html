@@ -465,11 +465,18 @@
         }
         .alert-status {
             display: none;
-            margin: 12px 0;
-            padding: 10px 18px;
-            border-radius: 6px;
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            z-index: 2000;
+            min-width: 280px;
+            max-width: 400px;
+            margin: 0;
+            padding: 14px 24px;
+            border-radius: 8px;
             font-size: 15px;
             font-weight: 500;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
         .alert-status.success {
             background: #e6ffed;
@@ -516,12 +523,12 @@
 <div class="order-page">
     <!-- Tabs -->
     <div class="order-tabs">
-        <button class="tab active" data-status="all">Tất cả</button>
-        <button class="tab" data-status="Chờ xác nhận">Chờ xác nhận</button>
-        <button class="tab" data-status="Đang chuẩn bị hàng">Đang chuẩn bị hàng</button>
-        <button class="tab" data-status="Đang giao">Đang giao </button>
-        <button class="tab" data-status="Đã giao">Đã giao </button>
-        <button class="tab" data-status="Đã huỷ">Đã huỷ</button>
+        <button class="tab active" data-status="all"><i class="fa fa-list"></i> Tất cả</button>
+        <button class="tab" data-status="Chờ xác nhận"><i class="fa fa-clock"></i> Chờ xác nhận</button>
+        <button class="tab" data-status="Đang chuẩn bị hàng"><i class="fa fa-box-open"></i> Đang chuẩn bị hàng</button>
+        <button class="tab" data-status="Đang giao"><i class="fa fa-truck"></i> Đang giao </button>
+        <button class="tab" data-status="Đã giao"><i class="fa fa-check-circle"></i> Đã giao </button>
+        <button class="tab" data-status="Đã huỷ"><i class="fa fa-times-circle"></i> Đã huỷ</button>
     </div>
 
     <!-- Filter/Search -->
@@ -586,6 +593,7 @@
     </div>
     <div id="pagination" class="pagination"></div>
 
+<!-- Di chuyển phần tử alert-status lên đầu body để hiển thị ở góc phải trên -->
 <div id="alertStatus" class="alert-status"></div>
 
     <!-- Modal Chi tiết đơn hàng -->
@@ -940,7 +948,7 @@ function loadOrderProducts(id) {
     const productListElement = document.getElementById('modalProductList');
     productListElement.innerHTML = '<tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải...</td></tr>';
 
-    // Gọi API để lấy danh sách sản phẩm của đơn hàng
+    // Gọi API
     fetch(`/quan-ly/api/don-hang/${id}/san-pham`)
         .then(response => response.json())
         .then(products => {
@@ -949,26 +957,15 @@ function loadOrderProducts(id) {
                 products.forEach((product, index) => {
                     const thanhTien = product.thanhTien ? product.thanhTien.toLocaleString('vi-VN') : '0';
                     const donGia = product.donGia ? product.donGia.toLocaleString('vi-VN') : '0';
-                    const productName = product.tenSanPham;
-                    const productVariant = `${product.mauSac ? product.mauSac : ''}${product.kichThuoc ? ' - ' + product.kichThuoc : ''}`;
+                    const productName = product.tenSanPham || '---';
+                    const productVariant = `${product.mauSac ? product.mauSac : ''}${product.kichThuoc ? ' - ' + product.kichThuoc : ''}`.trim() || '';
 
-                    let imgSrc = 'https://product.hstatic.net/1000123703/product/dong_ho_big_quartz_1024x1024.jpg';
-                    // if (product.hinhAnh) {
-                    //     // Nếu hinhAnh bắt đầu bằng 'images/', sử dụng static
-                    //     if (product.hinhAnh.startsWith('images/')) {
-                    //         imgSrc = `/static/${product.hinhAnh}`;
-                    //     } else {
-                    //         // Nếu không, thử tìm trong uploads
-                    //         imgSrc = `/uploads/${product.hinhAnh}`;
-                    //     }
-                    // }
 
                     html += `
                         <tr>
                             <td style="text-align: center; font-weight: 600; color: #3498db;">${index + 1}</td>
                             <td>
-                                <img src="${imgSrc}" alt="Ảnh sản phẩm" class="product-image"
-                                     onerror="this.src='/static/images/no-image.png'">
+                                <img src="/uploads/${product.hinhAnh ? product.hinhAnh.replace('images/', '') : 'no-image.png'}" alt="Ảnh sản phẩm" class="product-image" onerror="this.onerror=null;this.src='/static/images/no-image.png';">
                             </td>
                             <td>
                                 <div class="product-info">
@@ -977,7 +974,7 @@ function loadOrderProducts(id) {
                                 </div>
                             </td>
                             <td style="text-align: center;">
-                                <span class="quantity-badge">${product.soLuongDat}</span>
+                                <span class="quantity-badge">${product.soLuongDat || 0}</span>
                             </td>
                             <td style="text-align: right;" class="price">${donGia} ₫</td>
                             <td style="text-align: right;" class="total-price">${thanhTien} ₫</td>
@@ -1049,55 +1046,27 @@ function showAlertStatus(message, type) {
     }, 2000);
 }
 
-function nextOrderStatus(orderId, btn) {
+function nextOrderStatus(id, btn) {
     if (!confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này?')) return;
     btn.disabled = true;
-    fetch(`/quan-ly/don-hang/api/${orderId}/next-status`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        }
+    fetch(`/quan-ly/don-hang/api/${id}/next-status`, {
+        method: 'PATCH'
     })
-    .then(res => res.json())
-    .then(ok => {
-        if (ok) {
+    .then(response => response.json())
+    .then(data => {
+        if (data === true) {
             showAlertStatus('Chuyển trạng thái thành công!', 'success');
-            setTimeout(() => location.reload(), 1200);
+            setTimeout(() => window.location.reload(), 1000);
         } else {
-            showAlertStatus('Không thể chuyển trạng thái!', 'error');
+            showAlertStatus('Chuyển trạng thái thất bại!', 'error');
             btn.disabled = false;
         }
     })
-    .catch(() => {
-        showAlertStatus('Có lỗi xảy ra!', 'error');
+    .catch(error => {
+        showAlertStatus('Có lỗi xảy ra khi chuyển trạng thái!', 'error');
         btn.disabled = false;
     });
 }
-</script>
-<script>
-// Gán lại sự kiện copy mỗi lần mở modal
-setTimeout(() => {
-    const btnCopy = document.getElementById('btnCopyMaDonHang');
-    if (btnCopy) {
-        btnCopy.onclick = function() {
-            const ma = document.getElementById('modalMaDonHang').textContent.replace('#', '').trim();
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(ma).then(function() {
-                    showAlertStatus('Đã sao chép mã đơn hàng!', 'success');
-                });
-            } else {
-                // fallback cho trình duyệt cũ
-                const temp = document.createElement('input');
-                temp.value = ma;
-                document.body.appendChild(temp);
-                temp.select();
-                document.execCommand('copy');
-                document.body.removeChild(temp);
-                showAlertStatus('Đã sao chép mã đơn hàng!', 'success');
-            }
-        }
-    }
-}, 0);
 </script>
 </body>
 </html>

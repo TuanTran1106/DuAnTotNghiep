@@ -2,10 +2,7 @@ package com.example.duantotnghiep.repository;
 
 import com.example.duantotnghiep.dto.DonHangChiTietDto;
 import com.example.duantotnghiep.dto.DonHangDto;
-import com.example.duantotnghiep.entity.ChiTietDonHang;
-import com.example.duantotnghiep.entity.DiaChiNguoiDung;
 import com.example.duantotnghiep.entity.DonHang;
-import com.example.duantotnghiep.entity.SanPham;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +20,7 @@ public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
             "CAST(SUM(ctdh.donGia * ctdh.soLuongDat) AS big_decimal), " +
             "COALESCE(v.maVoucher, ''), COALESCE(v.tenVoucher, ''), " +
             "CASE WHEN dc.diaChi IS NOT NULL THEN CONCAT(COALESCE(dc.diaChi, ''), ', ', COALESCE(dc.phuongXa, ''), ', ', COALESCE(dc.quanHuyen, ''), ', ', COALESCE(dc.thanhPho, '')) ELSE '' END, " +
-            // Thành tiền sau voucher:
+
             "CASE " +
             "  WHEN v.id IS NULL THEN CAST(SUM(ctdh.donGia * ctdh.soLuongDat) AS big_decimal) " +
             "  WHEN v.maVoucher = 'VOUCHER01' THEN CAST(SUM(ctdh.donGia * ctdh.soLuongDat) - 50000 AS big_decimal) " +
@@ -33,7 +30,7 @@ public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
             "  WHEN v.maVoucher = 'VOUCHER05' THEN CAST(SUM(ctdh.donGia * ctdh.soLuongDat) - 10000 AS big_decimal) " +
             "  ELSE CAST(SUM(ctdh.donGia * ctdh.soLuongDat) AS big_decimal) " +
             "END, " +
-            "nd.sdt" + // Thêm số điện thoại khách hàng
+            "nd.sdt" +
             ") " +
             "FROM DonHang dh " +
             "JOIN dh.nguoiDung nd " +
