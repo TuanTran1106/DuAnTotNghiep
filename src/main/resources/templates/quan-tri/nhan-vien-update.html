@@ -1,0 +1,101 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<html lang="en">
+<head>
+    <title>Sửa nhân viên</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .container {
+        width: 420px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333333;
+        margin-bottom: 25px;
+    }
+
+    form {
+        background-color: #ffffff;
+        padding: 30px 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 6px;
+        color: #555555;
+        font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select {
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 18px;
+        border: 1px solid #cccccc;
+        border-radius: 6px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    button {
+        width: 100%;
+        background-color: #007bff;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<body>
+<div class="container">
+    <h1>Sửa nhân viên</h1>
+    <form th:action="@{/nhan-vien/save}" th:object="${nhanVien}" method="post">
+        <input type="hidden" th:field="*{id}" />
+        Mã nhân viên: <input type="text" th:field="*{maNhanVien}" /><br/>
+        Họ tên: <input type="text" th:field="*{hoTen}" /><br/>
+        Giới tính:
+        <select th:field="*{gioiTinh}">
+            <option th:value="true">Nam</option>
+            <option th:value="false">Nữ</option>
+        </select><br/>
+        Số điện thoại: <input type="text" th:field="*{sdt}" /><br/>
+        Email: <input type="email" th:field="*{email}" /><br/>
+        Địa chỉ: <input type="text" th:field="*{diaChi}" /><br/>
+        Trạng thái:
+        <select th:field="*{trangThai}">
+            <option th:value="true">Đang làm</option>
+            <option th:value="false">Đã nghỉ</option>
+        </select><br/>
+        <button type="submit">Lưu</button>
+    </form>
+</div>
+
+</body>
+</html>

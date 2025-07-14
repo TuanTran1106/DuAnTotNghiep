@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Sửa người dùng</title>
+</head>
+<body>
+<h1>Sửa người dùng</h1>
+<form th:action="@{/nguoi-dung/update}" th:object="${nguoiDung}" method="post"  enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}" />
+    Mã nhân viên: <input type="text" th:field="*{maNguoiDung}" /><br/>
+    <div th:if="*{hinhAnh != null}">
+        <img th:src="@{'/uploads/' + *{hinhAnh}}" width="100" />
+        <input type="hidden" th:field="*{hinhAnh}" />
+    </div>
+
+    Ảnh mới: <input type="file" name="fileUpload" /><br/>
+    Họ tên: <input type="text" th:field="*{hoTen}" /><br/>
+    Giới tính:
+    <select th:field="*{gioiTinh}">
+        <option th:value="true">Nam</option>
+        <option th:value="false">Nữ</option>
+    </select><br/>
+    Số điện thoại: <input type="text" th:field="*{sdt}" /><br/>
+    Email: <input type="email" th:field="*{email}" /><br/>
+    Trạng thái:
+    <select th:field="*{trangThai}">
+        <option th:value="true">Hoạt động</option>
+        <option th:value="false">Không hoạt động</option>
+    </select><br/>
+    <button type="submit">Lưu</button>
+</form>
+</body>
+</html>
