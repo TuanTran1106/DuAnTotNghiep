@@ -6,38 +6,60 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class DonHangDto {
 
-    private Integer id;
+
+    private Integer donHangId;
 
     private String maDonHang;
 
-    private String tenNguoiDung;
+    private  LocalDateTime ngayMua;
 
-    private BigDecimal tongGia;
+    private String tenKhachHang;
 
-    private LocalDateTime ngayMua;
+    private String sdtKhachHang;
 
-    private String tenTrangThai;
+    private  String tenTrangThai;
 
-    private String tenPhuongThucThanhToan;
+    private  String tenPhuongThuc;
 
-    public DonHangDto(Integer id, String maDonHang, String tenNguoiDung, BigDecimal tongGia,
-                      LocalDateTime ngayMua, String tenTrangThai, String tenPhuongThucThanhToan) {
-        this.id = id;
+    private  String tenNhanVien;
+
+    private  Long soLuongDat;
+
+    private  BigDecimal donGia;
+
+    private  BigDecimal thanhTien;
+
+    private  String voucher;
+    private  String tenVoucher;
+
+    private  String diaChi;
+
+    private BigDecimal thanhTienSauVoucher;
+
+    public DonHangDto(Integer donHangId, String maDonHang, LocalDateTime ngayMua, String tenKhachHang, String tenTrangThai, String tenPhuongThuc, String tenNhanVien, Long soLuongDat, BigDecimal donGia, BigDecimal thanhTien, String voucher, String tenVoucher, String diaChi, BigDecimal thanhTienSauVoucher, String sdtKhachHang) {
+        this.donHangId = donHangId;
         this.maDonHang = maDonHang;
-        this.tenNguoiDung = tenNguoiDung;
-        this.tongGia = tongGia;
         this.ngayMua = ngayMua;
+        this.tenKhachHang = tenKhachHang;
         this.tenTrangThai = tenTrangThai;
-        this.tenPhuongThucThanhToan = tenPhuongThucThanhToan;
+        this.tenPhuongThuc = tenPhuongThuc;
+        this.tenNhanVien = tenNhanVien;
+        this.soLuongDat = soLuongDat;
+        this.donGia = donGia;
+        this.thanhTien = thanhTien;
+        this.voucher = voucher;
+        this.tenVoucher = tenVoucher;
+        this.diaChi = diaChi;
+        this.thanhTienSauVoucher = thanhTienSauVoucher;
+        this.sdtKhachHang = sdtKhachHang;
     }
-
 
 }

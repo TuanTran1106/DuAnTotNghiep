@@ -3,13 +3,15 @@ package com.example.duantotnghiep.service;
 import com.example.duantotnghiep.dto.DonHangChiTietDto;
 import com.example.duantotnghiep.dto.DonHangDto;
 
-
 import java.util.List;
 
 public interface DonHangService {
 
-    // ds hóa đơn
-    List<DonHangDto> findOrder();
+    List<DonHangDto> getAllOrders();
 
-    List<DonHangChiTietDto> findChiTietByDonHangId(Integer donHangId);
+    DonHangChiTietDto getOrderDetail(Integer orderId);
+
+    List<DonHangChiTietDto> getOrderProducts(Integer orderId);
+
+    boolean nextOrderStatus(Integer orderId);
 }

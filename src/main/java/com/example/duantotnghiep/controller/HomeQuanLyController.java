@@ -2,14 +2,12 @@ package com.example.duantotnghiep.controller;
 
 
 import com.example.duantotnghiep.dto.DonHangChiTietDto;
+import com.example.duantotnghiep.dto.DonHangDto;
 import com.example.duantotnghiep.service.DonHangService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,22 +23,17 @@ public class HomeQuanLyController {
         return "quan-tri/home-quan-ly";
     }
 
-    @GetMapping("/trang-chu")
-    public String home(Model model) {
-        return "quan-tri/trang-chu";
-    }
-
     @GetMapping("/don-hang")
-    public String getOrder (Model model) {
-        model.addAttribute("order",donHangService.findOrder());
+    public String quanLyDonHang(Model model) {
+        List<DonHangDto> orders = donHangService.getAllOrders();
+        model.addAttribute("orders", orders);
         return "quan-tri/quan-ly-don-hang";
     }
-
-    @GetMapping("/chi-tiet/{id}")
+    
+    @GetMapping("/api/don-hang/{id}/san-pham")
     @ResponseBody
-    public List<DonHangChiTietDto> getOrderDetails(@PathVariable Integer id) {
-        return donHangService.findChiTietByDonHangId(id);
+    public List<DonHangChiTietDto> getOrderProducts(@PathVariable Integer id) {
+        return donHangService.getOrderProducts(id);
     }
-
 
 }

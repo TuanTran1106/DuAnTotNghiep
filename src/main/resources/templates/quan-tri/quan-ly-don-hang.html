@@ -2,435 +2,134 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Watch Aura</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Quản lý đơn hàng</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            line-height: 1.6;
-        }
-
-        :root {
-            /* Colors */
-            --primary-orange: #ff8c00;
-            --primary-orange-light: #ffa500;
-            --primary-red: #e74c3c;
-            --primary-red-dark: #c0392b;
-            --primary-green: #28a745;
-            --primary-green-dark: #218838;
-            --primary-blue: #007bff;
-            --primary-blue-dark: #0056b3;
-
-            --text-primary: #333;
-            --text-secondary: #666;
-            --text-muted: #999;
-            --text-light: #bdc3c7;
-
-            --bg-white: #fff;
-            --bg-light: #f8f9fa;
-            --bg-dark: #141414;
-            --bg-dark-secondary: #141414;
-
-            --border-light: #e0e0e0;
-            --border-lighter: #f0f0f0;
-
-            --spacing-xs: 5px;
-            --spacing-sm: 10px;
-            --spacing-md: 15px;
-            --spacing-lg: 20px;
-            --spacing-xl: 30px;
-            --spacing-xxl: 40px;
-
-            --radius-sm: 4px;
-            --radius-md: 8px;
-            --radius-lg: 10px;
-            --radius-xl: 25px;
-            --radius-full: 50%;
-
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 3px 15px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 8px 25px rgba(0, 0, 0, 0.15);
-
-            --transition: all 0.3s ease;
-            --transition-fast: all 0.2s ease;
-        }
-
-        .header-top {
-            background: #2e2d2d;
-            color: var(--bg-white);
-            padding: 8px 0;
-            font-size: 12px;
-        }
-
-        .header-main {
-            background: var(--bg-white);
-            box-shadow: var(--shadow-md);
-            position: relative;
-            z-index: 1000;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            color: var(--text-primary) !important;
-        }
-
-        .nav-item {
-            margin: 0 var(--spacing-sm);
-        }
-
-        .nav-link {
-            color: var(--text-primary) !important;
-            font-weight: 500;
-            padding: var(--spacing-md) var(--spacing-sm) !important;
-            transition: color 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: var(--primary-orange) !important;
-        }
-
-        /* Search Box */
-        .search-box {
-            position: relative;
-            max-width: 300px;
-        }
-
-        .search-box input {
-            border-radius: var(--radius-xl);
-            padding: 8px 40px 8px var(--spacing-md);
-            border: 2px solid var(--border-light);
-            font-size: 14px;
-            width: 100%;
-        }
-
-        .search-box .search-btn {
-            position: absolute;
-            right: var(--spacing-sm);
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-
-        /* Sidebar Menu */
-        .sidebar-menu {
-            position: fixed;
-            left: -280px;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            background: var(--bg-white);
-            box-shadow: 2px 0 var(--spacing-sm) rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease;
-            z-index: 1050;
-            overflow-y: auto;
-        }
-
-        .sidebar-menu.show {
-            left: 0;
-        }
-
-        .sidebar-header {
-            background: linear-gradient(135deg, var(--primary-orange), var(--primary-orange-light));
-            color: var(--bg-white);
-            padding: var(--spacing-lg);
-            text-align: center;
-        }
-
-        .sidebar-menu ul {
-            list-style: none;
-        }
-
-        .sidebar-menu li {
-            border-bottom: 1px solid var(--border-lighter);
-        }
-
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: var(--spacing-md) var(--spacing-lg);
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .sidebar-menu a:hover {
-            background: var(--bg-light);
-            color: var(--primary-orange);
-        }
-
-        .sidebar-menu i {
-            margin-right: var(--spacing-md);
-            width: var(--spacing-lg);
-            text-align: center;
-        }
-
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1040;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-        }
-
-        .overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            font-size: 18px;
-            color: var(--text-primary);
-            padding: var(--spacing-sm);
-            cursor: pointer;
-        }
-
-        /* Hero Banner */
-        .banner {
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .banner-img {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: cover;
-        }
-
-        /* Section Styles */
-        .header-section {
-            background: var(--bg-white);
-            padding: var(--spacing-xl) 0;
-            margin-bottom: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        .main-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--text-primary);
-            text-align: center;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: var(--text-secondary);
-            text-align: center;
-            margin-bottom: var(--spacing-xl);
-            line-height: 1.6;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-xxl);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .contact-info {
-            margin-top: 20px;
-        }
-
-        .contact-info p {
-            margin-bottom: 12px;
-            color: #e3f2fd;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-        }
-
-        .contact-info p strong {
-            color: #b9863e;
-            min-width: 60px;
-            margin-right: 8px;
-        }
-
-        .contact-info p i {
-            color: #b9863e;
-            margin-right: 12px;
-            width: 16px;
-            text-align: center;
-        }
-
-        .footer-section ul {
-            list-style: none;
-            padding: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            background: #f6f8fa;
             margin: 0;
+            padding: 0;
         }
-
-        .footer-section ul li {
-            margin-bottom: 12px;
-            position: relative;
-            padding-left: 20px;
+        .order-page {
+            background: #fff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            max-width: 100%;
+            margin: 32px auto;
         }
-
-        .footer-section ul li::before {
-            content: '▸';
-            position: absolute;
-            left: 0;
-            color: #b9863e;
-            font-weight: bold;
-            transition: all 0.3s ease;
+        .order-tabs {
+            display: flex;
+            gap: 24px;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 18px;
         }
-
-        .footer-section ul li a {
-            color: #e3f2fd;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            line-height: 1.5;
-        }
-
-        .footer-section ul li:hover::before {
-            color: #b9863e;
-            transform: translateX(3px);
-        }
-
-        .footer-section ul li a:hover {
-            color: #b9863e;
-            padding-left: 5px;
-        }
-
-        .newsletter-form {
-            position: relative;
-            margin-top: 20px;
-        }
-
-        .newsletter-input {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid rgba(100, 181, 246, 0.3);
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .newsletter-input:focus {
-            outline: none;
-            border-color: #64b5f6;
-            box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .newsletter-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .newsletter-btn {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(45deg, #64b5f6, #42a5f5);
-            color: white;
+        .order-tabs .tab {
+            background: none;
             border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 14px;
+            color: #222;
+            padding: 12px 0;
+            border-bottom: 2px solid transparent;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(100, 181, 246, 0.3);
+            transition: color 0.2s, border-color 0.2s;
         }
-
-        .newsletter-btn:hover {
-            transform: translateY(-50%) scale(1.05);
-            box-shadow: 0 6px 20px rgba(100, 181, 246, 0.4);
-            background: linear-gradient(45deg, #42a5f5, #1e88e5);
+        .order-tabs .tab.active {
+            color: #1976d2;
+            border-bottom: 2px solid #1976d2;
         }
-
-        .newsletter-description {
-            color: #ffffff;
-            font-size: 13px;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-
-        .footer-bottom {
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            text-align: center;
-            color: #B9863EFF;
-            font-size: 13px;
-        }
-
-        @media (max-width: 768px) {
-            .main-footer {
-                padding: 40px 0 20px;
-                background-attachment: scroll;
-            }
-
-            .footer-section {
-                margin-bottom: 40px;
-            }
-
-            .footer-logo img {
-                max-width: 150px;
-            }
-        }
-
-        .top-features {
-            background: linear-gradient(135deg, #a0616a, #8b4c55);
-            padding: var(--spacing-md) 0;
-            color: var(--bg-white);
-        }
-
-        .feature-item {
+        .order-filters {
             display: flex;
+            gap: 12px;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: 18px;
         }
-
-        .feature-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: var(--radius-full);
-            display: flex;
+        .order-search {
+            width: 350px;
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .order-filters select, .order-filters .filter-btn, .order-filters .save-filter-btn {
+            padding: 9px 14px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            background: #fafbfc;
+            font-size: 15px;
+            color: #333;
+        }
+        .order-filters .save-filter-btn {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+        }
+        .order-table-wrapper {
+            margin-top: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+        }
+        .order-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+        }
+        .order-table th, .order-table td {
+            padding: 14px 12px;
+            text-align: left;
+            font-size: 15px;
+            border-bottom: 1px solid #f5f5f5;
+            vertical-align: middle;
+        }
+        .order-table th {
+            background: #fafbfc;
+            font-weight: 600;
+            color: #222;
+        }
+        .order-link {
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            margin-right: var(--spacing-sm);
-            font-size: 18px;
-        }
-
-        .feature-text {
+            gap: 4px;
             font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
+            border-radius: 16px;
+            padding: 4px 14px;
+            font-weight: 500;
+            background: #fff7e6;
+            color: #b26a00;
+            border: 1px solid #ffe0b2;
+        }
+        .badge-success {
+            background: #e6ffed;
+            color: #237804;
+            border: 1px solid #b7eb8f;
+        }
+        .badge-warning {
+            background: #fff7e6;
+            color: #b26a00;
+            border: 1px solid #ffe0b2;
+        }
+        .badge-danger {
+            background: #fff1f0;
+            color: #a8071a;
+            border: 1px solid #ffa39e;
+        }
+        .order-table input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
         }
 
-        /* Modal Base Styles */
+                /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -439,892 +138,966 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
+            background-color: rgba(0,0,0,0.5);
         }
 
         .modal-content {
             background-color: #fff;
-            margin: 8% auto;
-            padding: 24px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 960px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            border: none;
-            animation: slideUp 0.4s ease-out forwards;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 95%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            animation: modalSlideIn 0.2s ease-out;
         }
 
-        @keyframes slideUp {
+        @keyframes modalSlideIn {
             from {
-                margin-top: 50%;
                 opacity: 0;
+                transform: translateY(-20px);
             }
             to {
-                margin-top: 8%;
                 opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        .close {
-            color: #(Clone this conversation to continue editing)6c757d;
-            font最后size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
+        .modal-header {
+            background: #f8f9fa;
+            color: #333;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        .close:hover,
-        .close:focus {
-            color: #343a40;
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #e9ecef;
+            color: #333;
         }
 
         .modal-body {
             padding: 24px;
         }
 
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            padding: 16px 24px;
-            border-top: 1px solid #e8ecef;
-            gap: 12px;
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
             background: #f8f9fa;
-            border-radius: 0 0 12px 12px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
         }
 
-        .modal-footer button {
-            padding: 10px 24px;
-            border-radius: 8px;
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
             font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.4;
         }
 
-        .modal-footer .cancel-btn {
-            background-color: #f1f3f5;
-            color: #495057;
-            border: 1px solid #dee2e6;
-        }
-
-        .modal-footer .cancel-btn:hover {
-            background-color: #e9ecef;
-            transform: translateY(-1px);
-        }
-
-        .modal-footer .submit-btn,
-        .modal-footer .apply-btn {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-        }
-
-        .modal-footer .submit-btn:hover,
-        .modal-footer .apply-btn:hover {
-            background-color: #0056b3;
-            transform: translateY(-1px);
-        }
-
-        /* Invoice Modal Styles */
-        #invoiceModal .modal-content {
-            max-width: 720px;
-        }
-
-        .form-group {
+        .voucher-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 16px;
             margin-bottom: 20px;
         }
 
-        .form-group label {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #343a40;
-            margin-bottom: 6px;
-        }
-
-        .form-group label.required::after {
-            content: '*';
-            color: #dc3545;
-            font-size: 14px;
-        }
-
-        .form-group select,
-        .form-group textarea,
-        .form-group input[type="text"],
-        .form-group input[type="number"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 14px;
-            color: #343a40;
-            background-color: #fff;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .form-group select:focus,
-        .form-group textarea:focus,
-        .form-group input[type="text"]:focus,
-        .form-group input[type="number"]:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-            outline: none;
-        }
-
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        .form-group input[readonly] {
-            background-color: #f8f9fa;
-            cursor: not-allowed;
-        }
-
-        .invoice-product-list {
-            max-height: 250px;
-            overflow-y: auto;
-            margin-bottom: 16px;
-            background-color: #fff;
-            border-radius: 6px;
-            border: 1px solid #e8ecef;
-        }
-
-        .invoice-product-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .invoice-product-list::-webkit-scrollbar-track {
-            background: #f1f3f5;
-            border-radius: 3px;
-        }
-
-        .invoice-product-list::-webkit-scrollbar-thumb {
-            background: #adb5bd;
-            border-radius: 3px;
-        }
-
-        .invoice-product-list::-webkit-scrollbar-thumb:hover {
-            background: #6c757d;
-        }
-
-        .product-row {
-            display: grid;
-            grid-template-columns: 50px 1.5fr 1fr 1fr 1fr;
-            align-items: center;
-            padding: 10px 12px;
-            border-bottom: 1px solid #e8ecef;
+        .voucher-title {
             font-size: 13px;
-            color: #343a40;
-            transition: background 0.2s ease;
-        }
-
-        .product-row.header {
-            background-color: #f8f9fa;
             font-weight: 600;
-            text-transform: uppercase;
-            color: #495057;
-            padding: 12px;
+            color: #856404;
+            margin-bottom: 8px;
         }
 
-        .product-row:hover {
-            background-color: #f8f9fa;
-        }
-
-        .product-row span {
-            text-align: left;
-        }
-
-        .product-row input[type="number"] {
-            width: 70px;
-            padding: 6px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
+        .voucher-details {
             font-size: 13px;
-            text-align: center;
-            transition: border-color 0.3s ease;
+            color: #856404;
+            line-height: 1.4;
         }
 
-        .product-row input[type="number"]:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-            outline: none;
+        .address-section {
+            background: #d1ecf1;
+            border: 1px solid #b8e6f1;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 24px;
         }
 
-        .remove-btn {
-            color: #dc3545;
-            cursor: pointer;
-            font-size: 14px;
-            text-align: center;
-            transition: color 0.3s ease;
-        }
-
-        .remove-btn:hover {
-            color: #bd2130;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            font-size: 15px;
+        .address-title {
+            font-size: 13px;
             font-weight: 600;
-            color: #343a40;
-            border-top: 1px solid #e8ecef;
-            margin-top: 16px;
+            color: #0c5460;
+            margin-bottom: 8px;
         }
 
-        .total-row span:last-child {
-            color: #007bff;
+        .address-content {
+            font-size: 13px;
+            color: #0c5460;
+            line-height: 1.4;
         }
 
-        .link-a {
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            color: #007bff;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin: 12px 0;
-            transition: color 0.3s ease;
-        }
-
-        .link-a i {
-            font-size: 14px;
-        }
-
-        .link-a:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-
-        /* Product Selection Modal Styles */
-        #productModal .modal-content {
-            max-width: 640px;
-        }
-
-        #productModal .modal-body {
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 0 8px;
-        }
-
-        #productModal .product-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
+        .product-section {
+            background: white;
+            border: 1px solid #e9ecef;
             border-radius: 6px;
             overflow: hidden;
+            margin-bottom: 20px;
         }
 
-        #productModal .product-table th,
-        #productModal .product-table td {
-            padding: 12px;
-            text-align: left;
-            font-size: 13px;
-            color: #343a40;
-            border-bottom: 1px solid #e8ecef;
+        .product-section-header {
+            background: #f8f9fa;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        #productModal .product-table th {
-            background-color: #f8f9fa;
+        .product-section-title {
+            font-size: 16px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #495057;
+            color: #333;
+            margin: 0;
         }
 
-        #productModal .product-table td {
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-table th {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
+        }
+
+        .product-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 13px;
             vertical-align: middle;
         }
 
-        #productModal .product-table tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        #productModal .product-table input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            accent-color: #007bff;
-        }
-
-        #productModal .product-table img {
-            width: 40px;
-            height: 40px;
-            border-radius: 4px;
+        .product-image {
+            width: 50px;
+            height: 50px;
             object-fit: cover;
-            margin-right: 8px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
         }
 
-        #productModal .product-table .product-name {
+        .product-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name {
             font-weight: 500;
-            display: flex;
-            align-items: center;
-        }
-
-        #productModal .product-table .price,
-        #productModal .product-table .quantity {
-            font-weight: 600;
-            color: #495057;
-            text-align: right;
-        }
-
-        #productModal .modal-body::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #productModal .modal-body::-webkit-scrollbar-track {
-            background: #f1f3f5;
-            border-radius: 3px;
-        }
-
-        #productModal .modal-body::-webkit-scrollbar-thumb {
-            background: #adb5bd;
-            border-radius: 3px;
-        }
-
-        #productModal .modal-body::-webkit-scrollbar-thumb:hover {
-            background: #6c757d;
-        }
-
-        /* Order Details Modal Styles */
-        #orderDetailsModal .modal-content {
-            max-width: 1200px;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        #orderDetailsModal .modal-body {
-            display: flex;
-            flex-direction: row;
-            gap: 24px;
-            padding: 24px;
-        }
-
-        #orderDetailsModal .order-details-column {
-            flex: 1;
-            min-width: 320px;
-            background: #f9fafb;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        #orderDetailsModal .product-list-column {
-            flex: 1.5;
-            min-width: 400px;
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        #orderDetailsModal .form-group {
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        #orderDetailsModal .form-group label {
-            font-size: 15px;
-            font-weight: 600;
-            color: #2d3748;
-            min-width: 120px;
-            margin-bottom: 0;
-        }
-
-        #orderDetailsModal .form-group span {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 15px;
-            color: #2d3748;
-            background-color: #f7fafc;
-            font-weight: 500;
-        }
-
-        #orderDetailsModal .product-list-column h5 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 16px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-        }
-
-        #orderDetailsModal .invoice-product-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: #fff;
-        }
-
-        #orderDetailsModal .product-row {
-            display: grid;
-            grid-template-columns: 50px 2fr 1fr 1fr 1fr;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 14px;
-            color: #2d3748;
-            transition: background 0.2s ease;
-        }
-
-        #orderDetailsModal .product-row.header {
-            background-color: #f7fafc;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #4a5568;
-            padding: 14px 16px;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        #orderDetailsModal .product-row:hover {
-            background-color: #f1f5f9;
-        }
-
-        #orderDetailsModal .product-row span {
-            text-align: left;
-        }
-
-        #orderDetailsModal .product-row span:nth-child(3),
-        #orderDetailsModal .product-row span:nth-child(4),
-        #orderDetailsModal .product-row span:nth-child(5) {
-            text-align: right;
-        }
-
-        #orderDetailsModal .total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            color: #2d3748;
-            background: #f7fafc;
-            border-top: 2px solid #e2e8f0;
-            border-radius: 0 0 8px 8px;
-        }
-
-        #orderDetailsModal .total-row span:last-child {
-            color: #1a73e8;
-        }
-
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 95%;
-                padding: 16px;
-                margin: 10% auto;
-            }
-
-            #orderDetailsModal .modal-body {
-                flex-direction: column;
-            }
-
-            #orderDetailsModal .order-details-column,
-            #orderDetailsModal .product-list-column {
-                min-width: 100%;
-            }
-
-            #orderDetailsModal .modal-header h2 {
-                font-size: 18px;
-            }
-
-            #orderDetailsModal .form-group label {
-                font-size: 14px;
-                min-width: 100px;
-            }
-
-            #orderDetailsModal .form-group span {
-                font-size: 14px;
-                padding: 10px;
-            }
-
-            #orderDetailsModal .product-row {
-                grid-template-columns: 50px 1.5fr 1fr 1fr “‘1fr’”;
-                font-size: 13px;
-                padding: 10px;
-            }
-
-            #orderDetailsModal .total-row {
-                font-size: 14px;
-            }
-
-            .modal-footer button {
-                padding: 8px 16px;
-                font-size: 13px;
-            }
-
-            #orderDetailsModal .invoice-product-list {
-                max-height: 200px;
-            }
-        }
-
-        .header {
-            background: white;
-            padding: 20px 30px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: #4ECDC4;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-        }
-
-        .logo-text {
-            font-size: 18px;
-            font-weight: 600;
             color: #333;
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-input {
-            width: 300px;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            outline: none;
+            margin-bottom: 2px;
             font-size: 14px;
-            transition: border-color 0.3s ease;
         }
 
-        .search-input:focus {
-            border-color: #2196F3;
-            box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        .product-variant {
+            font-size: 11px;
+            color: #6c757d;
         }
 
-        .search-input::placeholder {
-            color: #999;
-        }
-
-        .search-btn, .create-invoice-btn, .detail-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
+        .quantity-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 12px;
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
-
-        .create-invoice-btn {
-            background: #2196F3;
-        }
-
-        .detail-btn {
-            background: #007bff;
-        }
-
-        .search-btn:hover, .create-invoice-btn:hover, .detail-btn:hover {
-            background: #388E3C;
-            transform: translateY(-2px);
-        }
-
-        .create-invoice-btn:hover {
-            background: #1976D2;
-        }
-
-        .detail-btn:hover {
-            background: #0056b3;
-        }
-
-        .tabs,
-        .order-item {
-            display: grid;
-            grid-template-columns: 200px 200px 200px 200px 200px 250px 150px;
-            align-items: center;
-            padding: 15px 30px;
-            gap: 10px;
-        }
-
-        .tabs {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
-            color: #444;
-            font-weight: 600;
-        }
-
-        .product-list {
-            max-height: 400px;
-            overflow-y: auto;
-            background-color: #fff;
-        }
-
-        .order-item {
-            background-color: #fff;
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s ease;
-        }
-
-        .order-item:hover {
-            background-color: #f9f9f9;
-        }
-
-        .order-id,
-        .payment-method,
-        .order-date,
-        .order-customer,
-        .customer-name,
-        .order-total,
-        .action {
-            font-size: 14px;
-            color: #333;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .order-status {
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            border-radius: 15px;
-            padding: 6px 10px;
+            font-size: 12px;
             display: inline-block;
         }
 
-        .order-status.completed {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .price {
+            font-weight: 500;
+            color: #28a745;
+            font-size: 14px;
         }
 
-        .order-status.shipping {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
+        .total-price {
+            font-weight: 600;
+            color: #28a745;
+            font-size: 14px;
+        }
+
+        .final-price-section {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            padding: 16px;
+            text-align: right;
+        }
+
+        .final-price-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 6px;
+        }
+
+        .final-price-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #155724;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px 20px;
+            color: #6c757d;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px 20px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .error {
+            text-align: center;
+            padding: 30px 20px;
+            color: #dc3545;
+        }
+        .order-date-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 6px 12px;
+            border: 1px solid #e0e0e0;
+            height: 40px;
+        }
+        .order-date-filter {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 15px;
+            background: #fff;
+            color: #333;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .order-date-filter:focus {
+            border: 1.5px solid #1976d2;
+        }
+        .order-date-display {
+            min-width: 100px;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+        .btn-next-status {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 6px rgba(25, 118, 210, 0.08);
+        }
+        .btn-next-status:hover:enabled {
+            background: #1256a3;
+        }
+        .btn-next-status:disabled {
+            background: #b0bec5;
+            cursor: not-allowed;
+        }
+        .alert-status {
+            display: none;
+            margin: 12px 0;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .alert-status.success {
+            background: #e6ffed;
+            color: #237804;
+            border: 1px solid #b7eb8f;
+        }
+        .alert-status.error {
+            background: #fff1f0;
+            color: #a8071a;
+            border: 1px solid #ffa39e;
+        }
+        .pagination {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin: 18px 0 0 0;
+        }
+        .pagination button {
+            background: #fff;
+            color: #1976d2;
+            border: 1px solid #1976d2;
+            border-radius: 5px;
+            padding: 6px 14px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .pagination button[disabled] {
+            background: #f0f0f0;
+            color: #b0bec5;
+            border: 1px solid #e0e0e0;
+            cursor: not-allowed;
+        }
+        .pagination button.active, .pagination button[style*='font-weight:bold'] {
+            background: #1976d2 !important;
+            color: #fff !important;
+            border: 1px solid #1976d2;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
         }
     </style>
 </head>
-
-<body class="bg-light">
-<div class="header-top">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <span><i class="fas fa-phone"></i> HOTLINE: 0123456789</span>
-            </div>
-            <div class="col-md-6 text-end">
-                <span><i class="fas fa-shipping-fast"></i> HỆ THỐNG CỬA HÀNG</span>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="container-fluid">
-    <div class="header">
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="TÌM KIẾM SẢN PHẨM BẠN CẦN...">
-            <button class="search-btn">
-                <span>🔍</span> Tìm kiếm
-            </button>
-        </div>
+<body>
+<div class="order-page">
+    <!-- Tabs -->
+    <div class="order-tabs">
+        <button class="tab active" data-status="all">Tất cả</button>
+        <button class="tab" data-status="Chờ xác nhận">Chờ xác nhận</button>
+        <button class="tab" data-status="Đang chuẩn bị hàng">Đang chuẩn bị hàng</button>
+        <button class="tab" data-status="Đang giao">Đang giao </button>
+        <button class="tab" data-status="Đã giao">Đã giao </button>
+        <button class="tab" data-status="Đã huỷ">Đã huỷ</button>
     </div>
 
-    <div class="tabs">
-        <div class="order-id">Mã đơn hàng</div>
-        <div class="order-date">Ngày đặt hàng</div>
-        <div class="customer-name">Khách hàng</div>
-        <div class="order-total">Thành tiền</div>
-        <div class="order-status">Trạng thái</div>
-        <div class="payment-method">Phương thức thanh toán</div>
-        <div class="action">Thao tác</div>
+    <!-- Filter/Search -->
+    <div class="order-filters">
+        <label>
+            <input type="text" class="order-search" placeholder="Tìm kiếm theo mã đơn hàng, vận đơn, SĐT khách">
+        </label>
+        <label class="order-date-label">
+            <input type="date" class="order-date-filter" placeholder="Ngày đặt hàng">
+            <span class="order-date-display" style="margin-left:10px;color:#1976d2;font-weight:500;"></span>
+        </label>
+        <label style="font-size: 14px" >
+            Hiển thị
+            <select id="rowsPerPageSelect">
+                <option value="5">5 dòng</option>
+                <option value="10" selected>10 dòng</option>
+                <option value="20">20 dòng</option>
+                <option value="50">50 dòng</option>
+            </select>
+            / trang
+        </label>
     </div>
 
-    <div class="product-list">
-        <div class="order-item" th:each="o : ${order}">
-            <div class="order-id" th:text="${o.maDonHang}"></div>
-            <div class="order-date" th:text="${#temporals.format(o.ngayMua, 'dd/MM/yyyy HH:mm:ss')}"></div>
-            <div class="order-customer" th:text="${o.tenNguoiDung.toString()}"></div>
-            <div class="order-total" th:text="${#numbers.formatDecimal(o.tongGia, 0, 'COMMA', 0, 'POINT')} + 'đ'"></div>
-            <div class="order-status" th:classappend="${o.tenTrangThai == 'Hoàn tất' ? 'completed' : 'shipping'}"
-                 th:text="${o.tenTrangThai}"></div>
-            <div class="payment-method" th:text="${o.tenPhuongThucThanhToan}"></div>
-            <div class="action">
-                <button class="detail-btn" th:data-order-id="${o.maDonHang}"
-                        th:data-order-date="${#temporals.format(o.ngayMua, 'dd/MM/yyyy HH:mm:ss')}"
-                        th:data-customer-name="${o.tenNguoiDung.toString()}"
-                        th:data-order-total="${#numbers.formatDecimal(o.tongGia, 0, 'COMMA', 0, 'POINT')} + 'đ'"
-                        th:data-order-status="${o.tenTrangThai}"
-                        th:data-payment-method="${o.tenPhuongThucThanhToan}">
-                    Xem chi tiết
+    <!-- Table -->
+    <div class="order-table-wrapper">
+        <table class="order-table">
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã đơn hàng</th>
+                <th>Ngày đặt hàng</th>
+                <th>Khách hàng</th>
+                <th>Thành tiền</th>
+                <th>Phương thức thanh toán</th>
+                <th>Trạng thái xử lý</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order, stat : ${orders}" class="clickable-row" th:onclick="'showOrderDetail(' + ${order.donHangId} + ')'">
+                <td th:text="${stat.index + 1}">1</td>
+                <td class="order-link" th:text="'#' + ${order.maDonHang}"></td>
+                <td th:text="${#temporals.format(order.ngayMua, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${order.tenKhachHang != null ? order.tenKhachHang : '---'}"></td>
+                <td th:text="${#numbers.formatDecimal(order.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' ₫'"> ₫</td>
+                <td>
+                    <span th:text="${order.tenPhuongThuc != null ? order.tenPhuongThuc : '---'}"></span>
+                </td>
+                <td>
+                    <span th:classappend="'badge ' + (${order.tenTrangThai} == 'Hoàn tất' ? 'badge-success' : (${order.tenTrangThai} == 'Chưa xử lý' ? 'badge-warning' : 'badge-danger'))"
+                          th:text="${order.tenTrangThai != null ? order.tenTrangThai : '---'}"></span>
+                </td>
+                <td>
+                    <button type="button" class="btn-next-status"
+                        onclick="event.stopPropagation(); nextOrderStatus(${order.donHangId}, this)">
+                        Chuyển trạng thái
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="pagination" class="pagination"></div>
+
+<div id="alertStatus" class="alert-status"></div>
+
+    <!-- Modal Chi tiết đơn hàng -->
+    <div id="orderDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-file-invoice"></i> Chi tiết đơn hàng
+                </h3>
+                <button class="modal-close" onclick="closeOrderDetail()">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Order Details Modal -->
-<div class="modal" id="orderDetailsModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2><i class="fas fa-file-invoice me-2"></i>Chi tiết đơn hàng</h2>
-        </div>
-        <div class="modal-body">
-            <div class="order-details-column">
-                <h5><i class="fas fa-info-circle me-2"></i>Thông tin đơn hàng</h5>
-                <div class="form-group">
-                    <label><i class="fas fa-hashtag me-2"></i>Mã đơn hàng</label>
-                    <span id="orderId"></span>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-calendar-alt me-2"></i>Ngày đặt hàng</label>
-                    <span id="orderDate"></span>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-user me-2"></i>Khách hàng</label>
-                    <span id="customerName"></span>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-wallet me-2"></i>Thành tiền</label>
-                    <span id="orderTotal"></span>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-check-circle me-2"></i>Trạng thái</label>
-                    <span id="orderStatus"></span>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-credit-card me-2"></i>Phương thức thanh toán</label>
-                    <span id="paymentMethod"></span>
-                </div>
-            </div>
-            <div class="product-list-column">
-                <h5><i class="fas fa-box-open me-2"></i>Sản phẩm trong đơn hàng</h5>
-                <div class="invoice-product-list" id="orderProductList">
-                    <div class="product-row header">
-                        <span></span>
-                        <span>Tên sản phẩm</span>
-                        <span>Số lượng</span>
-                        <span>Giá</span>
-                        <span>Tổng</span>
+            <div class="modal-body">
+                <!-- Thông tin tổng quan -->
+                <div class="order-info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Mã đơn hàng</div>
+                        <div class="info-value" style="display: flex; align-items: center; gap: 8px;">
+                            <span id="modalMaDonHang">-</span>
+                            <button id="btnCopyMaDonHang" title="Sao chép mã đơn hàng" style="background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; font-size: 15px; color: #1976d2;">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
                     </div>
-                    <!-- Product rows will be dynamically populated -->
+                    <div class="info-item">
+                        <div class="info-label">Ngày đặt hàng</div>
+                        <div class="info-value" id="modalNgayDat">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Khách hàng</div>
+                        <div class="info-value" id="modalKhachHang">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Số điện thoại</div>
+                        <div class="info-value" id="modalSdtKhachHang">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Thành tiền</div>
+                        <div class="info-value" id="modalThanhTien">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Phương thức thanh toán</div>
+                        <div class="info-value" id="modalPhuongThuc">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Trạng thái xử lý</div>
+                        <div class="info-value" id="modalTrangThai">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Nhân viên xử lý</div>
+                        <div class="info-value" id="modalNhanVien">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Voucher</div>
+                        <div class="info-value" id="modalVoucherCode">-</div>
+                    </div>
                 </div>
-                <div class="total-row">
-                    <span>Tổng cộng:</span>
-                    <span id="orderTotalPrice"></span>
+
+                <!-- Thông tin voucher -->
+                <div class="voucher-section" id="voucherDetailRow" style="display: none;">
+                    <div class="voucher-title">Chi tiết voucher</div>
+                    <div class="voucher-details" id="modalVoucherDetail">-</div>
+                </div>
+
+                <!-- Địa chỉ giao hàng -->
+                <div class="address-section">
+                    <div class="address-title">Địa chỉ giao hàng</div>
+                    <div class="address-content" id="modalDiaChi">-</div>
+                </div>
+
+                <!-- Danh sách sản phẩm -->
+                <div class="product-section">
+                    <div class="product-section-header">
+                        <i class="fas fa-box"></i>
+                        <h4 class="product-section-title">Danh sách sản phẩm</h4>
+                    </div>
+                    <table class="product-table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Ảnh</th>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalProductList">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu sản phẩm...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Thành tiền sau voucher -->
+                <div class="final-price-section" id="thanhTienSauVoucherRow" style="display: none;">
+                    <div class="final-price-label">Thành tiền sau voucher</div>
+                    <div class="final-price-value" id="modalThanhTienSauVoucher">-</div>
                 </div>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="cancel-btn" onclick="closeOrderDetailsModal()">Đóng</button>
-        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
-    /*<![CDATA[*/
-    function openOrderDetailsModal(orderId, orderDate, customerName, orderTotal, orderStatus, paymentMethod, products) {
-        document.getElementById('orderId').textContent = orderId;
-        document.getElementById('orderDate').textContent = orderDate;
-        document.getElementById('customerName').textContent = customerName;
-        document.getElementById('orderTotal').textContent = orderTotal;
-        document.getElementById('orderStatus').textContent = orderStatus;
-        document.getElementById('paymentMethod').textContent = paymentMethod;
+// Lưu trữ dữ liệu đơn hàng từ Thymeleaf
+const orderData = /*[[${orders}]]*/ {};
 
-        const orderProductList = document.getElementById('orderProductList');
-        orderProductList.innerHTML = `
-        <div class="product-row header">
-            <span></span>
-            <span>Tên sản phẩm</span>
-            <span>Số lượng</span>
-            <span>Giá</span>
-            <span>Tổng</span>
-        </div>
-    `;
+// --- TAB FILTERING CODE START ---
+// Lấy các phần tử tab và tbody
+const tabs = document.querySelectorAll('.order-tabs .tab');
+const tbody = document.querySelector('.order-table tbody');
+const searchInput = document.querySelector('.order-search');
+const dateInput = document.querySelector('.order-date-filter');
+const dateDisplay = document.querySelector('.order-date-display');
+let currentTabStatus = 'all';
+let currentSearch = '';
 
-        let total = 0;
-        products.forEach(product => {
-            const row = document.createElement('div');
-            row.className = 'product-row';
+// Lấy dropdown số dòng/trang
+let rowsPerPage = 10;
+let currentPage = 1;
+const rowsPerPageSelect = document.getElementById('rowsPerPageSelect');
+if (rowsPerPageSelect) {
+    rowsPerPageSelect.addEventListener('change', function() {
+        rowsPerPage = parseInt(this.value, 10);
+        currentPage = 1;
+        renderOrdersByAllFilters();
+    });
+}
 
-            const productTotal = product.soLuong * product.donGia;
-            total += productTotal;
-
-            row.innerHTML = `
-            <span><img src="${product.hinhAnh}" alt="Ảnh" style="width: 40px; height: 40px; object-fit: cover;"></span>
-            <span>${product.tenSanPham}</span>
-            <span>${product.soLuong}</span>
-            <span>${product.donGia.toLocaleString('vi-VN')}đ</span>
-            <span>${productTotal.toLocaleString('vi-VN')}đ</span>
-        `;
-            orderProductList.appendChild(row);
+// Sửa lại renderOrdersByAllFilters để phân trang
+let filteredOrders = [];
+function renderOrdersByAllFilters() {
+    let filtered = orderData;
+    if (currentTabStatus !== 'all') {
+        filtered = filtered.filter(o => (o.tenTrangThai || '').trim() === currentTabStatus);
+    }
+    if (currentSearch && currentSearch.trim() !== '') {
+        const keyword = currentSearch.trim().toLowerCase();
+        filtered = filtered.filter(o => {
+            const maDonHang = (o.maDonHang || '').toLowerCase();
+            const sdt = (o.sdtKhachHang || '').toLowerCase();
+            return maDonHang.includes(keyword) || sdt.includes(keyword);
         });
-
-        document.getElementById('orderTotalPrice').textContent = total.toLocaleString('vi-VN') + 'đ';
-        document.getElementById('orderDetailsModal').style.display = 'block';
     }
-
-    function closeOrderDetailsModal() {
-        document.getElementById('orderDetailsModal').style.display = 'none';
+    if (dateInput && dateInput.value) {
+        const selectedDate = dateInput.value;
+        filtered = filtered.filter(o => {
+            if (!o.ngayMua) return false;
+            // o.ngayMua có thể là chuỗi ISO hoặc dd/MM/yyyy HH:mm
+            let ngay = o.ngayMua;
+            if (ngay.includes('/')) {
+                // dd/MM/yyyy HH:mm
+                ngay = ngay.split(' ')[0];
+                const [d, m, y] = ngay.split('/');
+                ngay = `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+            } else if (ngay.includes('T')) {
+                // ISO
+                ngay = ngay.split('T')[0];
+            }
+            return ngay === selectedDate;
+        });
     }
+    filteredOrders = filtered; // Lưu lại để phân trang
+    const totalRows = filtered.length;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    const startIdx = (currentPage - 1) * rowsPerPage;
+    const endIdx = startIdx + rowsPerPage;
+    const pageData = filtered.slice(startIdx, endIdx);
 
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.detail-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const orderId = button.getAttribute('data-order-id');
-                const orderDate = button.getAttribute('data-order-date');
-                const customerName = button.getAttribute('data-customer-name');
-                const orderTotal = button.getAttribute('data-order-total');
-                const orderStatus = button.getAttribute('data-order-status');
-                const paymentMethod = button.getAttribute('data-payment-method');
+    if (!pageData || pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="no-data">Không có đơn hàng nào</td></tr>';
+        renderPagination(totalRows);
+        return;
+    }
+    tbody.innerHTML = pageData.map((order, idx) => {
+        return `
+        <tr class="clickable-row" onclick="showOrderDetail(${order.donHangId})">
+            <td>${idx + 1}</td>
+            <td class="order-link">#${order.maDonHang}</td>
+            <td>${formatDateTimeVN(order.ngayMua)}</td>
+            <td>${order.tenKhachHang || '---'}</td>
+            <td>${order.thanhTien ? order.thanhTien.toLocaleString('vi-VN') + ' ₫' : '-'}</td>
+            <td><span>${order.tenPhuongThuc || '---'}</span></td>
+            <td>
+                <span class="badge ${order.tenTrangThai === 'Hoàn tất' ? 'badge-success' : (order.tenTrangThai === 'Chưa xử lý' ? 'badge-warning' : 'badge-danger')}">
+                    ${order.tenTrangThai || '---'}
+                </span>
+            </td>
+            <td>
+                ${(order.tenTrangThai !== 'Hoàn tất' && order.tenTrangThai !== 'Đã huỷ')
+                    ? `<button type="button" class="btn-next-status" onclick="event.stopPropagation(); nextOrderStatus(${order.donHangId}, this)">Chuyển trạng thái</button>`
+                    : ''}
+            </td>
+        </tr>
+        `;
+    }).join('');
+    renderPagination(totalRows);
+}
 
-                // Gọi API lấy sản phẩm chi tiết của đơn hàng
-                fetch(`/quan-ly/don-hang/chi-tiet/${orderId}`)
-                    .then(response => response.json())
-                    .then(products => {
-                        openOrderDetailsModal(orderId, orderDate, customerName, orderTotal, orderStatus, paymentMethod, products);
-                    })
-                    .catch(error => {
-                        console.error("Lỗi khi lấy chi tiết đơn hàng:", error);
-                        openOrderDetailsModal(orderId, orderDate, customerName, orderTotal, orderStatus, paymentMethod, []);
-                    });
-            });
+// Gán sự kiện click cho các tab
+if (tabs && tabs.length > 0) {
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentTabStatus = this.getAttribute('data-status');
+            renderOrdersByAllFilters();
         });
     });
-    /*]]>*/
+}
+// Gán sự kiện tìm kiếm cho input
+if (searchInput) {
+    searchInput.addEventListener('input', function() {
+        currentSearch = this.value;
+        renderOrdersByAllFilters();
+    });
+}
+
+function formatDateDisplay(isoDate) {
+    if (!isoDate) return '';
+    const [y, m, d] = isoDate.split('-');
+    return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${y}`;
+}
+
+if (dateInput) {
+    dateInput.addEventListener('change', function() {
+        if (dateDisplay) dateDisplay.textContent = formatDateDisplay(this.value);
+        renderOrdersByAllFilters();
+    });
+    // Hiển thị ngày đã chọn nếu có
+    if (dateInput.value && dateDisplay) {
+        dateDisplay.textContent = formatDateDisplay(dateInput.value);
+    }
+}
+// Hiển thị tất cả đơn hàng ban đầu
+renderOrdersByAllFilters();
+// --- TAB FILTERING CODE END ---
+
+function formatDateTimeVN(ngayMua) {
+    if (!ngayMua) return '';
+    // Nếu là dd/MM/yyyy HH:mm
+    if (ngayMua.match(/^\d{2}\/\d{2}\/\d{4}( \d{2}:\d{2})?$/)) {
+        return ngayMua;
+    }
+    // Nếu là ISO yyyy-MM-ddTHH:mm:ss
+    if (ngayMua.includes('T')) {
+        const [date, time] = ngayMua.split('T');
+        const [y, m, d] = date.split('-');
+        const [hh, mm] = time.split(':');
+        return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${y} ${hh}:${mm}`;
+    }
+    // Nếu là yyyy-MM-dd HH:mm:ss
+    if (ngayMua.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)) {
+        const [date, time] = ngayMua.split(' ');
+        const [y, m, d] = date.split('-');
+        const [hh, mm] = time.split(':');
+        return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${y} ${hh}:${mm}`;
+    }
+    // Nếu là yyyy-MM-dd
+    if (ngayMua.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [y, m, d] = ngayMua.split('-');
+        return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${y}`;
+    }
+    return ngayMua;
+}
+
+function showOrderDetail(orderId) {
+    // Tìm đơn hàng trong danh sách
+    const order = orderData.find(o => o.donHangId === orderId);
+    if (order) {
+        document.getElementById('modalMaDonHang').textContent = '#' + order.maDonHang;
+        document.getElementById('modalNgayDat').textContent = formatDateTimeVN(order.ngayMua);
+        document.getElementById('modalKhachHang').textContent = order.tenKhachHang || '---';
+        document.getElementById('modalSdtKhachHang').textContent = order.sdtKhachHang || '---';
+        document.getElementById('modalThanhTien').textContent = order.thanhTien ? order.thanhTien.toLocaleString('vi-VN') + ' ₫' : '-';
+        // Hiển thị thành tiền sau voucher nếu có và khác giá gốc
+        if (order.thanhTienSauVoucher && order.thanhTienSauVoucher !== order.thanhTien) {
+            document.getElementById('modalThanhTienSauVoucher').textContent = order.thanhTienSauVoucher.toLocaleString('vi-VN') + ' ₫';
+            document.getElementById('thanhTienSauVoucherRow').style.display = 'block';
+        } else {
+            document.getElementById('thanhTienSauVoucherRow').style.display = 'none';
+        }
+        document.getElementById('modalPhuongThuc').textContent = order.tenPhuongThuc || '---';
+        document.getElementById('modalTrangThai').textContent = order.tenTrangThai || '---';
+        document.getElementById('modalNhanVien').textContent = order.tenNhanVien || '---';
+
+        // Hiển thị mã voucher và tên voucher
+        let voucherText = 'Không có';
+        if (order.voucher && order.voucher.trim() !== '') {
+            voucherText = order.voucher;
+            if (order.tenVoucher && order.tenVoucher.trim() !== '') {
+                voucherText += ' - ' + order.tenVoucher;
+            }
+        }
+        document.getElementById('modalVoucherCode').textContent = voucherText;
+
+        // Hiển thị chi tiết voucher nếu có
+        const voucherDetailRow = document.getElementById('voucherDetailRow');
+        const voucherDetailElement = document.getElementById('modalVoucherDetail');
+
+        if (order.tenVoucher && order.tenVoucher.trim() !== '') {
+            const kieuGiam = order.kieuGiamVoucher ? 'Giảm tiền trực tiếp' : 'Giảm theo phần trăm';
+            const mucGiam = order.kieuGiamVoucher ?
+                order.mucGiamVoucher.toLocaleString('vi-VN') + ' ₫' :
+                order.mucGiamVoucher + '%';
+
+            voucherDetailElement.innerHTML = `<strong>${order.tenVoucher}</strong>`;
+            voucherDetailRow.style.display = 'block';
+        } else {
+            voucherDetailRow.style.display = 'none';
+        }
+
+        const diaChiElement = document.getElementById('modalDiaChi');
+        const hasDiaChi = order.diaChi && order.diaChi.trim() !== '';
+        diaChiElement.textContent = hasDiaChi ? order.diaChi : 'Chưa có địa chỉ giao hàng';
+
+        // Load danh sách sản phẩm từ API
+        loadOrderProducts(orderId);
+
+        document.getElementById('orderDetailModal').style.display = 'block';
+        // Gán lại sự kiện copy mỗi lần mở modal
+        setTimeout(() => {
+            const btnCopy = document.getElementById('btnCopyMaDonHang');
+            if (btnCopy) {
+                btnCopy.onclick = function() {
+                    const ma = document.getElementById('modalMaDonHang').textContent.replace('#', '').trim();
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(ma).then(function() {
+                            showAlertStatus('Đã sao chép mã đơn hàng!', 'success');
+                        });
+                    } else {
+                        // fallback cho trình duyệt cũ
+                        const temp = document.createElement('input');
+                        temp.value = ma;
+                        document.body.appendChild(temp);
+                        temp.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(temp);
+                        showAlertStatus('Đã sao chép mã đơn hàng!', 'success');
+                    }
+                }
+            }
+        }, 0);
+    }
+}
+
+function loadOrderProducts(id) {
+    const productListElement = document.getElementById('modalProductList');
+    productListElement.innerHTML = '<tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải...</td></tr>';
+
+    // Gọi API để lấy danh sách sản phẩm của đơn hàng
+    fetch(`/quan-ly/api/don-hang/${id}/san-pham`)
+        .then(response => response.json())
+        .then(products => {
+            if (products && products.length > 0) {
+                let html = '';
+                products.forEach((product, index) => {
+                    const thanhTien = product.thanhTien ? product.thanhTien.toLocaleString('vi-VN') : '0';
+                    const donGia = product.donGia ? product.donGia.toLocaleString('vi-VN') : '0';
+                    const productName = product.tenSanPham;
+                    const productVariant = `${product.mauSac ? product.mauSac : ''}${product.kichThuoc ? ' - ' + product.kichThuoc : ''}`;
+
+                    let imgSrc = 'https://product.hstatic.net/1000123703/product/dong_ho_big_quartz_1024x1024.jpg';
+                    // if (product.hinhAnh) {
+                    //     // Nếu hinhAnh bắt đầu bằng 'images/', sử dụng static
+                    //     if (product.hinhAnh.startsWith('images/')) {
+                    //         imgSrc = `/static/${product.hinhAnh}`;
+                    //     } else {
+                    //         // Nếu không, thử tìm trong uploads
+                    //         imgSrc = `/uploads/${product.hinhAnh}`;
+                    //     }
+                    // }
+
+                    html += `
+                        <tr>
+                            <td style="text-align: center; font-weight: 600; color: #3498db;">${index + 1}</td>
+                            <td>
+                                <img src="${imgSrc}" alt="Ảnh sản phẩm" class="product-image"
+                                     onerror="this.src='/static/images/no-image.png'">
+                            </td>
+                            <td>
+                                <div class="product-info">
+                                    <div class="product-name">${productName}</div>
+                                    ${productVariant ? `<div class="product-variant">${productVariant}</div>` : ''}
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="quantity-badge">${product.soLuongDat}</span>
+                            </td>
+                            <td style="text-align: right;" class="price">${donGia} ₫</td>
+                            <td style="text-align: right;" class="total-price">${thanhTien} ₫</td>
+                        </tr>
+                    `;
+                });
+                productListElement.innerHTML = html;
+            } else {
+                productListElement.innerHTML = '<tr><td colspan="6" class="no-data">Không có sản phẩm nào trong đơn hàng này</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi tải danh sách sản phẩm:', error);
+            productListElement.innerHTML = '<tr><td colspan="6" class="error">Lỗi khi tải dữ liệu sản phẩm</td></tr>';
+        });
+}
+
+function closeOrderDetail() {
+    document.getElementById('orderDetailModal').style.display = 'none';
+}
+
+// Đóng modal khi click bên ngoài
+window.onclick = function(event) {
+    const modal = document.getElementById('orderDetailModal');
+    if (event.target === modal) {
+        closeOrderDetail();
+    }
+}
+
+// Đóng modal bằng phím ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeOrderDetail();
+    }
+});
+
+function renderPagination(totalRows) {
+    const pagination = document.getElementById('pagination');
+    if (!pagination) return;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    let html = '';
+    if (totalPages > 1) {
+        html += `<button onclick="gotoPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Trước</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button onclick="gotoPage(${i})" ${i === currentPage ? 'style="font-weight:bold;background:#1976d2;color:#fff;"' : ''}>${i}</button>`;
+        }
+        html += `<button onclick="gotoPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Sau</button>`;
+    }
+    pagination.innerHTML = html;
+}
+
+function gotoPage(page) {
+    const totalRows = filteredOrders.length;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderOrdersByAllFilters();
+}
 </script>
 
+<script>
+function showAlertStatus(message, type) {
+    const alert = document.getElementById('alertStatus');
+    alert.textContent = message;
+    alert.className = 'alert-status ' + type;
+    alert.style.display = 'block';
+    setTimeout(() => {
+        alert.style.display = 'none';
+    }, 2000);
+}
+
+function nextOrderStatus(orderId, btn) {
+    if (!confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này?')) return;
+    btn.disabled = true;
+    fetch(`/quan-ly/don-hang/api/${orderId}/next-status`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(ok => {
+        if (ok) {
+            showAlertStatus('Chuyển trạng thái thành công!', 'success');
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            showAlertStatus('Không thể chuyển trạng thái!', 'error');
+            btn.disabled = false;
+        }
+    })
+    .catch(() => {
+        showAlertStatus('Có lỗi xảy ra!', 'error');
+        btn.disabled = false;
+    });
+}
+</script>
+<script>
+// Gán lại sự kiện copy mỗi lần mở modal
+setTimeout(() => {
+    const btnCopy = document.getElementById('btnCopyMaDonHang');
+    if (btnCopy) {
+        btnCopy.onclick = function() {
+            const ma = document.getElementById('modalMaDonHang').textContent.replace('#', '').trim();
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(ma).then(function() {
+                    showAlertStatus('Đã sao chép mã đơn hàng!', 'success');
+                });
+            } else {
+                // fallback cho trình duyệt cũ
+                const temp = document.createElement('input');
+                temp.value = ma;
+                document.body.appendChild(temp);
+                temp.select();
+                document.execCommand('copy');
+                document.body.removeChild(temp);
+                showAlertStatus('Đã sao chép mã đơn hàng!', 'success');
+            }
+        }
+    }
+}, 0);
+</script>
 </body>
 </html>

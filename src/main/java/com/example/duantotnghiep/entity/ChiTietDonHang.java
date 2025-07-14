@@ -37,6 +37,9 @@ public class ChiTietDonHang {
     @Column(name = "so_luong")
     private Integer soLuong;
 
+    @Column(name = "so_luong_dat")
+    private Integer soLuongDat;
+
     @Column(name = "don_gia")
     private BigDecimal donGia;
 

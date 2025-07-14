@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "don_hang")
@@ -60,5 +61,8 @@ public class DonHang {
 
     @Column(name = "id_dia_chi")
     private Integer idDiaChi;
+
+    @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ChiTietDonHang> chiTietDonHangs;
 }
 

@@ -13,12 +13,27 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class DonHangChiTietDto {
 
+    private Integer chiTietId;
+
+    private Integer sanPhamChiTietId;
+
+    private String maSanPham;
+
+    private String tenSanPham;
+
     private String hinhAnh;
 
-    private String name;
+    private String mauSac;
 
-    private int quantity;
+    private String kichThuoc;
 
-    private BigDecimal price;
+    private String chatLieu;
+
+    private Integer soLuongDat;
+
+    private BigDecimal donGia;
+
+    private BigDecimal thanhTien;
+
 
 }
