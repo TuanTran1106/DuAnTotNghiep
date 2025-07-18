@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sửa Sản phẩm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <style>
+        body, input, textarea, select, button {
+            font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
+        }
+    </style>
+</head>
+<body style="background: #f8f9fa;">
+<div class="container py-4">
+    <!-- Hiển thị thông báo thành công/thất bại -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="mb-4">Sửa Sản phẩm</h3>
+            <form th:action="@{'/san-pham/edit/' + ${sanPhamEditDto.sanPham.id}}" th:object="${sanPhamEditDto}" method="post" enctype="multipart/form-data">
+                <!-- Thông tin sản phẩm -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Mã sản phẩm:</label>
+                        <input type="text" th:field="*{sanPham.maSanPham}" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tên sản phẩm:</label>
+                        <input type="text" th:field="*{sanPham.tenSanPham}" class="form-control" required />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.tenSanPham')}" th:errors="*{sanPham.tenSanPham}"></div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Giá nhập:</label>
+                        <input type="number" th:field="*{sanPham.giaNhap}" class="form-control" required />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.giaNhap')}" th:errors="*{sanPham.giaNhap}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Trạng thái:</label>
+                        <select th:field="*{sanPham.trangThai}" class="form-select">
+                            <option value="true">Kích hoạt</option>
+                            <option value="false">Không kích hoạt</option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.trangThai')}" th:errors="*{sanPham.trangThai}"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mô tả:</label>
+                    <textarea th:field="*{sanPham.moTa}" class="form-control"></textarea>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Danh mục:</label>
+                        <select th:field="*{sanPham.danhMuc.id}" class="form-select" required>
+                            <option th:each="dm : ${danhMucList}" th:value="${dm.id}" th:text="${dm.tenDanhMuc}"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.danhMuc')}" th:errors="*{sanPham.danhMuc}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Thương hiệu:</label>
+                        <select th:field="*{sanPham.thuongHieu.id}" class="form-select" required>
+                            <option th:each="th : ${thuongHieuList}" th:value="${th.id}" th:text="${th.tenThuongHieu}"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.thuongHieu')}" th:errors="*{sanPham.thuongHieu}"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ảnh hiện tại:</label>
+                    <img th:if="${sanPhamEditDto.sanPham.hinhAnh != null}" th:src="@{'/uploads/' + ${sanPhamEditDto.sanPham.hinhAnh}}" style="max-width:120px; max-height:120px; margin-bottom:10px; display:block;" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Chọn ảnh mới:</label>
+                    <input type="file" id="fileInput" name="file" class="form-control" onchange="previewImage(event)">
+                    <img id="preview" src="#" alt="Preview" style="display:none; max-width:120px; margin-top:10px;"/>
+                    <button type="button" class="btn btn-secondary mt-2" onclick="openImageModal()">Chọn ảnh có sẵn</button>
+                    <input type="hidden" name="selectedImage" id="selectedImage" />
+                </div>
+                <!-- Modal chọn ảnh có sẵn -->
+                <div class="modal fade" id="imageModal" tabindex="-1">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Chọn ảnh có sẵn</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body" id="image-list" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+                    </div>
+                  </div>
+                </div>
+            <!-- Chi tiết sản phẩm -->
+            <h5 class="mt-4 mb-2">Chi tiết sản phẩm</h5>
+            <table class="table table-bordered align-middle text-center shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Màu sắc</th>
+                        <th>Kích thước</th>
+                        <th>Chất liệu</th>
+                        <th>Số lượng</th>
+                        <th>Giá bán</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="chiTietTableBody">
+                    <tr th:each="ct, i : ${sanPhamEditDto.chiTietList}">
+                        <td><input type="text" th:name="'chiTietList[' + ${i.index} + '].mauSac'" th:value="${ct.mauSac}" class="form-control" required/></td>
+                        <td><input type="text" th:name="'chiTietList[' + ${i.index} + '].kichThuoc'" th:value="${ct.kichThuoc}" class="form-control" required/></td>
+                        <td><input type="text" th:name="'chiTietList[' + ${i.index} + '].chatLieu'" th:value="${ct.chatLieu}" class="form-control" required/></td>
+                        <td><input type="number" th:name="'chiTietList[' + ${i.index} + '].soLuong'" th:value="${ct.soLuong}" class="form-control" min="0" required/></td>
+                        <td><input type="number" th:name="'chiTietList[' + ${i.index} + '].gia_ban'" th:value="${ct.gia_ban}" class="form-control" min="0" step="0.01" required/></td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Xóa</button>
+                        </td>
+                        <input type="hidden" th:name="'chiTietList[' + ${i.index} + '].id'" th:value="${ct.id}" />
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-success mb-3" onclick="addRow()">+ Thêm chi tiết</button>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu</button>
+                <a th:href="@{/san-pham}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function openImageModal() {
+    fetch('/san-pham/list-images')
+        .then(res => res.json())
+        .then(files => {
+            const list = document.getElementById('image-list');
+            list.innerHTML = '';
+            files.forEach(file => {
+                const img = document.createElement('img');
+                img.src = '/uploads/' + file;
+                img.style.width = '80px';
+                img.style.height = '80px';
+                img.style.objectFit = 'cover';
+                img.style.cursor = 'pointer';
+                img.onclick = function() {
+                    document.getElementById('preview').src = img.src;
+                    document.getElementById('preview').style.display = 'block';
+                    document.getElementById('selectedImage').value = file;
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
+                    modal.hide();
+                };
+                list.appendChild(img);
+            });
+            var modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            modal.show();
+        });
+}
+function previewImage(event) {
+    var input = event.target;
+    var preview = document.getElementById('preview');
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+    }
+}
+// Nếu chọn ảnh có sẵn, cũng preview luôn
+function setSelectedImage(fileName) {
+    document.getElementById('selectedImage').value = fileName;
+    var preview = document.getElementById('preview');
+    preview.src = '/uploads/' + fileName;
+    preview.style.display = 'block';
+}
+function showMessage(msg, type = 'success') {
+    var alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger') + ' alert-dismissible fade show';
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = '<span>' + msg + '</span>' +
+        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+    document.querySelector('.container').prepend(alertDiv);
+    setTimeout(function() { alertDiv.remove(); }, 3000);
+}
+function removeRow(btn) {
+    var row = btn.closest('tr');
+    row.parentNode.removeChild(row);
+    showMessage('Đã xóa chi tiết sản phẩm!', 'success');
+}
+function addRow() {
+    var tbody = document.getElementById('chiTietTableBody');
+    var rowCount = tbody.rows.length;
+    var row = tbody.insertRow();
+    row.innerHTML = `
+        <td><input type="text" name="chiTietList[${rowCount}].mauSac" class="form-control" required/></td>
+        <td><input type="text" name="chiTietList[${rowCount}].kichThuoc" class="form-control" required/></td>
+        <td><input type="text" name="chiTietList[${rowCount}].chatLieu" class="form-control" required/></td>
+        <td><input type="number" name="chiTietList[${rowCount}].soLuong" class="form-control" min="0" required/></td>
+        <td><input type="number" name="chiTietList[${rowCount}].gia_ban" class="form-control" min="0" step="0.01" required/></td>
+        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Xóa</button></td>
+    `;
+    showMessage('Đã thêm dòng chi tiết mới!', 'success');
+}
+</script>
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+</script>
+</body>
+</html>

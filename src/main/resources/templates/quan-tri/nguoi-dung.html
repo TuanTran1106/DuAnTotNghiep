@@ -518,11 +518,14 @@
             <td th:text="${nd.gioiTinh ? 'Nam' : 'Nữ'}"></td>
             <td th:text="${nd.sdt}"></td>
             <td th:text="${nd.email}"></td>
-            <td th:text="${nd.trangThai ? 'Hoạt động': 'Không hoạt động'}"></td>
             <td>
-                <a th:href="@{'/nguoi-dung/update/' + ${nd.id}}"><i class="fa-solid fa-pen"></i></a> |
-                <a th:href="@{'/nguoi-dung/delete/' + ${nd.id}}"
-                   onclick="return confirm('Bạn có chắc chắn xoá?')"><i class="fa-solid fa-trash"></i></a>
+                <select th:attr="onchange=|updateTrangThai(this, '${nd.id}')|">
+                    <option th:value="true" th:selected="${nd.trangThai}">Hoạt động</option>
+                    <option th:value="false" th:selected="${!nd.trangThai}">Không hoạt động</option>
+                </select>
+            </td>
+            <td>
+                <a th:href="@{'/nguoi-dung/update/' + ${nd.id}}"><i class="fa-solid fa-pen"></i></a>
             </td>
         </tr>
         </tbody>
@@ -530,6 +533,30 @@
 </div>
 </main>
 </div>
+<script>
+    function updateTrangThai(select, id) {
+        console.log("Gọi API với id:", id, "trạng thái:", select.value);
+        var trangThai = select.value;
+        fetch('/nguoi-dung/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id, trangThai: trangThai })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success){
+                    // alert('Cập nhật trạng thái thành công!');
+                } else {
+                    alert('Cập nhật thất bại!');
+                }
+            })
+            .catch(error => {
+                alert('Có lỗi xảy ra!');
+            });
+    }
+</script>
 </body>
 </html>
 s

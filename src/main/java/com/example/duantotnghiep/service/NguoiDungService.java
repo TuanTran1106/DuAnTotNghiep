@@ -10,4 +10,5 @@ public interface NguoiDungService {
     NguoiDung getNguoiDungById(int id);
     void deleteNguoiDung(int id);
     List<NguoiDung> searchNguoiDung(String keyword);
+    boolean updateTrangThai(int id, boolean trangThai);
 }

@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/nguoi-dung")
@@ -92,13 +94,22 @@ public class NguoiDungController {
         nguoiDungService.saveNguoiDung(nguoiDung);
         return "redirect:/nguoi-dung";
     }
-
-
-    @GetMapping("/delete/{id}")
-    public String deleteNguoiDung(@PathVariable int id) {
-        nguoiDungService.deleteNguoiDung(id);
-        return "redirect:/nguoi-dung";
+    @PostMapping("/update-status")
+    @ResponseBody
+    public Map<String, Object> updateStatus(@RequestBody Map<String, Object> payload) {
+        Integer id = Integer.valueOf(payload.get("id").toString());
+        Boolean trangThai = Boolean.valueOf(payload.get("trangThai").toString());
+        boolean result = nguoiDungService.updateTrangThai(id, trangThai);
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", result);
+        return response;
     }
+
+//    @GetMapping("/delete/{id}")
+//    public String deleteNguoiDung(@PathVariable int id) {
+//        nguoiDungService.deleteNguoiDung(id);
+//        return "redirect:/nguoi-dung";
+//    }
     @GetMapping("/search")
     public String searchNguoiDung(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
         List<NguoiDung> danhSachNguoiDung;

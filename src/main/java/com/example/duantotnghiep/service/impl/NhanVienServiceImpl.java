@@ -23,7 +23,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
         nhanVienRepository.save(nhanVien);
 
-        nhanVien.setMaNhanVien("NV" + nhanVien.getId());
+        nhanVien.setMaNhanVien("NV0" + nhanVien.getId());
 
         return nhanVienRepository.save(nhanVien);
     }
@@ -41,5 +41,14 @@ public class NhanVienServiceImpl implements NhanVienService {
     @Override
     public List<NhanVien> searchNhanVien(String keyword) {
         return nhanVienRepository.searchNhanVien(keyword);
+    }
+
+    @Override
+    public boolean updateTrangThai(int id, boolean trangThai) {
+        NhanVien nv = nhanVienRepository.findById(id).orElse(null);
+        if (nv == null) return false;
+        nv.setTrangThai(trangThai);
+        nhanVienRepository.save(nv);
+        return true;
     }
 }

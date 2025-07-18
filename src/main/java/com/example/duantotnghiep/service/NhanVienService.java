@@ -14,4 +14,6 @@ public interface NhanVienService {
     void deleteNhanVien(int id);
 
     List<NhanVien> searchNhanVien(String keyword);
+
+    boolean updateTrangThai(int id, boolean trangThai);
 }

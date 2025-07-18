@@ -1,6 +1,7 @@
 package com.example.duantotnghiep.service.impl;
 
 import com.example.duantotnghiep.entity.NguoiDung;
+import com.example.duantotnghiep.entity.NhanVien;
 import com.example.duantotnghiep.repository.NguoiDungRepository;
 import com.example.duantotnghiep.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +36,14 @@ public class NguoiDungServiceImpl implements NguoiDungService {
     @Override
     public List<NguoiDung> searchNguoiDung(String keyword) {
         return nguoiDungRepository.searchNguoiDung(keyword);
+    }
+
+    @Override
+    public boolean updateTrangThai(int id, boolean trangThai) {
+        NguoiDung nd = nguoiDungRepository.findById(id).orElse(null);
+        if (nd == null) return false;
+        nd.setTrangThai(trangThai);
+        nguoiDungRepository.save(nd);
+        return true;
     }
 }

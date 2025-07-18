@@ -515,15 +515,42 @@
             <td th:text="${nv.sdt}"></td>
             <td th:text="${nv.email}"></td>
             <td th:text="${nv.diaChi}"></td>
-            <td th:text="${nv.trangThai ? 'Đang làm': 'Đã nghỉ'}"></td>
             <td>
-                <a th:href="@{'/nhan-vien/update/' + ${nv.id}}"><i class="fa-solid fa-pen"></i></a> |
-                <a th:href="@{'/nhan-vien/delete/' + ${nv.id}}"
-                   onclick="return confirm('Bạn có chắc chắn xoá?')"><i class="fa-solid fa-trash"></i></a>
+                <select th:attr="onchange=|updateTrangThai(this, '${nv.id}')|">
+                    <option th:value="true" th:selected="${nv.trangThai}">Đang làm</option>
+                    <option th:value="false" th:selected="${!nv.trangThai}">Đã nghỉ</option>
+                </select>
+            </td>
+            <td>
+                <a th:href="@{'/nhan-vien/update/' + ${nv.id}}"><i class="fa-solid fa-pen"></i></a>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
+<script>
+    function updateTrangThai(select, id) {
+        console.log("Gọi API với id:", id, "trạng thái:", select.value);
+        var trangThai = select.value;
+        fetch('/nhan-vien/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id, trangThai: trangThai })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success){
+                    // alert('Cập nhật trạng thái thành công!');
+                } else {
+                    alert('Cập nhật thất bại!');
+                }
+            })
+            .catch(error => {
+                alert('Có lỗi xảy ra!');
+            });
+    }
+</script>
 </body>
 </html>
