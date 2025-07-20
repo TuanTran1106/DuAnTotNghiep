@@ -12,6 +12,7 @@ public class PageResponse<T> {
     private int pageSize;
     private boolean hasNext;
     private boolean hasPrevious;
+    private int size;
 
     public PageResponse(List<T> content, int currentPage, int totalPages, long totalElements, int pageSize) {
         this.content = content;
@@ -22,10 +23,19 @@ public class PageResponse<T> {
         this.hasNext = currentPage < totalPages;
         this.hasPrevious = currentPage > 1;
     }
+    public PageResponse() {}
 
     // Getters and Setters
     public List<T> getContent() {
         return content;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public void setContent(List<T> content) {

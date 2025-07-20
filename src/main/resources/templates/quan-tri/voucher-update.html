@@ -364,84 +364,127 @@
 
 <div class="form-container">
     <div class="form-header">
-        <h1 class="form-title">Cập nhật nhân viên</h1>
-        <p class="form-subtitle">Chỉnh sửa thông tin nhân viên</p>
+        <h1 class="form-title">Cập nhật Voucher</h1>
+        <p class="form-subtitle">Chỉnh sửa thông tin Voucher</p>
     </div>
 
     <div class="form-body">
         <div class="employee-info">
             <i class="fa-solid fa-user-edit"></i>
-            Đang cập nhật thông tin cho nhân viên: <strong th:text="${nhanVien.hoTen}"></strong>
+            Đang cập nhật thông tin cho voucher: <strong th:text="${voucher.tenVoucher}"></strong>
         </div>
 
-        <div class="form-note">
-            <i class="fa-solid fa-exclamation-triangle"></i>
-            Vui lòng kiểm tra kỹ thông tin trước khi lưu thay đổi.
-        </div>
 
-        <form th:action="@{/nhan-vien/save}" th:object="${nhanVien}" method="post" id="updateForm">
+        <form th:action="@{/voucher/save}" th:object="${voucher}" method="post" id="updateForm">
             <input type="hidden" th:field="*{id}" />
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="hoTen" class="form-label">
-                        Họ và tên <span class="required">*</span>
+                    <label for="tenVoucher" class="form-label">
+                        Tên Voucher <span class="required">*</span>
                     </label>
                     <input type="text"
-                           id="hoTen"
-                           th:field="*{hoTen}"
+                           id="tenVoucher"
+                           th:field="*{tenVoucher}"
                            class="form-input"
-                           placeholder="Nhập họ và tên"
+                           placeholder="Nhập tên voucher"
                            required />
                 </div>
 
                 <div class="form-group">
-                    <label for="gioiTinh" class="form-label">
-                        Giới tính <span class="required">*</span>
+                    <label for="kieuGiam" class="form-label">
+                        Kiểu Giảm <span class="required">*</span>
                     </label>
-                    <select id="gioiTinh" th:field="*{gioiTinh}" class="form-select" required>
-                        <option th:value="true">Nam</option>
-                        <option th:value="false">Nữ</option>
+                    <select id="kieuGiam" th:field="*{kieuGiam}" class="form-select" required>
+                        <option th:value="true">Tiền Mặt</option>
+                        <option th:value="false">Phần Trăm</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="moTa" class="form-label">
+                        Mô Tả <span class="required">*</span>
+                    </label>
+                    <input type="text"
+                           id="moTa"
+                           th:field="*{moTa}"
+                           class="form-input"
+                           placeholder="Nhập mô tả"
+                           required />
+                </div>
+                <div class="form-group">
+                    <label for="dieuKienToiThieu" class="form-label">
+                        Điều Kiện Tối Thiểu <span class="required">*</span>
+                    </label>
+                    <input type="text"
+                           id="dieuKienToiThieu"
+                           th:field="*{dieuKienToiThieu}"
+                           class="form-input"
+                           placeholder="Nhập điều kiện tối thiểu "
+                           required />
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="sdt" class="form-label">
-                        Số điện thoại <span class="required">*</span>
+                    <label for="mucGiam" class="form-label">
+                        Mức Giảm <span class="required">*</span>
                     </label>
                     <input type="text"
-                           id="sdt"
-                           th:field="*{sdt}"
+                           id="mucGiam"
+                           th:field="*{mucGiam}"
                            class="form-input"
-                           placeholder="Nhập số điện thoại"
+                           placeholder="Nhập mức giảm"
                            required />
                 </div>
 
                 <div class="form-group">
-                    <label for="email" class="form-label">
-                        Email <span class="required">*</span>
+                    <label for="soLuong" class="form-label">
+                        Số Lượng <span class="required">*</span>
                     </label>
-                    <input type="email"
-                           id="email"
-                           th:field="*{email}"
+                    <input type="text"
+                           id="soLuong"
+                           th:field="*{soLuong}"
                            class="form-input"
-                           placeholder="Nhập địa chỉ email"
+                           placeholder="Nhập soLuong"
+                           required />
+                </div>
+                <div class="form-group">
+                    <label for="soLuongCon" class="form-label">
+                        Số Lượng Còn lại <span class="required">*</span>
+                    </label>
+                    <input type="text"
+                           id="soLuongCon"
+                           th:field="*{soLuongCon}"
+                           class="form-input"
+                           placeholder="Nhập số Lượng còn lại"
                            required />
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="diaChi" class="form-label">
-                    Địa chỉ <span class="required">*</span>
+            <div class="form-row"><div class="form-group">
+                <label for="ngayBatDau" class="form-label">
+                    Ngày Bắt Đầu <span class="required">*</span>
                 </label>
-                <input type="text"
-                       id="diaChi"
-                       th:field="*{diaChi}"
+                <input type="date"
+                       id="ngayBatDau"
+                       th:field="*{ngayBatDau}"
                        class="form-input"
-                       placeholder="Nhập địa chỉ chi tiết"
+                       placeholder=" "
                        required />
+            </div>
+
+            <div class="form-group">
+                <label for="ngayKetThuc" class="form-label">
+                    Ngày Kết Thúc <span class="required">*</span>
+                </label>
+                <input type="date"
+                       id="ngayKetThuc"
+                       th:field="*{ngayKetThuc}"
+                       class="form-input"
+                       placeholder=" "
+                       required />
+            </div>
             </div>
 
             <div class="form-group">
@@ -449,13 +492,13 @@
                     Trạng thái <span class="required">*</span>
                 </label>
                 <select id="trangThai" th:field="*{trangThai}" class="form-select" required>
-                    <option th:value="true">Đang làm việc</option>
-                    <option th:value="false">Đã nghỉ việc</option>
+                    <option th:value="true">Hoạt động</option>
+                    <option th:value="false">Tắt</option>
                 </select>
             </div>
 
             <div class="form-actions">
-                <a href="/nhan-vien" class="btn btn-secondary">
+                <a href="/voucher" class="btn btn-secondary">
                     <i class="fa-solid fa-arrow-left"></i>
                     Quay lại
                 </a>
@@ -476,7 +519,6 @@
 
 
 <script>
-    // Form submission with loading
     document.getElementById('updateForm').addEventListener('submit', function(e) {
         const submitBtn = document.getElementById('submitBtn');
         const btnText = submitBtn.querySelector('.btn-text');
@@ -517,10 +559,6 @@
         document.getElementById('deleteModal').style.display = 'none';
     }
 
-    function deleteEmployee() {
-        const employeeId = document.querySelector('input[name="id"]').value;
-        window.location.href = `/nhan-vien/delete/${employeeId}`;
-    }
 
     // Close modal when clicking outside
     window.onclick = function(event) {
