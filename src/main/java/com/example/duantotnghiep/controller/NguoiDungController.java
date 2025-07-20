@@ -1,5 +1,6 @@
 package com.example.duantotnghiep.controller;
 
+import com.example.duantotnghiep.dto.PageResponse;
 import com.example.duantotnghiep.entity.NguoiDung;
 import com.example.duantotnghiep.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +29,20 @@ public class NguoiDungController {
     private NguoiDungService nguoiDungService;
 
     @GetMapping
-    public String listNguoiDung(Model model) {
-        model.addAttribute("listNguoiDung", nguoiDungService.getAllNguoiDung());
+    public String listNguoiDung(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        PageResponse<NguoiDung> pageResponse = nguoiDungService.getAllNguoiDungWithPagination(page, size);
+        model.addAttribute("listNguoiDung", pageResponse.getContent());
+        model.addAttribute("currentPage", pageResponse.getCurrentPage());
+        model.addAttribute("totalPages", pageResponse.getTotalPages());
+        model.addAttribute("totalElements", pageResponse.getTotalElements());
+        model.addAttribute("pageSize", pageResponse.getPageSize());
+        model.addAttribute("hasNext", pageResponse.isHasNext());
+        model.addAttribute("hasPrevious", pageResponse.isHasPrevious());
         return "/quan-tri/nguoi-dung";
     }
-
-//    @GetMapping("/add")
-//    public String showAddForm(Model model) {
-//        model.addAttribute("nguoiDung", new NguoiDung());
-//        return "/quantri/nguoi-dung-add";
-//    }
 
     @PostMapping("/save")
     public String saveNguoiDung(@ModelAttribute("nguoiDung") NguoiDung nguoiDung,
@@ -59,13 +64,13 @@ public class NguoiDungController {
         return "redirect:/nguoi-dung";
     }
 
-
     @GetMapping("/update/{id}")
     public String showEditForm(@PathVariable int id, Model model) {
         NguoiDung nd = nguoiDungService.getNguoiDungById(id);
         model.addAttribute("nguoiDung", nguoiDungService.getNguoiDungById(id));
         return "/quan-tri/nguoi-dung-update";
     }
+
     @PostMapping("/update")
     public String updateNguoiDung(
             @ModelAttribute("nguoiDung") NguoiDung nguoiDung,
@@ -83,17 +88,16 @@ public class NguoiDungController {
 
                 file.transferTo(filePath.toFile());
 
-
                 nguoiDung.setHinhAnh(fileName);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
         nguoiDungService.saveNguoiDung(nguoiDung);
         return "redirect:/nguoi-dung";
     }
+
     @PostMapping("/update-status")
     @ResponseBody
     public Map<String, Object> updateStatus(@RequestBody Map<String, Object> payload) {
@@ -105,20 +109,27 @@ public class NguoiDungController {
         return response;
     }
 
-//    @GetMapping("/delete/{id}")
-//    public String deleteNguoiDung(@PathVariable int id) {
-//        nguoiDungService.deleteNguoiDung(id);
-//        return "redirect:/nguoi-dung";
-//    }
     @GetMapping("/search")
-    public String searchNguoiDung(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
-        List<NguoiDung> danhSachNguoiDung;
+    public String searchNguoiDung(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        PageResponse<NguoiDung> pageResponse;
         if (keyword != null && !keyword.isEmpty()) {
-            danhSachNguoiDung = nguoiDungService.searchNguoiDung(keyword);
+            pageResponse = nguoiDungService.searchNguoiDungWithPagination(keyword, page, size);
         } else {
-            danhSachNguoiDung = nguoiDungService.getAllNguoiDung();
+            pageResponse = nguoiDungService.getAllNguoiDungWithPagination(page, size);
         }
-        model.addAttribute("listNguoiDung", danhSachNguoiDung);
+
+        model.addAttribute("listNguoiDung", pageResponse.getContent());
+        model.addAttribute("currentPage", pageResponse.getCurrentPage());
+        model.addAttribute("totalPages", pageResponse.getTotalPages());
+        model.addAttribute("totalElements", pageResponse.getTotalElements());
+        model.addAttribute("pageSize", pageResponse.getPageSize());
+        model.addAttribute("hasNext", pageResponse.isHasNext());
+        model.addAttribute("hasPrevious", pageResponse.isHasPrevious());
         model.addAttribute("keyword", keyword);
         return "/quan-tri/nguoi-dung";
     }
@@ -138,7 +149,4 @@ public class NguoiDungController {
             throw new RuntimeException("Không thể đọc file: " + fileName);
         }
     }
-
-
-
 }

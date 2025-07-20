@@ -1,11 +1,15 @@
 package com.example.duantotnghiep.service.impl;
 
+import com.example.duantotnghiep.dto.PageResponse;
 import com.example.duantotnghiep.entity.NguoiDung;
-import com.example.duantotnghiep.entity.NhanVien;
 import com.example.duantotnghiep.repository.NguoiDungRepository;
 import com.example.duantotnghiep.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -17,6 +21,20 @@ public class NguoiDungServiceImpl implements NguoiDungService {
     @Override
     public List<NguoiDung> getAllNguoiDung() {
         return nguoiDungRepository.findAll();
+    }
+
+    @Override
+    public PageResponse<NguoiDung> getAllNguoiDungWithPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<NguoiDung> nguoiDungPage = nguoiDungRepository.findAll(pageable);
+
+        return new PageResponse<>(
+                nguoiDungPage.getContent(),
+                page,
+                nguoiDungPage.getTotalPages(),
+                nguoiDungPage.getTotalElements(),
+                size
+        );
     }
 
     @Override
@@ -33,9 +51,24 @@ public class NguoiDungServiceImpl implements NguoiDungService {
     public void deleteNguoiDung(int id) {
         nguoiDungRepository.deleteById(id);
     }
+
     @Override
     public List<NguoiDung> searchNguoiDung(String keyword) {
         return nguoiDungRepository.searchNguoiDung(keyword);
+    }
+
+    @Override
+    public PageResponse<NguoiDung> searchNguoiDungWithPagination(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<NguoiDung> nguoiDungPage = nguoiDungRepository.searchNguoiDungWithPagination(keyword, pageable);
+
+        return new PageResponse<>(
+                nguoiDungPage.getContent(),
+                page,
+                nguoiDungPage.getTotalPages(),
+                nguoiDungPage.getTotalElements(),
+                size
+        );
     }
 
     @Override

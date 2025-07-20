@@ -1,5 +1,6 @@
 package com.example.duantotnghiep.controller;
 
+import com.example.duantotnghiep.dto.PageResponse;
 import com.example.duantotnghiep.entity.NhanVien;
 import com.example.duantotnghiep.service.NhanVienService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,18 @@ public class NhanVienController {
     private NhanVienService nhanVienService;
 
     @GetMapping
-    public String listNhanVien(Model model) {
-        model.addAttribute("listNhanVien", nhanVienService.getAllNhanVien());
+    public String listNhanVien(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        PageResponse<NhanVien> pageResponse = nhanVienService.getAllNhanVienWithPagination(page, size);
+        model.addAttribute("listNhanVien", pageResponse.getContent());
+        model.addAttribute("currentPage", pageResponse.getCurrentPage());
+        model.addAttribute("totalPages", pageResponse.getTotalPages());
+        model.addAttribute("totalElements", pageResponse.getTotalElements());
+        model.addAttribute("pageSize", pageResponse.getPageSize());
+        model.addAttribute("hasNext", pageResponse.isHasNext());
+        model.addAttribute("hasPrevious", pageResponse.isHasPrevious());
         return "/quan-tri/nhan-vien";
     }
 
@@ -30,6 +41,7 @@ public class NhanVienController {
         model.addAttribute("nhanVien", new NhanVien());
         return "/quan-tri/nhan-vien-add";
     }
+
     @PostMapping("/update-status")
     @ResponseBody
     public Map<String, Object> updateStatus(@RequestBody Map<String, Object> payload) {
@@ -53,20 +65,27 @@ public class NhanVienController {
         return "/quan-tri/nhan-vien-update";
     }
 
-//    @GetMapping("/delete/{id}")
-//    public String deleteNhanVien(@PathVariable int id) {
-//        nhanVienService.deleteNhanVien(id);
-//        return "redirect:/nhan-vien";
-//    }
     @GetMapping("/search")
-    public String searchNhanVien(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
-        List<NhanVien> danhSachNhanVien;
+    public String searchNhanVien(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        PageResponse<NhanVien> pageResponse;
         if (keyword != null && !keyword.isEmpty()) {
-            danhSachNhanVien = nhanVienService.searchNhanVien(keyword);
+            pageResponse = nhanVienService.searchNhanVienWithPagination(keyword, page, size);
         } else {
-            danhSachNhanVien = nhanVienService.getAllNhanVien();
+            pageResponse = nhanVienService.getAllNhanVienWithPagination(page, size);
         }
-        model.addAttribute("listNhanVien", danhSachNhanVien);
+
+        model.addAttribute("listNhanVien", pageResponse.getContent());
+        model.addAttribute("currentPage", pageResponse.getCurrentPage());
+        model.addAttribute("totalPages", pageResponse.getTotalPages());
+        model.addAttribute("totalElements", pageResponse.getTotalElements());
+        model.addAttribute("pageSize", pageResponse.getPageSize());
+        model.addAttribute("hasNext", pageResponse.isHasNext());
+        model.addAttribute("hasPrevious", pageResponse.isHasPrevious());
         model.addAttribute("keyword", keyword);
         return "/quan-tri/nhan-vien";
     }
