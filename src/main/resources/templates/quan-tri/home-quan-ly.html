@@ -339,7 +339,7 @@
 
         <nav class="sidebar-menu">
             <div class="menu-item">
-                <a href="#"  class="menu-link active" data-url="http://localhost:8080/quan-ly" data-title="Dashboard">
+                <a href="#"  class="menu-link active" data-url="" data-title="Dashboard">
                     <i class="fas fa-home"></i>
                     <span>Trang chủ</span>
                 </a>
@@ -365,10 +365,16 @@
                     <span>Sản phẩm</span>
                 </a>
                 <div class="submenu">
-                    <a href="#" class="submenu-item" data-url="https://stackoverflow.com" data-title="Danh sách sản phẩm">Danh sách sản phẩm</a>
-                    <a href="#" class="submenu-item" data-url="https://github.com" data-title="Thêm sản phẩm">Thêm sản phẩm</a>
-                    <a href="#" class="submenu-item" data-url="https://youtube.com" data-title="Danh mục">Danh mục</a>
+                    <a href="#" class="submenu-item" data-url="/san-pham" data-title="Danh sách sản phẩm">Danh sách sản phẩm</a>
+<!--                    <a href="#" class="submenu-item" data-url="/san-pham/add" data-title="Thêm sản phẩm">Thêm sản phẩm</a>-->
+<!--                    <a href="#" class="submenu-item" data-url="/quantri/danh-muc" data-title="Danh mục">Danh mục</a>-->
                 </div>
+            </div>
+            <div class="menu-item">
+                <a th:href="@{/quan-tri/voucher}" class="menu-link" data-url="http://localhost:8080/voucher" data-title="Voucher">
+                    <i class="fa-solid fa-ticket"></i></i>
+                    <span>Voucher</span>
+                </a>
             </div>
 
             <div class="menu-item">

@@ -21,7 +21,7 @@ public interface ThongKeDoanhThuRepository extends JpaRepository<ThongKeDoanhThu
     @Query("SELECT COUNT(d) FROM DonHang d WHERE d.ngayTao BETWEEN :from AND :to")
     Long countDonHangByDate(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
-    @Query("SELECT COALESCE(SUM(d.tongGia), 0) FROM DonHang d WHERE d.ngayTao BETWEEN :from AND :to")
+    @Query("SELECT COALESCE(SUM(ctdh.donGia * ctdh.soLuongDat), 0) FROM ChiTietDonHang ctdh JOIN ctdh.donHang d WHERE d.ngayTao BETWEEN :from AND :to")
     BigDecimal sumDoanhThuByDate(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query("SELECT COALESCE(SUM(ctdh.soLuongDat), 0) FROM ChiTietDonHang ctdh JOIN ctdh.donHang d WHERE d.ngayTao BETWEEN :from AND :to")
@@ -30,8 +30,9 @@ public interface ThongKeDoanhThuRepository extends JpaRepository<ThongKeDoanhThu
     @Query("SELECT COUNT(nd) FROM NguoiDung nd WHERE nd.ngayTao BETWEEN :from AND :to")
     Long countKhachHangMoiByDate(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
-    @Query(value = "SELECT CONVERT(date, d.ngay_tao) AS thoi_gian, SUM(d.tong_gia) AS tong_doanh_thu " +
-            "FROM don_hang d WHERE d.ngay_tao BETWEEN :from AND :to " +
+    @Query(value = "SELECT CONVERT(date, d.ngay_tao) AS thoi_gian, SUM(ctdh.don_gia * ctdh.so_luong_dat) AS tong_doanh_thu " +
+            "FROM chi_tiet_don_hang ctdh JOIN don_hang d ON ctdh.id_don_hang = d.id " +
+            "WHERE d.ngay_tao BETWEEN :from AND :to " +
             "GROUP BY CONVERT(date, d.ngay_tao) ORDER BY CONVERT(date, d.ngay_tao)",
             nativeQuery = true)
     List<ThongKeDoanhThuDto> thongKeDoanhThuTheoNgay(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);

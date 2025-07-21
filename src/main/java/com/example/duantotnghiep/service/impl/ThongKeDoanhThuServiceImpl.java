@@ -36,7 +36,7 @@ public class ThongKeDoanhThuServiceImpl implements ThongKeDoanhThuService {
         dto.setSoKhachHangMoi(thongKeDoanhThuRepository.countKhachHangMoiByDate(from, to) != null ? thongKeDoanhThuRepository.countKhachHangMoiByDate(from, to) : 0L);
         dto.setThongKeList(thongKeDoanhThuRepository.thongKeDoanhThuTheoNgay(from, to) != null ? thongKeDoanhThuRepository.thongKeDoanhThuTheoNgay(from, to) : Collections.emptyList());
         // Nếu sử dụng topSanPhamBanChay, bỏ comment dòng dưới sau khi sửa query
-         dto.setSanPhamBanChayList(thongKeDoanhThuRepository.topSanPhamBanChay(from, to) != null ? thongKeDoanhThuRepository.topSanPhamBanChay(from, to) : Collections.emptyList());
+        dto.setSanPhamBanChayList(thongKeDoanhThuRepository.topSanPhamBanChay(from, to) != null ? thongKeDoanhThuRepository.topSanPhamBanChay(from, to) : Collections.emptyList());
 
         return dto;
     }

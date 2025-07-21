@@ -30,6 +30,8 @@ public class ThongKeDoanhThuController {
 
     private final ThongKeDoanhThuService thongKeDoanhThuService;
 
+
+
     @GetMapping("")
     public String thongKeDashboard(
             @RequestParam(value = "fromDate", required = false) String fromDateStr,
@@ -37,17 +39,23 @@ public class ThongKeDoanhThuController {
             Model model) {
         LocalDateTime fromDate, toDate;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        // Nếu không truyền ngày, mặc định là từ đầu tháng đến hiện tại
-        if (fromDateStr != null && !fromDateStr.isEmpty()) {
-            fromDate = LocalDate.parse(fromDateStr, formatter).atStartOfDay();
-        } else {
+        // Nếu không truyền ngày, mặc định là 7 ngày gần nhất
+        if ((fromDateStr == null || fromDateStr.isEmpty()) && (toDateStr == null || toDateStr.isEmpty())) {
             LocalDate now = LocalDate.now();
-            fromDate = now.withDayOfMonth(1).atStartOfDay();
-        }
-        if (toDateStr != null && !toDateStr.isEmpty()) {
-            toDate = LocalDate.parse(toDateStr, formatter).atTime(LocalTime.MAX);
+            toDate = now.atTime(LocalTime.MAX);
+            fromDate = now.minusDays(29).atStartOfDay();
         } else {
-            toDate = LocalDate.now().atTime(LocalTime.MAX);
+            if (fromDateStr != null && !fromDateStr.isEmpty()) {
+                fromDate = LocalDate.parse(fromDateStr, formatter).atStartOfDay();
+            } else {
+                LocalDate now = LocalDate.now();
+                fromDate = now.withDayOfMonth(1).atStartOfDay();
+            }
+            if (toDateStr != null && !toDateStr.isEmpty()) {
+                toDate = LocalDate.parse(toDateStr, formatter).atTime(LocalTime.MAX);
+            } else {
+                toDate = LocalDate.now().atTime(LocalTime.MAX);
+            }
         }
 
         // Validate date range

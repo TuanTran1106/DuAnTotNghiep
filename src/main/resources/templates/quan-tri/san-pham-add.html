@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Thêm Sản phẩm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <style>
+        body, input, textarea, select, button {
+            font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
+        }
+    </style>
+  </head>
+<body style="background: #f8f9fa;">
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="mb-4">Thêm Sản phẩm</h3>
+            <form th:action="@{/san-pham/add}" method="post" th:object="${sanPham}" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Mã sản phẩm:</label>
+                        <input type="text" th:field="*{maSanPham}" class="form-control" readonly placeholder="Sẽ tự sinh khi lưu" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tên sản phẩm:</label>
+                        <input type="text" th:field="*{tenSanPham}" class="form-control" required />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('tenSanPham')}" th:errors="*{tenSanPham}"></div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Giá nhập:</label>
+                        <input type="number" th:field="*{giaNhap}" class="form-control" required />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('giaNhap')}" th:errors="*{giaNhap}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Trạng thái:</label>
+                        <select th:field="*{trangThai}" class="form-select">
+        <option value="true">Kích hoạt</option>
+        <option value="false">Không kích hoạt</option>
+      </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('trangThai')}" th:errors="*{trangThai}"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mô tả:</label>
+                    <textarea th:field="*{moTa}" class="form-control"></textarea>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Danh mục:</label>
+                        <div class="input-group">
+                            <select th:field="*{danhMuc.id}" class="form-select" required>
+                                <option th:each="dm : ${danhMucList}" th:value="${dm.id}" th:text="${dm.tenDanhMuc}"></option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addDanhMucModal">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('danhMuc')}" th:errors="*{danhMuc}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Thương hiệu:</label>
+                        <div class="input-group">
+                            <select th:field="*{thuongHieu.id}" class="form-select" required>
+                                <option th:each="th : ${thuongHieuList}" th:value="${th.id}" th:text="${th.tenThuongHieu}"></option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addThuongHieuModal">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('thuongHieu')}" th:errors="*{thuongHieu}"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ảnh sản phẩm</label>
+                    <input type="file" id="fileInput" name="file" class="form-control" onchange="previewImage(event)">
+                    <img id="preview" src="#" alt="Preview" style="display:none; max-width:120px; margin-top:10px;"/>
+                </div>
+                <hr />
+                <h5 class="mb-3">Thông tin chi tiết sản phẩm</h5>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Màu sắc:</label>
+                        <input type="text" name="mauSac" class="form-control" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Kích thước:</label>
+                        <input type="text" name="kichThuoc" class="form-control" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Chất liệu:</label>
+                        <input type="text" name="chatLieu" class="form-control" required />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Số lượng:</label>
+                        <input type="number" name="soLuong" class="form-control" min="0" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Giá bán:</label>
+                        <input type="number" name="gia_ban" class="form-control" min="0" step="0.01" required />
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu</button>
+                    <a th:href="@{/san-pham}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal Thêm Danh Mục -->
+<div class="modal fade" id="addDanhMucModal" tabindex="-1" aria-labelledby="addDanhMucModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form th:action="@{/danh-muc/add-ajax}" method="post" id="quickAddDanhMucForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addDanhMucModalLabel">Thêm nhanh danh mục</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" name="tenDanhMuc" class="form-control" placeholder="Tên danh mục" required />
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Thêm</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Modal Thêm Thương Hiệu -->
+<div class="modal fade" id="addThuongHieuModal" tabindex="-1" aria-labelledby="addThuongHieuModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form th:action="@{/thuong-hieu/add-ajax}" method="post" id="quickAddThuongHieuForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addThuongHieuModalLabel">Thêm nhanh thương hiệu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" name="tenThuongHieu" class="form-control" placeholder="Tên thương hiệu" required />
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Thêm</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Modal chọn ảnh có sẵn -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Chọn ảnh có sẵn</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="image-list" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById('quickAddDanhMucForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const ten = this.tenDanhMuc.value;
+    const res = await fetch('/api/danh-muc/add', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'tenDanhMuc=' + encodeURIComponent(ten)
+    });
+    if (res.ok) {
+        const dm = await res.json();
+        const select = document.querySelector('select[name="danhMuc.id"]');
+        const option = document.createElement('option');
+        option.value = dm.id;
+        option.text = dm.tenDanhMuc;
+        option.selected = true;
+        select.appendChild(option);
+        var modal = bootstrap.Modal.getInstance(document.getElementById('addDanhMucModal'));
+        modal.hide();
+        this.reset();
+    }
+};
+document.getElementById('quickAddThuongHieuForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const ten = this.tenThuongHieu.value;
+    const res = await fetch('/api/thuong-hieu/add', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'tenThuongHieu=' + encodeURIComponent(ten)
+    });
+    if (res.ok) {
+        const th = await res.json();
+        const select = document.querySelector('select[name="thuongHieu.id"]');
+        const option = document.createElement('option');
+        option.value = th.id;
+        option.text = th.tenThuongHieu;
+        option.selected = true;
+        select.appendChild(option);
+        var modal = bootstrap.Modal.getInstance(document.getElementById('addThuongHieuModal'));
+        modal.hide();
+        this.reset();
+    }
+};
+function openImageModal() {
+    fetch('/san-pham/list-images')
+        .then(res => res.json())
+        .then(files => {
+            const list = document.getElementById('image-list');
+            list.innerHTML = '';
+            files.forEach(file => {
+                const img = document.createElement('img');
+                img.src = '/uploads/' + file;
+                img.style.width = '80px';
+                img.style.height = '80px';
+                img.style.objectFit = 'cover';
+                img.style.cursor = 'pointer';
+                img.onclick = function() {
+                    document.getElementById('preview-img').src = img.src;
+                    document.getElementById('preview-img').style.display = 'block';
+                    document.getElementById('selectedImage').value = file;
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
+                    modal.hide();
+                };
+                list.appendChild(img);
+            });
+            var modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            modal.show();
+        });
+}
+function previewImage(event) {
+    var input = event.target;
+    var preview = document.getElementById('preview');
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+    }
+}
+// Preview ảnh khi chọn file upload mới
+const fileInput = document.querySelector('input[type="file"][name="file"]');
+if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                document.getElementById('preview-img').src = ev.target.result;
+                document.getElementById('preview-img').style.display = 'block';
+                document.getElementById('selectedImage').value = '';
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+}
+</script>
+  </body>
+</html>

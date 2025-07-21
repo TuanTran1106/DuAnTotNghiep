@@ -31,19 +31,24 @@
     <form class="row g-3 mb-4 align-items-end" method="get" action="/quan-tri/thong-ke-doanh-thu">
         <div class="col-auto">
             <label for="fromDate" class="form-label">Từ ngày</label>
-            <input type="date" class="form-control" id="fromDate" name="fromDate" th:value="${fromDate}">
+
+            <input type="date" class="form-control" id="fromDate" name="fromDate"
+                   th:value="${fromDate != null ? fromDate : '2025-07-01'}"
+                   onchange="this.form.submit()">
         </div>
         <div class="col-auto">
             <label for="toDate" class="form-label">Đến ngày</label>
-            <input type="date" class="form-control" id="toDate" name="toDate" th:value="${toDate}">
+
+
+            <input type="date" class="form-control" id="toDate" name="toDate"
+                   th:value="${toDate != null ? toDate : T(java.time.LocalDate).now()}"
+                   onchange="this.form.submit()">
         </div>
 
         <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Lọc</button>
+            <button type="submit" class="btn btn-primary">Xem</button>
         </div>
     </form>
-    <!-- Xóa các div lỗi cũ -->
-
     <!-- Bảng tổng hợp chỉ số doanh thu -->
     <div class="row mb-4" th:if="${dashboard != null}">
         <div class="col-md-3">
@@ -278,6 +283,23 @@
             }
         });
         /*]]>*/
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromDate = document.getElementById('fromDate');
+            const toDate = document.getElementById('toDate');
+            const form = fromDate.form;
+
+            function autoSubmitIfBothFilled() {
+                if (fromDate.value && toDate.value) {
+                    form.submit();
+                }
+            }
+
+            fromDate.addEventListener('change', autoSubmitIfBothFilled);
+            toDate.addEventListener('change', autoSubmitIfBothFilled);
+        });
     </script>
 </div>
 </body>

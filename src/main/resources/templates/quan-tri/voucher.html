@@ -1,0 +1,817 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<html lang="en">
+<head>
+    <title>Quản lý voucher</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Copy toàn bộ phần <style> từ nhan-vien.html ở đây nếu muốn giữ nguyên giao diện -->
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f6f8fa; /* Thay đổi từ gradient tím thành màu nền nhẹ */
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .admin-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .header-section {
+        background: #fff; /* Thay đổi từ gradient tím thành màu trắng */
+        color: #333; /* Thay đổi text thành màu đen */
+        padding: 30px;
+        text-align: center;
+        position: relative;
+        border-bottom: 2px solid #e0e0e0; /* Thêm border để phân tách */
+    }
+
+    .header-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%231976d2" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%231976d2" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="%231976d2" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="%231976d2" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="%231976d2" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #1976d2; /* Thay đổi thành màu xanh dương */
+        text-shadow: none; /* Bỏ text shadow */
+    }
+
+    .header-subtitle {
+        font-size: 1.1rem;
+        color: #666; /* Thay đổi màu text */
+        font-weight: 300;
+    }
+
+    .content-section {
+        padding: 40px;
+        background: #f8f9fa;
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .add-button {
+        background: #1976d2; /* Thay đổi từ gradient tím thành màu xanh dương */
+        color: white;
+        padding: 15px 25px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(25, 118, 210, 0.4); /* Thay đổi shadow */
+    }
+
+    .add-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(25, 118, 210, 0.6); /* Thay đổi shadow */
+        color: white;
+        text-decoration: none;
+        background: #1565c0; /* Màu hover */
+    }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .search-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        border-radius: 50px;
+        padding: 5px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .search-form:focus-within {
+        border-color: #1976d2; /* Thay đổi từ #667eea */
+        box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3); /* Thay đổi shadow */
+    }
+
+    .search-form input[type="text"] {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        width: 300px;
+        font-size: 14px;
+        outline: none;
+        background: transparent;
+    }
+
+    .search-form input[type="text"]::placeholder {
+        color: #999;
+    }
+
+    .search-form button {
+        background: #1976d2; /* Thay đổi từ gradient tím */
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-form button:hover {
+        transform: scale(1.1);
+        background: #1565c0; /* Màu hover */
+    }
+
+    .reset-button {
+        background: #6c757d;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .reset-button:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .table-header {
+        background: #fafbfc; /* Thay đổi từ gradient tím thành màu nền nhẹ */
+        color: #333; /* Thay đổi text thành màu đen */
+        padding: 20px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 2px solid #e0e0e0; /* Thêm border */
+    }
+
+    .table-header i {
+        font-size: 1.4rem;
+        color: #1976d2; /* Thay đổi màu icon */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    thead {
+        background: #fafbfc; /* Thay đổi từ gradient thành màu nền nhẹ */
+    }
+
+    th {
+        padding: 18px 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #222; /* Thay đổi màu text */
+        border-bottom: 2px solid #dee2e6;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #f1f3f4;
+        color: #495057;
+        font-size: 14px;
+    }
+
+    tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+        background: #f8f9ff; /* Thay đổi từ gradient thành màu nền nhẹ */
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(25, 118, 210, 0.1); /* Thay đổi shadow */
+    }
+
+    .status-select {
+        padding: 8px 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 20px;
+        background: white;
+        color: #495057;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .status-select:focus {
+        border-color: #1976d2; /* Thay đổi từ #667eea */
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1); /* Thay đổi shadow */
+    }
+
+    .status-select option[value="true"] {
+        color: #28a745;
+    }
+
+    .status-select option[value="false"] {
+        color: #dc3545;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-edit {
+        background: #1976d2; /* Thay đổi từ gradient xanh */
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .btn-edit:hover {
+        transform: scale(1.1);
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(25, 118, 210, 0.4); /* Thay đổi shadow */
+        background: #1565c0; /* Màu hover */
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .btn-delete:hover {
+        transform: scale(1.1);
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    .pagination-container {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .pagination-info {
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .pagination-info span {
+        color: #1976d2; /* Thay đổi từ #667eea */
+        font-weight: 600;
+    }
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .pagination li {
+        margin: 0;
+    }
+
+    .pagination a,
+    .pagination span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 15px;
+        text-decoration: none;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        color: #495057;
+        background: white;
+        transition: all 0.3s ease;
+        min-width: 45px;
+        height: 45px;
+        font-weight: 500;
+    }
+
+    .pagination a:hover {
+        background: #1976d2; /* Thay đổi từ gradient tím */
+        border-color: #1976d2;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3); /* Thay đổi shadow */
+    }
+
+    .pagination .active {
+        background: #1976d2; /* Thay đổi từ gradient tím */
+        border-color: #1976d2;
+        color: white;
+        box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3); /* Thay đổi shadow */
+    }
+
+    .pagination .disabled {
+        color: #adb5bd;
+        pointer-events: none;
+        background: #f8f9fa;
+        border-color: #e9ecef;
+    }
+
+    .page-size-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 25px;
+        border: 2px solid #e9ecef;
+    }
+
+    .page-size-selector label {
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .page-size-selector select {
+        padding: 8px 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        background: white;
+        color: #495057;
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+    .page-size-selector select:focus {
+        border-color: #1976d2; /* Thay đổi từ #667eea */
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1); /* Thay đổi shadow */
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: #adb5bd;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+
+    .empty-state p {
+        font-size: 1rem;
+        color: #6c757d;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        body {
+            padding: 10px;
+        }
+
+        .admin-container {
+            border-radius: 15px;
+        }
+
+        .header-section {
+            padding: 20px;
+        }
+
+        .header-title {
+            font-size: 2rem;
+        }
+
+        .content-section {
+            padding: 20px;
+        }
+
+        .toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-form {
+            width: 100%;
+        }
+
+        .search-form input[type="text"] {
+            width: 100%;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            min-width: 800px;
+        }
+
+        .pagination-container {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .pagination {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-title {
+            font-size: 1.5rem;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+        }
+
+        .add-button {
+            padding: 12px 20px;
+            font-size: 0.9rem;
+        }
+
+        .search-form input[type="text"] {
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 10px 8px;
+            font-size: 13px;
+        }
+    }
+
+    /* Loading Animation */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #1976d2; /* Thay đổi từ #667eea */
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Success/Error Messages */
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+<body>
+
+<div class="admin-container">
+    <!-- Content Section -->
+    <div class="content-section">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <a th:href="@{/voucher/add}" class="add-button">
+                <i class="fas fa-plus"></i>
+                Thêm voucher mới
+            </a>
+
+            <div class="search-container">
+                <form th:action="@{/voucher/search}" method="get" class="search-form">
+                    <input type="text" name="keyword" placeholder="Tìm kiếm theo tên hoặc mã voucher..."
+                           th:value="${keyword}" />
+                    <button type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a th:href="@{/voucher}" class="reset-button">
+                    <i class="fas fa-rotate"></i>
+                    Làm mới
+                </a>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <div class="table-header">
+                <i class="fas fa-table"></i>
+                Danh sách voucher
+            </div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>ID</th>
+                    <th>Mã voucher</th>
+                    <th>Tên voucher</th>
+                    <th>Mô tả</th>
+                    <th>Kiểu giảm</th>
+                    <th>Mức giảm</th>
+                    <th>Số lượng</th>
+                    <th>Còn lại</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Điều kiện tối thiểu</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(listVoucher)}">
+                    <td colspan="14">
+                        <div class="empty-state">
+                            <i class="fas fa-ticket-alt"></i>
+                            <h3>Không có dữ liệu</h3>
+                            <p>Chưa có voucher nào trong hệ thống</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:each="voucher, index : ${listVoucher}">
+                    <td th:text="${index.count}"></td>
+                    <td th:text="${voucher.id}"></td>
+                    <td><strong th:text="${voucher.maVoucher}"></strong></td>
+                    <td><strong th:text="${voucher.tenVoucher}"></strong></td>
+                    <td th:text="${voucher.moTa}"></td>
+                    <td>
+                        <span th:if="${voucher.kieuGiam}" class="badge badge-primary">Phần trăm</span>
+                        <span th:unless="${voucher.kieuGiam}" class="badge badge-secondary">Tiền mặt</span>
+                    </td>
+                    <td th:text="${voucher.mucGiam}"></td>
+                    <td th:text="${voucher.soLuong}"></td>
+                    <td th:text="${voucher.soLuongCon}"></td>
+                    <td th:text="${#temporals.format(voucher.ngayBatDau, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(voucher.ngayKetThuc, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${voucher.dieuKienToiThieu}"></td>
+                    <td>
+                        <select class="status-select" th:attr="onchange=|updateTrangThai(this, '${voucher.id}')|">
+                            <option th:value="true" th:selected="${voucher.trangThai}">Hoạt động</option>
+                            <option th:value="false" th:selected="${!voucher.trangThai}">Tắt</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a th:href="@{'/voucher/update/' + ${voucher.id}}" class="btn-edit" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Hiển thị <span th:text="${#lists.size(listVoucher)}"></span>
+                trong tổng số <span th:text="${totalElements}"></span> voucher
+            </div>
+
+            <ul class="pagination" th:if="${totalPages > 1}">
+                <!-- Previous button -->
+                <li th:class="${hasPrevious} ? '' : 'disabled'">
+                    <a th:if="${hasPrevious}"
+                       th:href="@{/voucher(page=${currentPage - 1}, size=${pageSize}, keyword=${keyword})}"
+                       title="Trang trước">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    <span th:unless="${hasPrevious}">
+                        <i class="fas fa-chevron-left"></i>
+                    </span>
+                </li>
+
+                <!-- Page numbers -->
+                <li th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                    th:class="${pageNum == currentPage} ? 'active' : ''">
+                    <a th:href="@{/voucher(page=${pageNum}, size=${pageSize}, keyword=${keyword})}"
+                       th:text="${pageNum}"></a>
+                </li>
+
+                <!-- Next button -->
+                <li th:class="${hasNext} ? '' : 'disabled'">
+                    <a th:if="${hasNext}"
+                       th:href="@{/voucher(page=${currentPage + 1}, size=${pageSize}, keyword=${keyword})}"
+                       title="Trang sau">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <span th:unless="${hasNext}">
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+            </ul>
+
+        <!-- Page size selector -->
+        <div class="page-size-selector">
+            <label>Hiển thị:</label>
+            <select onchange="changePageSize(this.value)">
+                <option value="5" th:selected="${pageSize == 5}">5</option>
+                <option value="10" th:selected="${pageSize == 10}">10</option>
+                <option value="20" th:selected="${pageSize == 20}">20</option>
+                <option value="50" th:selected="${pageSize == 50}">50</option>
+            </select>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    function updateTrangThai(select, id) {
+        const originalValue = select.value;
+        const loadingSpinner = '<div class="loading-spinner"></div>';
+        select.innerHTML = loadingSpinner;
+        select.disabled = true;
+
+        fetch('/voucher/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id, trangThai: originalValue })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success){
+                    showAlert('Cập nhật trạng thái thành công!', 'success');
+                    // Restore select options
+                    select.innerHTML = `
+                    <option value="true" ${originalValue === 'true' ? 'selected' : ''}>Hoạt động</option>
+                    <option value="false" ${originalValue === 'false' ? 'selected' : ''}>Tắt</option>
+                `;
+                } else {
+                    showAlert('Cập nhật thất bại!', 'error');
+                    // Revert to original value
+                    select.value = originalValue === 'true' ? 'false' : 'true';
+                }
+            })
+            .catch(error => {
+                showAlert('Có lỗi xảy ra!', 'error');
+                // Revert to original value
+                select.value = originalValue === 'true' ? 'false' : 'true';
+            })
+            .finally(() => {
+                select.disabled = false;
+            });
+    }
+
+    function changePageSize(size) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('size', size);
+        urlParams.set('page', '1'); // Reset to first page when changing size
+        window.location.href = window.location.pathname + '?' + urlParams.toString();
+    }
+
+
+    function showAlert(message, type) {
+        // Remove existing alerts
+        const existingAlert = document.querySelector('.alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+
+        // Create new alert
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+
+        // Insert at the top of content section
+        const contentSection = document.querySelector('.content-section');
+        contentSection.insertBefore(alert, contentSection.firstChild);
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            alert.remove();
+        }, 3000);
+    }
+
+    // Add some interactive effects
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effects to table rows
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add click effects to buttons
+        const buttons = document.querySelectorAll('.btn-edit, .btn-delete, .add-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    });
+</script>
+</body>
+</html>
