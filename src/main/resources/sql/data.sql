@@ -382,19 +382,6 @@ VALUES
     (4, GETDATE()),
     (5, GETDATE());
 
-INSERT INTO gio_hang_chi_tiet (id_gio_hang, id_san_pham_chi_tiet, so_luong)
-VALUES
-    (1, 1, 2),
-    (1, 2, 1),
-    (2, 3, 1),
-    (2, 4, 2),
-    (3, 5, 1),
-    (3, 6, 2),
-    (4, 7, 1),
-    (4, 8, 1),
-    (5, 9, 1),
-    (5, 10, 1);
-
 INSERT INTO don_hang (ma_don_hang, tong_gia, ngay_mua, ghi_chu, ngay_tao, ngay_sua, id_nguoi_dung, id_trang_thai, id_phuong_thuc, id_voucher, id_nhan_vien, id_dia_chi)
 VALUES
     ('DH01', 3600000, '2025-06-10', N'Giao trong giờ hành chính', GETDATE(), NULL, 1, 1, 1, 1, 1, 1),

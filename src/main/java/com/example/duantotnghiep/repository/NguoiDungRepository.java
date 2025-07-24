@@ -26,4 +26,6 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
 
     @Query("SELECT COUNT(nd) FROM NguoiDung nd WHERE nd.ngayTao BETWEEN :startDate AND :endDate")
     Long countNewUsersBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    Optional<NguoiDung> findByEmailAndMatKhau(String email, String matKhau);
 }
