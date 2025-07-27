@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin    </title>
     <style>
         * {
             margin: 0;
@@ -330,7 +330,7 @@
         <div class="sidebar-header">
             <div class="logo">
                 <i class="fas fa-cogs"></i>
-                <span>Admin</span>
+                <span th:text="${tenDangNhap}+' Admin'"></span>
             </div>
             <button class="toggle-btn" id="toggleBtn">
                 <i class="fas fa-bars"></i>
@@ -339,7 +339,7 @@
 
         <nav class="sidebar-menu">
             <div class="menu-item">
-                <a href="#"  class="menu-link active" data-url="" data-title="Dashboard">
+                <a th:href="@{/quantri/trang-chu}"  class="menu-link active" data-url="http://localhost:8080/trang-chu" data-title="Trang chủ">
                     <i class="fas fa-home"></i>
                     <span>Trang chủ</span>
                 </a>
@@ -422,10 +422,10 @@
 
     <main class="main-content" id="mainContent">
         <div class="content-header">
-            <h1 id="pageTitle">Dashboard</h1>
+            <h1 id="pageTitle">Trang chủ</h1>
             <div class="breadcrumb">
                 <i class="fas fa-home"></i>
-                <a href="/quan-ly">Quản trị</a> /
+                <a th:href="@{/quantri/trang-chu}">Quản trị</a> /
                 <a id="breadcrumbText">Trang chủ</a>
             </div>
         </div>
@@ -437,7 +437,7 @@
                 <p>Đang tải...</p>
             </div>
             <div class="iframe-container">
-                <iframe id="contentFrame" src="https://example.com"></iframe>
+                <iframe id="contentFrame" th:src="@{/trang-chu}" src="/trang-chu"></iframe>
             </div>
         </div>
     </main>

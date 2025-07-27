@@ -5,6 +5,8 @@
     <title>Quản lý đơn hàng</title>
     <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', Arial, sans-serif;
@@ -113,6 +115,11 @@
             background: #e6ffed;
             color: #237804;
             border: 1px solid #b7eb8f;
+        }
+        .badge-delivered {
+            background: #e6ffe6;
+            color: #1a7f37;
+            border: 1px solid #52c41a;
         }
         .badge-warning {
             background: #fff7e6;
@@ -463,31 +470,6 @@
             background: #b0bec5;
             cursor: not-allowed;
         }
-        .alert-status {
-            display: none;
-            position: fixed;
-            top: 32px;
-            right: 32px;
-            z-index: 2000;
-            min-width: 280px;
-            max-width: 400px;
-            margin: 0;
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 500;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
-        .alert-status.success {
-            background: #e6ffed;
-            color: #237804;
-            border: 1px solid #b7eb8f;
-        }
-        .alert-status.error {
-            background: #fff1f0;
-            color: #a8071a;
-            border: 1px solid #ffa39e;
-        }
         .pagination {
             display: flex;
             gap: 6px;
@@ -517,187 +499,195 @@
             border: 1px solid #1976d2;
             box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
         }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1060;
+        }
     </style>
 </head>
 <body>
-<div class="order-page">
-    <!-- Tabs -->
-    <div class="order-tabs">
-        <button class="tab active" data-status="all"><i class="fa fa-list"></i> Tất cả</button>
-        <button class="tab" data-status="Chờ xác nhận"><i class="fa fa-clock"></i> Chờ xác nhận</button>
-        <button class="tab" data-status="Đang chuẩn bị hàng"><i class="fa fa-box-open"></i> Đang chuẩn bị hàng</button>
-        <button class="tab" data-status="Đang giao"><i class="fa fa-truck"></i> Đang giao </button>
-        <button class="tab" data-status="Đã giao"><i class="fa fa-check-circle"></i> Đã giao </button>
-        <button class="tab" data-status="Đã hủy"><i class="fa fa-times-circle"></i> Đã huỷ</button>
-    </div>
+    <!-- Toast container -->
+    <div class="toast-container"></div>
 
-    <!-- Filter/Search -->
-    <div class="order-filters">
-        <label>
-            <input type="text" class="order-search" placeholder="Tìm kiếm theo mã đơn hàng, SĐT khách">
-        </label>
-        <label class="order-date-label">
-            <input type="date" class="order-date-filter" placeholder="Ngày đặt hàng">
-            <span class="order-date-display" style="margin-left:10px;color:#1976d2;font-weight:500;"></span>
-        </label>
-        <label style="font-size: 14px" >
-            Hiển thị
-            <select id="rowsPerPageSelect">
-                <option value="all" selected>Tất cả</option>
-                <option value="5">5 dòng</option>
-                <option value="10">10 dòng</option>
-                <option value="20">20 dòng</option>
-                <option value="50">50 dòng</option>
-            </select>
-            / trang
-        </label>
-    </div>
+    <div class="order-page">
+        <!-- Tabs -->
+        <div class="order-tabs">
+            <button class="tab active" data-status="all"><i class="fa fa-list"></i> Tất cả</button>
+            <button class="tab" data-status="Chờ xác nhận"><i class="fa fa-clock"></i> Chờ xác nhận</button>
+            <button class="tab" data-status="Đang chuẩn bị hàng"><i class="fa fa-box-open"></i> Đang chuẩn bị hàng</button>
+            <button class="tab" data-status="Đang giao"><i class="fa fa-truck"></i> Đang giao </button>
+            <button class="tab" data-status="Đã giao"><i class="fa fa-check-circle"></i> Đã giao </button>
+            <button class="tab" data-status="Đã hủy"><i class="fa fa-times-circle"></i> Đã huỷ</button>
+        </div>
+        <!-- Filter/Search -->
+        <div class="order-filters">
+            <label>
+                <input type="text" class="order-search" placeholder="Tìm kiếm theo mã đơn hàng,SĐT khách">
+            </label>
+                <label class="order-date-label">
+                <input type="date" class="order-date-filter" placeholder="Ngày đặt hàng">
+                <span class="order-date-display" style="margin-left:10px;color:#1976d2;font-weight:500;"></span>
+            </label>
+            <label style="font-size: 14px" >
+                Hiển thị
+                <select id="rowsPerPageSelect">
+                    <option value="all" selected>Tất cả</option>
+                    <option value="5">5 dòng</option>
+                    <option value="10">10 dòng</option>
+                    <option value="20">20 dòng</option>
+                    <option value="50">50 dòng</option>
+                </select>
+                / trang
+            </label>
+        </div>
 
-    <!-- Table -->
-    <div class="order-table-wrapper">
-        <table class="order-table">
-            <thead>
-            <tr>
-                <th>STT</th>
-                <th>Mã đơn hàng</th>
-                <th>Ngày đặt hàng</th>
-                <th>Khách hàng</th>
-                <th>Thành tiền</th>
-                <th>Phương thức thanh toán</th>
-                <th>Trạng thái xử lý</th>
-                <th>Thao tác</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="order, stat : ${orders}" class="clickable-row" th:onclick="'showOrderDetail(' + ${order.donHangId} + ')'">
-                <td th:text="${stat.index + 1}">1</td>
-                <td class="order-link" th:text="'#' + ${order.maDonHang}"></td>
-                <td th:text="${#temporals.format(order.ngayMua, 'dd/MM/yyyy HH:mm')}"></td>
-                <td th:text="${order.tenKhachHang != null ? order.tenKhachHang : '---'}"></td>
-                <td th:text="${#numbers.formatDecimal(order.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' ₫'"> ₫</td>
-                <td>
-                    <span th:text="${order.tenPhuongThuc != null ? order.tenPhuongThuc : '---'}"></span>
-                </td>
-                <td>
-                    <span th:classappend="'badge ' + (${order.tenTrangThai} == 'Hoàn tất' ? 'badge-success' : (${order.tenTrangThai} == 'Chưa xử lý' ? 'badge-warning' : 'badge-danger'))"
-                          th:text="${order.tenTrangThai != null ? order.tenTrangThai : '---'}"></span>
-                </td>
-                <td>
-                    <button type="button" class="btn-next-status"
-                        onclick="event.stopPropagation(); nextOrderStatus(${order.donHangId}, this)">
-                        Chuyển trạng thái
+
+        <!-- Table -->
+        <div class="order-table-wrapper">
+            <table class="order-table">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã đơn hàng</th>
+                    <th>Ngày đặt hàng</th>
+                    <th>Khách hàng</th>
+                    <th>Thành tiền</th>
+                    <th>Phương thức thanh toán</th>
+                    <th>Trạng thái xử lý</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                <tr th:each="order, stat : ${orders}" class="clickable-row" th:onclick="'showOrderDetail(' + ${order.donHangId} + ')'">
+                    <td><input type="checkbox" class="order-checkbox" th:value="${order.donHangId}" onclick="event.stopPropagation(); updatePrintButton()"></td>
+                    <td th:text="${stat.index + 1}">1</td>
+                    <td class="order-link" th:text="'#' + ${order.maDonHang}"></td>
+                    <td th:text="${#temporals.format(order.ngayMua, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${order.tenKhachHang != null ? order.tenKhachHang : '---'}"></td>
+                    <td th:text="${#numbers.formatDecimal(order.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' ₫'"> ₫</td>
+                    <td>
+                        <span th:text="${order.tenPhuongThuc != null ? order.tenPhuongThuc : '---'}"></span>
+                    </td>
+                    <td>
+                        <span th:classappend="'badge ' + (${order.tenTrangThai} == 'Hoàn tất' ? 'badge-success' : (${order.tenTrangThai} == 'Đã giao' ? 'badge-delivered' : (${order.tenTrangThai} == 'Chưa xử lý' ? 'badge-warning' : 'badge-danger')))"
+                              th:text="${order.tenTrangThai != null ? order.tenTrangThai : '---'}"></span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn-next-status"
+                                th:onclick="'event.stopPropagation(); nextOrderStatus(' + ${order.donHangId} + ', this)'">
+                            Duyệt
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+
+        <!-- Modal Chi tiết đơn hàng -->
+        <div id="orderDetailModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-file-invoice"></i> Chi tiết đơn hàng
+                    </h3>
+                    <button class="modal-close" onclick="closeOrderDetail()">
+                        <i class="fas fa-times"></i>
                     </button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div id="pagination" class="pagination"></div>
-
-<!-- Di chuyển phần tử alert-status lên đầu body để hiển thị ở góc phải trên -->
-<div id="alertStatus" class="alert-status"></div>
-
-    <!-- Modal Chi tiết đơn hàng -->
-    <div id="orderDetailModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    <i class="fas fa-file-invoice"></i> Chi tiết đơn hàng
-                </h3>
-                <button class="modal-close" onclick="closeOrderDetail()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Thông tin tổng quan -->
-                <div class="order-info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Mã đơn hàng</div>
-                        <div class="info-value" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="modalMaDonHang">-</span>
-                            <button id="btnCopyMaDonHang" title="Sao chép mã đơn hàng" style="background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; font-size: 15px; color: #1976d2;">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Thông tin tổng quan -->
+                    <div class="order-info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Mã đơn hàng</div>
+                            <div class="info-value" style="display: flex; align-items: center; gap: 8px;">
+                                <span id="modalMaDonHang">-</span>
+                                <button id="btnCopyMaDonHang" title="Sao chép mã đơn hàng" style="background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; font-size: 15px; color: #1976d2;">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ngày đặt hàng</div>
+                            <div class="info-value" id="modalNgayDat">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Khách hàng</div>
+                            <div class="info-value" id="modalKhachHang">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Số điện thoại</div>
+                            <div class="info-value" id="modalSdtKhachHang">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Thành tiền</div>
+                            <div class="info-value" id="modalThanhTien">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Phương thức thanh toán</div>
+                            <div class="info-value" id="modalPhuongThuc">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Trạng thái xử lý</div>
+                            <div class="info-value" id="modalTrangThai">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Nhân viên xử lý</div>
+                            <div class="info-value" id="modalNhanVien">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Voucher</div>
+                            <div class="info-value" id="modalVoucherCode">-</div>
                         </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Ngày đặt hàng</div>
-                        <div class="info-value" id="modalNgayDat">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Khách hàng</div>
-                        <div class="info-value" id="modalKhachHang">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Số điện thoại</div>
-                        <div class="info-value" id="modalSdtKhachHang">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Thành tiền</div>
-                        <div class="info-value" id="modalThanhTien">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Phương thức thanh toán</div>
-                        <div class="info-value" id="modalPhuongThuc">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Trạng thái xử lý</div>
-                        <div class="info-value" id="modalTrangThai">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Nhân viên xử lý</div>
-                        <div class="info-value" id="modalNhanVien">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Voucher</div>
-                        <div class="info-value" id="modalVoucherCode">-</div>
-                    </div>
-                </div>
 
-                <!-- Thông tin voucher -->
-                <div class="voucher-section" id="voucherDetailRow" style="display: none;">
-                    <div class="voucher-title">Chi tiết voucher</div>
-                    <div class="voucher-details" id="modalVoucherDetail">-</div>
-                </div>
-
-                <!-- Địa chỉ giao hàng -->
-                <div class="address-section">
-                    <div class="address-title">Địa chỉ giao hàng</div>
-                    <div class="address-content" id="modalDiaChi">-</div>
-                </div>
-
-                <!-- Danh sách sản phẩm -->
-                <div class="product-section">
-                    <div class="product-section-header">
-                        <i class="fas fa-box"></i>
-                        <h4 class="product-section-title">Danh sách sản phẩm</h4>
+                    <!-- Thông tin voucher -->
+                    <div class="voucher-section" id="voucherDetailRow" style="display: none;">
+                        <div class="voucher-title">Chi tiết voucher</div>
+                        <div class="voucher-details" id="modalVoucherDetail">-</div>
                     </div>
-                    <table class="product-table">
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Ảnh</th>
-                                <th>Sản phẩm</th>
-                                <th>Số lượng</th>
-                                <th>Đơn giá</th>
-                                <th>Thành tiền</th>
-                            </tr>
-                        </thead>
-                        <tbody id="modalProductList">
-                            <tr>
-                                <td colspan="6" class="loading">
-                                    <i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu sản phẩm...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div id="modalProductTotal" style="text-align:right;font-weight:600;font-size:15px;margin:8px 12px 0 0;color:#1976d2;"></div>
-                </div>
 
-                <!-- Thành tiền sau voucher -->
-                <div class="final-price-section" id="thanhTienSauVoucherRow" style="display: none;">
-                    <div class="final-price-label">Thành tiền sau voucher</div>
-                    <div class="final-price-value" id="modalThanhTienSauVoucher">-</div>
+                    <!-- Địa chỉ giao hàng -->
+                    <div class="address-section">
+                        <div class="address-title">Địa chỉ giao hàng</div>
+                        <div class="address-content" id="modalDiaChi">-</div>
+                    </div>
+
+                    <!-- Danh sách sản phẩm -->
+                    <div class="product-section">
+                        <div class="product-section-header">
+                            <i class="fas fa-box"></i>
+                            <h4 class="product-section-title">Danh sách sản phẩm</h4>
+                        </div>
+                        <table class="product-table">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Ảnh</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modalProductList">
+                                <tr>
+                                    <td colspan="6" class="loading">
+                                        <i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu sản phẩm...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="modalProductTotal" style="text-align:right;font-weight:600;font-size:15px;margin:8px 12px 0 0;color:#1976d2;"></div>
+                    </div>
+
+                    <!-- Thành tiền sau voucher -->
+                    <div class="final-price-section" id="thanhTienSauVoucherRow" style="display: none;">
+                        <div class="final-price-label">Thành tiền sau voucher</div>
+                        <div class="final-price-value" id="modalThanhTienSauVoucher">-</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -781,13 +771,13 @@ function renderOrdersByAllFilters() {
             <td>${order.thanhTien ? order.thanhTien.toLocaleString('vi-VN') + ' ₫' : '-'}</td>
             <td><span>${order.tenPhuongThuc || '---'}</span></td>
             <td>
-                <span class="badge ${order.tenTrangThai === 'Hoàn tất' ? 'badge-success' : (order.tenTrangThai === 'Chưa xử lý' ? 'badge-warning' : 'badge-danger')}">
+                <span class="badge ${order.tenTrangThai === 'Hoàn tất' ? 'badge-success' : (order.tenTrangThai === 'Đã giao' ? 'badge-delivered' : (order.tenTrangThai === 'Chưa xử lý' ? 'badge-warning' : 'badge-danger'))}">
                     ${order.tenTrangThai || '---'}
                 </span>
             </td>
             <td>
                 ${(order.tenTrangThai !== 'Hoàn tất' && order.tenTrangThai !== 'Đã huỷ')
-                    ? `<button type="button" class="btn-next-status" onclick="event.stopPropagation(); nextOrderStatus(${order.donHangId}, this)">Chuyển trạng thái</button>`
+                    ? `<button type="button" class="btn-next-status" onclick="event.stopPropagation(); nextOrderStatus(${order.donHangId}, this)">Duyệt</button>`
                     : ''}
             </td>
         </tr>
@@ -922,7 +912,7 @@ function showOrderDetail(orderId) {
                     const ma = document.getElementById('modalMaDonHang').textContent.replace('#', '').trim();
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(ma).then(function() {
-                            showAlertStatus('Đã sao chép mã đơn hàng!', 'success');
+                            showToast('Đã sao chép mã đơn hàng!', 'success');
                         });
                     } else {
                         // fallback cho trình duyệt cũ
@@ -932,7 +922,7 @@ function showOrderDetail(orderId) {
                         temp.select();
                         document.execCommand('copy');
                         document.body.removeChild(temp);
-                        showAlertStatus('Đã sao chép mã đơn hàng!', 'success');
+                        showToast('Đã sao chép mã đơn hàng!', 'success');
                     }
                 }
             }
@@ -1037,40 +1027,83 @@ function gotoPage(page) {
     currentPage = page;
     renderOrdersByAllFilters();
 }
-</script>
 
+function updatePrintButton() {
+    const checkboxes = document.querySelectorAll('.order-checkbox');
+    const btn = document.getElementById('btnPrintPDF');
+    let anyChecked = false;
+    checkboxes.forEach(cb => { if (cb.checked) anyChecked = true; });
+    btn.disabled = !anyChecked;
+}
+function toggleSelectAllOrders(source) {
+    const checkboxes = document.querySelectorAll('.order-checkbox');
+    checkboxes.forEach(cb => { cb.checked = source.checked; });
+    updatePrintButton();
+}
+function getSelectedOrderIds() {
+    const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+function printSelectedOrders() {
+    const ids = getSelectedOrderIds();
+    if (ids.length === 0) return;
+    // Gửi request in PDF (sẽ bổ sung backend sau)
+    window.open('/quan-ly/don-hang/print?ids=' + ids.join(','), '_blank');
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-function showAlertStatus(message, type) {
-    const alert = document.getElementById('alertStatus');
-    alert.textContent = message;
-    alert.className = 'alert-status ' + type;
-    alert.style.display = 'block';
-    setTimeout(() => {
-        alert.style.display = 'none';
-    }, 2000);
-}
+        function showToast(message, type) {
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
 
-function nextOrderStatus(id, btn) {
-    if (!confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này?')) return;
-    btn.disabled = true;
-    fetch(`/quan-ly/don-hang/api/${id}/next-status`, {
-        method: 'PATCH'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data === true) {
-            showAlertStatus('Chuyển trạng thái thành công!', 'success');
-            setTimeout(() => window.location.reload(), 1000);
-        } else {
-            showAlertStatus('Chuyển trạng thái thất bại!', 'error');
-            btn.disabled = false;
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast, {
+                delay: 3000
+            });
+            bsToast.show();
+            
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
         }
-    })
-    .catch(error => {
-        showAlertStatus('Có lỗi xảy ra khi chuyển trạng thái!', 'error');
-        btn.disabled = false;
-    });
-}
-</script>
+
+        function nextOrderStatus(id, btn) {
+            if (!confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này?')) return;
+            btn.disabled = true;
+            fetch(`/quan-ly/don-hang/api/${id}/next-status`, {
+                method: 'PATCH'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data === true) {
+                    showToast('Chuyển trạng thái thành công!', 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast('Chuyển trạng thái thất bại!', 'danger');
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                showToast('Có lỗi xảy ra khi chuyển trạng thái!', 'danger');
+                btn.disabled = false;
+            });
+        }
+    </script>
 </body>
 </html>
+
+

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
@@ -19,4 +20,6 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
     Page<NhanVien> searchNhanVienWithPagination(@Param("keyword") String keyword, Pageable pageable);
 
     Page<NhanVien> findAll(Pageable pageable);
+
+    Optional<NhanVien> findByEmailAndMatKhau(String email, String matKhau);
 }

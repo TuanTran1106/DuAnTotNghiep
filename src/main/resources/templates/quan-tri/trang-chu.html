@@ -1,10 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Trang chủ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: #f6f8fa;
+            margin: 0;
+            padding: 0;
+        }
+        .main-content-only {
+            padding: 24px 0 0 0;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .dashboard-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            padding: 22px 28px 18px 28px;
+            display: flex;
+            flex-direction: column;
+            min-height: 160px;
+            border: 1px solid #f0f0f0;
+        }
+        .section-title {
+            font-weight: 600;
+            color: #1976d2;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .dashboard-list .item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f3f3;
+        }
+        .dashboard-list .item:last-child {
+            border-bottom: none;
+        }
+        .item-icon {
+            font-size: 20px;
+            color: #1976d2;
+            min-width: 28px;
+            text-align: center;
+            margin-top: 2px;
+        }
+        .item-content {
+            flex: 1;
+        }
+        .item-title {
+            font-weight: 500;
+            color: #222;
+            font-size: 15px;
+        }
+        .item-desc {
+            color: #666;
+            font-size: 13px;
+        }
+        .badge-task {
+            background: #ff9800;
+            color: #fff;
+            font-size: 12px;
+            border-radius: 12px;
+            padding: 2px 8px;
+            margin-left: 8px;
+        }
+        .badge-alert {
+            background: #e53935;
+            color: #fff;
+            font-size: 12px;
+            border-radius: 12px;
+            padding: 2px 8px;
+            margin-left: 8px;
+        }
+        .copyright {
+            text-align: center;
+            color: #aaa;
+            font-size: 13px;
+            margin: 32px 0 8px 0;
+        }
+        @media (max-width: 900px) {
+            .main-content-only { padding: 16px 4px; }
+            .dashboard-grid { grid-template-columns: 1fr; gap: 16px; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Trang chủ</h1>
+<div class="main-content-only">
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="section-title"><i class="fa fa-bell"></i> Thông báo</div>
+            <div class="dashboard-list">
+                <div class="item">
+                    <span class="item-icon"><i class="fa fa-info-circle"></i></span>
+                    <div class="item-content">
+                        <span class="item-title">Chào mừng bạn đến với hệ thống quản trị!</span>
+                        <div class="item-desc">Hãy kiểm tra các thông báo và cảnh báo mới nhất bên dưới.</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="item-icon"><i class="fa fa-calendar-check"></i></span>
+                    <div class="item-content">
+                        <span class="item-title">Lịch bảo trì hệ thống</span>
+                        <div class="item-desc">Hệ thống sẽ bảo trì vào 23:00 ngày 30/06/2024.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-card">
+            <div class="section-title"><i class="fa fa-exclamation-triangle"></i> Cảnh báo hệ thống</div>
+            <div class="dashboard-list">
+                <div class="item">
+                    <span class="item-icon"><i class="fa fa-server"></i></span>
+                    <div class="item-content">
+                        <span class="item-title">Máy chủ sử dụng cao <span class="badge-alert">Cảnh báo</span></span>
+                        <div class="item-desc">Tải CPU vượt ngưỡng 85% trong 10 phút gần nhất.</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="item-icon"><i class="fa fa-database"></i></span>
+                    <div class="item-content">
+                        <span class="item-title">Dung lượng lưu trữ sắp đầy <span class="badge-alert">Cảnh báo</span></span>
+                        <div class="item-desc">Ổ đĩa hệ thống còn dưới 5% dung lượng trống.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-card">
+            <div class="section-title"><i class="fa fa-tasks"></i> Đơn hàng cần xử lý</div>
+            <div class="dashboard-list">
+                <div class="item">
+                    <span class="item-icon"><i class="fa fa-truck"></i></span>
+                    <div class="item-content">
+                        <span class="item-title">Có <span th:text="${soDonChoXacNhan}">8</span> đơn hàng chờ xác nhận <span class="badge-task" th:text="${soDonChoXacNhan}">8</span></span>
+                        <div class="item-desc">Vui lòng kiểm tra và duyệt các đơn hàng mới.</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="item-icon"><i class="fa fa-box-open"></i></span>
+                    <div class="item-content">
+                        <span class="item-title">Có <span th:text="${soDonDangChuanBi}">3</span> đơn hàng đang chuẩn bị giao <span class="badge-task" th:text="${soDonDangChuanBi}">3</span></span>
+                        <div class="item-desc">Đảm bảo đóng gói và giao hàng đúng hạn.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-card">
+            <div class="section-title"><i class="fa fa-user-check"></i> Tài khoản cần xác minh</div>
+            <div class="dashboard-list">
+                <div class="item">
+                    <span class="item-icon"><i class="fa fa-user"></i></span>
+                    <div class="item-content">
+                        <span class="item-title">Có 2 tài khoản khách hàng chờ xác minh <span class="badge-task">2</span></span>
+                        <div class="item-desc">Xác minh tài khoản để khách hàng có thể sử dụng đầy đủ chức năng.</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="item-icon"><i class="fa fa-user-tie"></i></span>
+                    <div class="item-content">
+                        <span class="item-title">Có 1 tài khoản nhân viên chờ xác minh <span class="badge-task">1</span></span>
+                        <div class="item-desc">Xác minh tài khoản nhân viên để phân quyền quản trị.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="copyright">
+        © 2024 Quản Trị Shop. All rights reserved.<br>
+        Phần mềm được phát triển bởi nhóm Đồ Án Tốt Nghiệp.
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
