@@ -20,9 +20,8 @@ public interface DonHangService {
     // trang chu
     Long countByTrangThai(String tenTrangThai);
 
-
-
-//    // in pdf
-//    List<DonHangDto> getOrderDtosByIds(List<Integer> ids);
-//    ByteArrayOutputStream generateOrdersPDFByDto(List<DonHangDto> donHangs);
+    // in pdf
+    List<DonHangDto> getOrderDtosByIds(List<Integer> ids);
+    ByteArrayOutputStream generateOrdersPDFByDto(List<DonHangDto> donHangs);
+    ByteArrayOutputStream generateInvoicePDF(Integer orderId);
 }

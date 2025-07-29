@@ -20,8 +20,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     org.springframework.data.domain.Page<SanPham> findByDanhMuc_IdAndThuongHieu_Id(Integer danhMucId, Integer thuongHieuId, org.springframework.data.domain.Pageable pageable);
     org.springframework.data.domain.Page<SanPham> findByDanhMuc_Id(Integer danhMucId, org.springframework.data.domain.Pageable pageable);
     org.springframework.data.domain.Page<SanPham> findByThuongHieu_Id(Integer thuongHieuId, org.springframework.data.domain.Pageable pageable);
-    java.util.List<SanPham> findByDeletedFalse();
-    org.springframework.data.domain.Page<SanPham> findByDeletedFalse(org.springframework.data.domain.Pageable pageable);
     @Query("SELECT s FROM SanPham s WHERE LOWER(s.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(s.maSanPham) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<SanPham> searchByTenOrMa(@Param("keyword") String keyword, Pageable pageable);
 }

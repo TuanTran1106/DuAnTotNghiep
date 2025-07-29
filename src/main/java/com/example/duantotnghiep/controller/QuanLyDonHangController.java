@@ -45,21 +45,32 @@ public class QuanLyDonHangController {
         return donHangService.getOrderProducts(id);
     }
 
-//    @GetMapping("/quan-ly/don-hang/print")
-//    public void printOrdersToPDF(@RequestParam("ids") String ids, HttpServletResponse response) throws IOException {
-//        List<Integer> idList = Arrays.stream(ids.split(","))
-//                .map(String::trim)
-//                .filter(s -> !s.isEmpty())
-//                .map(Integer::parseInt)
-//                .collect(Collectors.toList());
-//        List<DonHangDto> donHangs = donHangService.getOrderDtosByIds(idList);
-//        ByteArrayOutputStream baos = donHangService.generateOrdersPDFByDto(donHangs);
-//
-//        response.setContentType("application/pdf");
-//        response.setHeader("Content-Disposition", "attachment; filename=orders.pdf");
-//        response.setContentLength(baos.size());
-//        baos.writeTo(response.getOutputStream());
-//        response.getOutputStream().flush();
-//    }
+    @GetMapping("/quan-ly/don-hang/print")
+    public void printOrdersToPDF(@RequestParam("ids") String ids, HttpServletResponse response) throws IOException {
+        List<Integer> idList = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        List<DonHangDto> donHangs = donHangService.getOrderDtosByIds(idList);
+        ByteArrayOutputStream baos = donHangService.generateOrdersPDFByDto(donHangs);
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=hoa-don-don-hang.pdf");
+        response.setContentLength(baos.size());
+        baos.writeTo(response.getOutputStream());
+        response.getOutputStream().flush();
+    }
+
+    @GetMapping("/quan-ly/don-hang/{id}/invoice")
+    public void printInvoicePDF(@PathVariable Integer id, HttpServletResponse response) throws IOException {
+        ByteArrayOutputStream baos = donHangService.generateInvoicePDF(id);
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=invoice-" + id + ".pdf");
+        response.setContentLength(baos.size());
+        baos.writeTo(response.getOutputStream());
+        response.getOutputStream().flush();
+    }
 
 }

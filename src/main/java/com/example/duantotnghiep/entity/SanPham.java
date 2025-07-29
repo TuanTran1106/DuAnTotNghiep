@@ -61,9 +61,6 @@ public class SanPham {
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
 
-    @Column(name = "deleted")
-    private Boolean deleted = false;
-
     @Transient
     private List<SanPhamChiTiet> chiTietList;
 
@@ -99,9 +96,6 @@ public class SanPham {
 
     public DanhMuc getDanhMuc() { return danhMuc; }
     public void setDanhMuc(DanhMuc danhMuc) { this.danhMuc = danhMuc; }
-
-    public Boolean getDeleted() { return deleted; }
-    public void setDeleted(Boolean deleted) { this.deleted = deleted; }
 
     public List<SanPhamChiTiet> getChiTietList() { return chiTietList; }
     public void setChiTietList(List<SanPhamChiTiet> chiTietList) { this.chiTietList = chiTietList; }
