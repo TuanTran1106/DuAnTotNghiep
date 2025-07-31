@@ -79,29 +79,44 @@
                     <img id="preview" src="#" alt="Preview" style="display:none; max-width:120px; margin-top:10px;"/>
                 </div>
                 <hr />
-                <h5 class="mb-3">Thông tin chi tiết sản phẩm</h5>
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Màu sắc:</label>
-                        <input type="text" name="mauSac" class="form-control" required />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Kích thước:</label>
-                        <input type="text" name="kichThuoc" class="form-control" required />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Chất liệu:</label>
-                        <input type="text" name="chatLieu" class="form-control" required />
-                    </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Biến thể sản phẩm</h5>
+                    <button type="button" class="btn btn-success btn-sm" onclick="addVariant()">
+                        <i class="bi bi-plus-circle"></i> Thêm biến thể
+                    </button>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Số lượng:</label>
-                        <input type="number" name="soLuong" class="form-control" min="0" required />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Giá bán:</label>
-                        <input type="number" name="gia_ban" class="form-control" min="0" step="0.01" required />
+                
+                <div id="variantContainer">
+                    <!-- Biến thể đầu tiên -->
+                    <div class="variant-item border rounded p-3 mb-3" data-variant-index="0">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0 text-primary">Biến thể #1</h6>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeVariant(0)" style="display: none;">
+                                <i class="bi bi-trash"></i> Xóa
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Màu sắc:</label>
+                                <input type="text" name="variants[0].mauSac" class="form-control" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Kích thước:</label>
+                                <input type="text" name="variants[0].kichThuoc" class="form-control" required />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Chất liệu:</label>
+                                <input type="text" name="variants[0].chatLieu" class="form-control" required />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Số lượng:</label>
+                                <input type="number" name="variants[0].soLuong" class="form-control" min="0" required />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Giá bán:</label>
+                                <input type="number" name="variants[0].giaBan" class="form-control" min="0" step="0.01" required />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between">
@@ -252,15 +267,114 @@ const fileInput = document.querySelector('input[type="file"][name="file"]');
 if (fileInput) {
     fileInput.addEventListener('change', function(e) {
         if (this.files && this.files[0]) {
-            const reader = new FileReader();
+            var reader = new FileReader();
             reader.onload = function(ev) {
-                document.getElementById('preview-img').src = ev.target.result;
-                document.getElementById('preview-img').style.display = 'block';
-                document.getElementById('selectedImage').value = '';
+                document.getElementById('preview').src = ev.target.result;
+                document.getElementById('preview').style.display = 'block';
             };
             reader.readAsDataURL(this.files[0]);
         }
     });
+}
+
+// Quản lý biến thể sản phẩm
+let variantCount = 1;
+
+function addVariant() {
+    const container = document.getElementById('variantContainer');
+    const newVariant = document.createElement('div');
+    newVariant.className = 'variant-item border rounded p-3 mb-3';
+    newVariant.setAttribute('data-variant-index', variantCount);
+    
+    newVariant.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-primary">Biến thể #${variantCount + 1}</h6>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeVariant(${variantCount})">
+                <i class="bi bi-trash"></i> Xóa
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label class="form-label">Màu sắc:</label>
+                <input type="text" name="variants[${variantCount}].mauSac" class="form-control" required />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Kích thước:</label>
+                <input type="text" name="variants[${variantCount}].kichThuoc" class="form-control" required />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Chất liệu:</label>
+                <input type="text" name="variants[${variantCount}].chatLieu" class="form-control" required />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Số lượng:</label>
+                <input type="number" name="variants[${variantCount}].soLuong" class="form-control" min="0" required />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Giá bán:</label>
+                <input type="number" name="variants[${variantCount}].giaBan" class="form-control" min="0" step="0.01" required />
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(newVariant);
+    variantCount++;
+    
+    // Hiển thị nút xóa cho biến thể đầu tiên nếu có nhiều hơn 1 biến thể
+    updateDeleteButtons();
+}
+
+function removeVariant(index) {
+    const variant = document.querySelector(`[data-variant-index="${index}"]`);
+    if (variant) {
+        variant.remove();
+        updateDeleteButtons();
+        reindexVariants();
+    }
+}
+
+function updateDeleteButtons() {
+    const variants = document.querySelectorAll('.variant-item');
+    const firstVariantDeleteBtn = variants[0]?.querySelector('.btn-outline-danger');
+    
+    if (variants.length > 1) {
+        if (firstVariantDeleteBtn) {
+            firstVariantDeleteBtn.style.display = 'inline-block';
+        }
+    } else {
+        if (firstVariantDeleteBtn) {
+            firstVariantDeleteBtn.style.display = 'none';
+        }
+    }
+}
+
+function reindexVariants() {
+    const variants = document.querySelectorAll('.variant-item');
+    variants.forEach((variant, index) => {
+        variant.setAttribute('data-variant-index', index);
+        
+        // Cập nhật tiêu đề
+        const title = variant.querySelector('h6');
+        title.textContent = `Biến thể #${index + 1}`;
+        
+        // Cập nhật name attributes
+        const inputs = variant.querySelectorAll('input');
+        inputs.forEach(input => {
+            const name = input.getAttribute('name');
+            if (name && name.includes('variants[')) {
+                const newName = name.replace(/variants\[\d+\]/, `variants[${index}]`);
+                input.setAttribute('name', newName);
+            }
+        });
+        
+        // Cập nhật onclick cho nút xóa
+        const deleteBtn = variant.querySelector('.btn-outline-danger');
+        if (deleteBtn) {
+            deleteBtn.setAttribute('onclick', `removeVariant(${index})`);
+        }
+    });
+    
+    variantCount = variants.length;
 }
 </script>
   </body>

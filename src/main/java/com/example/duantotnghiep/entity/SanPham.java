@@ -16,6 +16,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "san_pham")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,42 +65,10 @@ public class SanPham {
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
 
+    @Column(name = "deleted")
+    private Boolean deleted = false;
+
     @Transient
     private List<SanPhamChiTiet> chiTietList;
 
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-
-    public String getMaSanPham() { return maSanPham; }
-    public void setMaSanPham(String maSanPham) { this.maSanPham = maSanPham; }
-
-    public String getTenSanPham() { return tenSanPham; }
-    public void setTenSanPham(String tenSanPham) { this.tenSanPham = tenSanPham; }
-
-    public String getHinhAnh() { return hinhAnh; }
-    public void setHinhAnh(String hinhAnh) { this.hinhAnh = hinhAnh; }
-
-    public BigDecimal getGiaNhap() { return giaNhap; }
-    public void setGiaNhap(BigDecimal giaNhap) { this.giaNhap = giaNhap; }
-
-    public LocalDateTime getNgayNhap() { return ngayNhap; }
-    public void setNgayNhap(LocalDateTime ngayNhap) { this.ngayNhap = ngayNhap; }
-
-    public LocalDateTime getNgaySua() { return ngaySua; }
-    public void setNgaySua(LocalDateTime ngaySua) { this.ngaySua = ngaySua; }
-
-    public String getMoTa() { return moTa; }
-    public void setMoTa(String moTa) { this.moTa = moTa; }
-
-    public Boolean getTrangThai() { return trangThai; }
-    public void setTrangThai(Boolean trangThai) { this.trangThai = trangThai; }
-
-    public ThuongHieu getThuongHieu() { return thuongHieu; }
-    public void setThuongHieu(ThuongHieu thuongHieu) { this.thuongHieu = thuongHieu; }
-
-    public DanhMuc getDanhMuc() { return danhMuc; }
-    public void setDanhMuc(DanhMuc danhMuc) { this.danhMuc = danhMuc; }
-
-    public List<SanPhamChiTiet> getChiTietList() { return chiTietList; }
-    public void setChiTietList(List<SanPhamChiTiet> chiTietList) { this.chiTietList = chiTietList; }
 }

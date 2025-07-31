@@ -1,22 +1,14 @@
 package com.example.duantotnghiep.service.impl;
 
 import com.example.duantotnghiep.dto.DashboardThongKeDto;
-import com.example.duantotnghiep.entity.ThongKeDoanhThu;
 import com.example.duantotnghiep.repository.ThongKeDoanhThuRepository;
-import com.example.duantotnghiep.repository.DonHangRepository;
-import com.example.duantotnghiep.repository.SanPhamRepository;
-import com.example.duantotnghiep.repository.ChiTietDonHangRepository;
 import com.example.duantotnghiep.service.ThongKeDoanhThuService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
-import com.example.duantotnghiep.dto.ThongKeDoanhThuDto;
 
 @Service
 @AllArgsConstructor
