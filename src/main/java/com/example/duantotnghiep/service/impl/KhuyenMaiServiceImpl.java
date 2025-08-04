@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -40,9 +41,45 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
 
     @Override
     public KhuyenMai saveKhuyenMai(KhuyenMai khuyenMai) {
+        // Business validation
+        validateKhuyenMai(khuyenMai);
+        
         khuyenMaiRepository.save(khuyenMai);
         khuyenMai.setMaKhuyenMai("KM0" + khuyenMai.getId());
         return khuyenMaiRepository.save(khuyenMai);
+    }
+    
+    /**
+     * Validate business rules for KhuyenMai
+     */
+    private void validateKhuyenMai(KhuyenMai khuyenMai) {
+        LocalDate today = LocalDate.now();
+        
+        // Kiểm tra ngày bắt đầu không được là quá khứ
+        if (khuyenMai.getNgayBatDau() != null && khuyenMai.getNgayBatDau().isBefore(today)) {
+            throw new IllegalArgumentException("Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
+        }
+        
+        // Kiểm tra ngày kết thúc không được là quá khứ
+        if (khuyenMai.getNgayKetThuc() != null && khuyenMai.getNgayKetThuc().isBefore(today)) {
+            throw new IllegalArgumentException("Ngày kết thúc không được là quá khứ. Vui lòng chọn ngày trong tương lai.");
+        }
+        
+        // Kiểm tra ngày bắt đầu phải trước ngày kết thúc
+        if (khuyenMai.getNgayBatDau() != null && khuyenMai.getNgayKetThuc() != null && 
+            khuyenMai.getNgayBatDau().isAfter(khuyenMai.getNgayKetThuc())) {
+            throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc.");
+        }
+        
+        // Kiểm tra số lượng phải dương
+        if (khuyenMai.getSoLuong() != null && khuyenMai.getSoLuong() <= 0) {
+            throw new IllegalArgumentException("Số lượng phải lớn hơn 0.");
+        }
+        
+        // Kiểm tra mức giảm giá phải dương
+        if (khuyenMai.getMucGiamGia() != null && khuyenMai.getMucGiamGia().doubleValue() <= 0) {
+            throw new IllegalArgumentException("Mức giảm giá phải lớn hơn 0.");
+        }
     }
 
     @Override

@@ -5,11 +5,15 @@ import com.example.duantotnghiep.entity.NhanVien;
 import com.example.duantotnghiep.entity.Voucher;
 import com.example.duantotnghiep.service.NhanVienService;
 import com.example.duantotnghiep.service.VoucherService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,9 +45,47 @@ public class VoucherController {
         model.addAttribute("voucher", new Voucher());
         return "quan-tri/voucher-add";
     }
+    
     @PostMapping("/save")
-    public String saveVoucher(@ModelAttribute("voucher") Voucher voucher) {
-        voucherService.saveVoucher(voucher);
+    public String saveVoucher(@Valid @ModelAttribute("voucher") Voucher voucher, 
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
+        // Kiểm tra Bean Validation errors
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(error -> {
+                errorMessage.append(error.getDefaultMessage()).append(" ");
+            });
+            redirectAttributes.addFlashAttribute("error", errorMessage.toString().trim());
+            return "redirect:/voucher/add";
+        }
+        
+        // Custom validation logic
+        if (voucher.getNgayKetThuc() != null && voucher.getNgayKetThuc().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("error", "Ngày kết thúc không được là quá khứ. Vui lòng chọn ngày trong tương lai.");
+            return "redirect:/voucher/add";
+        }
+        
+        // Validation: Kiểm tra ngày bắt đầu phải trước ngày kết thúc
+        if (voucher.getNgayBatDau() != null && voucher.getNgayKetThuc() != null && 
+            voucher.getNgayBatDau().isAfter(voucher.getNgayKetThuc())) {
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu phải trước ngày kết thúc.");
+            return "redirect:/voucher/add";
+        }
+        
+        // Validation: Kiểm tra ngày bắt đầu không được là quá khứ
+        if (voucher.getNgayBatDau() != null && voucher.getNgayBatDau().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
+            return "redirect:/voucher/add";
+        }
+        
+        try {
+            voucherService.saveVoucher(voucher);
+            redirectAttributes.addFlashAttribute("success", "Voucher đã được lưu thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi lưu voucher: " + e.getMessage());
+        }
+        
         return "redirect:/voucher";
     }
 
@@ -88,5 +130,59 @@ public class VoucherController {
         model.addAttribute("hasPrevious", pageResponse.isHasPrevious());
         model.addAttribute("keyword", keyword);
         return "/quan-tri/voucher";
+    }
+    
+    /**
+     * REST API để validate ngày real-time
+     */
+    @PostMapping("/api/validate-dates")
+    @ResponseBody
+    public Map<String, Object> validateDates(@RequestBody Map<String, String> request) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+        
+        String ngayBatDauStr = request.get("ngayBatDau");
+        String ngayKetThucStr = request.get("ngayKetThuc");
+        
+        LocalDate today = LocalDate.now();
+        
+        if (ngayBatDauStr != null && !ngayBatDauStr.isEmpty()) {
+            try {
+                LocalDate ngayBatDau = LocalDate.parse(ngayBatDauStr);
+                if (ngayBatDau.isBefore(today)) {
+                    errors.put("ngayBatDau", "Ngày bắt đầu không được là quá khứ");
+                }
+            } catch (Exception e) {
+                errors.put("ngayBatDau", "Ngày bắt đầu không hợp lệ");
+            }
+        }
+        
+        if (ngayKetThucStr != null && !ngayKetThucStr.isEmpty()) {
+            try {
+                LocalDate ngayKetThuc = LocalDate.parse(ngayKetThucStr);
+                if (ngayKetThuc.isBefore(today)) {
+                    errors.put("ngayKetThuc", "Ngày kết thúc không được là quá khứ");
+                }
+                
+                // Kiểm tra ngày kết thúc phải sau ngày bắt đầu
+                if (ngayBatDauStr != null && !ngayBatDauStr.isEmpty()) {
+                    try {
+                        LocalDate ngayBatDau = LocalDate.parse(ngayBatDauStr);
+                        if (ngayKetThuc.isBefore(ngayBatDau) || ngayKetThuc.isEqual(ngayBatDau)) {
+                            errors.put("ngayKetThuc", "Ngày kết thúc phải sau ngày bắt đầu");
+                        }
+                    } catch (Exception e) {
+                        // Ignore if ngayBatDau is invalid
+                    }
+                }
+            } catch (Exception e) {
+                errors.put("ngayKetThuc", "Ngày kết thúc không hợp lệ");
+            }
+        }
+        
+        response.put("valid", errors.isEmpty());
+        response.put("errors", errors);
+        
+        return response;
     }
 }

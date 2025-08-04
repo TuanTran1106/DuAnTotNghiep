@@ -369,6 +369,18 @@
     </div>
 
     <div class="form-body">
+        <!-- Hiển thị thông báo lỗi -->
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <span th:text="${error}"></span>
+        </div>
+        
+        <!-- Hiển thị thông báo thành công -->
+        <div th:if="${success}" class="alert alert-success">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        
         <div class="employee-info">
             <i class="fa-solid fa-user-edit"></i>
             Đang cập nhật thông tin cho voucher: <strong th:text="${voucher.tenVoucher}"></strong>
@@ -396,8 +408,8 @@
                         Kiểu Giảm <span class="required">*</span>
                     </label>
                     <select id="kieuGiam" th:field="*{kieuGiam}" class="form-select" required>
-                        <option th:value="true">Tiền Mặt</option>
-                        <option th:value="false">Phần Trăm</option>
+                        <option th:value="true" th:text="'Phần Trăm'"></option>
+                        <option th:value="false" th:text="'Tiền Mặt'"></option>
                     </select>
                 </div>
 
@@ -457,8 +469,10 @@
                            id="soLuongCon"
                            th:field="*{soLuongCon}"
                            class="form-input"
-                           placeholder="Nhập số Lượng còn lại"
-                           required />
+                           placeholder="Tự động cập nhật theo số lượng"
+                           readonly
+                           style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;" />
+                    <small style="color: #666; font-size: 12px;">Sẽ tự động cập nhật theo số lượng mới</small>
                 </div>
             </div>
 
@@ -468,9 +482,9 @@
                 </label>
                 <input type="date"
                        id="ngayBatDau"
-                       th:field="*{ngayBatDau}"
+                       th:value="${voucher.ngayBatDau != null ? #temporals.format(voucher.ngayBatDau, 'yyyy-MM-dd') : ''}"
+                       name="ngayBatDau"
                        class="form-input"
-                       placeholder=" "
                        required />
             </div>
 
@@ -480,9 +494,9 @@
                 </label>
                 <input type="date"
                        id="ngayKetThuc"
-                       th:field="*{ngayKetThuc}"
+                       th:value="${voucher.ngayKetThuc != null ? #temporals.format(voucher.ngayKetThuc, 'yyyy-MM-dd') : ''}"
+                       name="ngayKetThuc"
                        class="form-input"
-                       placeholder=" "
                        required />
             </div>
             </div>
@@ -519,7 +533,48 @@
 
 
 <script>
+    // Form submission with loading and validation
     document.getElementById('updateForm').addEventListener('submit', function(e) {
+        // Validation ngày
+        const ngayBatDau = document.getElementById('ngayBatDau').value;
+        const ngayKetThuc = document.getElementById('ngayKetThuc').value;
+        const today = new Date().toISOString().split('T')[0]; // Lấy ngày hôm nay
+
+        let hasError = false;
+        let errorMessage = '';
+
+        // Kiểm tra ngày bắt đầu không được là quá khứ
+        if (ngayBatDau && ngayBatDau < today) {
+            errorMessage += 'Ngày bắt đầu không được là quá khứ. ';
+            document.getElementById('ngayBatDau').style.borderColor = '#dc3545';
+            hasError = true;
+        } else if (ngayBatDau) {
+            document.getElementById('ngayBatDau').style.borderColor = '#28a745';
+        }
+
+        // Kiểm tra ngày kết thúc không được là quá khứ
+        if (ngayKetThuc && ngayKetThuc < today) {
+            errorMessage += 'Ngày kết thúc không được là quá khứ. ';
+            document.getElementById('ngayKetThuc').style.borderColor = '#dc3545';
+            hasError = true;
+        } else if (ngayKetThuc) {
+            document.getElementById('ngayKetThuc').style.borderColor = '#28a745';
+        }
+
+        // Kiểm tra ngày bắt đầu phải trước ngày kết thúc
+        if (ngayBatDau && ngayKetThuc && ngayBatDau > ngayKetThuc) {
+            errorMessage += 'Ngày bắt đầu phải trước ngày kết thúc. ';
+            document.getElementById('ngayBatDau').style.borderColor = '#dc3545';
+            document.getElementById('ngayKetThuc').style.borderColor = '#dc3545';
+            hasError = true;
+        }
+
+        if (hasError) {
+            e.preventDefault();
+            alert('Lỗi validation: ' + errorMessage);
+            return false;
+        }
+
         const submitBtn = document.getElementById('submitBtn');
         const btnText = submitBtn.querySelector('.btn-text');
         const loading = submitBtn.querySelector('.loading');
@@ -530,7 +585,59 @@
         submitBtn.disabled = true;
     });
 
-    // Validation
+    // Validation real-time cho ngày sử dụng API
+    function validateDates() {
+        const ngayBatDau = document.getElementById('ngayBatDau').value;
+        const ngayKetThuc = document.getElementById('ngayKetThuc').value;
+
+        if (!ngayBatDau && !ngayKetThuc) return;
+
+        fetch('/voucher/api/validate-dates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ngayBatDau: ngayBatDau,
+                ngayKetThuc: ngayKetThuc
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Reset styles
+            document.getElementById('ngayBatDau').style.borderColor = '#28a745';
+            document.getElementById('ngayKetThuc').style.borderColor = '#28a745';
+
+            if (!data.valid) {
+                const errors = data.errors;
+
+                if (errors.ngayBatDau) {
+                    document.getElementById('ngayBatDau').style.borderColor = '#dc3545';
+                    document.getElementById('ngayBatDau').setCustomValidity(errors.ngayBatDau);
+                } else {
+                    document.getElementById('ngayBatDau').setCustomValidity('');
+                }
+
+                if (errors.ngayKetThuc) {
+                    document.getElementById('ngayKetThuc').style.borderColor = '#dc3545';
+                    document.getElementById('ngayKetThuc').setCustomValidity(errors.ngayKetThuc);
+                } else {
+                    document.getElementById('ngayKetThuc').setCustomValidity('');
+                }
+            } else {
+                document.getElementById('ngayBatDau').setCustomValidity('');
+                document.getElementById('ngayKetThuc').setCustomValidity('');
+            }
+        })
+        .catch(error => {
+            console.error('Error validating dates:', error);
+        });
+    }
+
+    document.getElementById('ngayBatDau').addEventListener('change', validateDates);
+    document.getElementById('ngayKetThuc').addEventListener('change', validateDates);
+
+    // Validation cho các trường khác
     document.querySelectorAll('.form-input, .form-select').forEach(input => {
         input.addEventListener('blur', function() {
             if (this.hasAttribute('required') && !this.value.trim()) {
@@ -548,6 +655,22 @@
                 this.style.boxShadow = '0 0 0 3px rgba(25, 118, 210, 0.1)';
             }
         });
+    });
+
+    // Set min date cho input ngày
+    window.addEventListener('load', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('ngayBatDau').setAttribute('min', today);
+        document.getElementById('ngayKetThuc').setAttribute('min', today);
+    });
+    
+    // Tự động cập nhật số lượng còn lại khi thay đổi số lượng
+    document.getElementById('soLuong').addEventListener('input', function() {
+        const soLuong = this.value;
+        const soLuongCon = document.getElementById('soLuongCon');
+        if (soLuong && !isNaN(soLuong)) {
+            soLuongCon.value = soLuong;
+        }
     });
 
     // Delete confirmation modal
