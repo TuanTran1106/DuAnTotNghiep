@@ -319,6 +319,13 @@
         .loading.active {
             display: block;
         }
+        .link {
+            color: #7f8c8d;
+            text-decoration: none;
+        }
+        .link:hover{
+            text-decoration: underline;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -435,7 +442,7 @@
             <h1 id="pageTitle">Trang chủ</h1>
             <div class="breadcrumb">
                 <i class="fas fa-home"></i>
-                <a th:href="@{/quan-tri/trang-chu}">Quản trị</a> /
+                <a class="link" th:href="@{/quan-ly}">Quản trị</a> /
                 <a id="breadcrumbText">Trang chủ</a>
             </div>
         </div>

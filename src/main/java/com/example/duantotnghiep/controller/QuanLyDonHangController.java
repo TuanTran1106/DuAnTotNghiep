@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class QuanLyDonHangController {
     private final DonHangService donHangService;
 
-    @PatchMapping("/api/{id}/next-status")
+    @PatchMapping("quan-ly/don-hang/api/{id}/next-status")
     @ResponseBody
     public boolean nextOrderStatus(@PathVariable Integer id) {
         return donHangService.nextOrderStatus(id);

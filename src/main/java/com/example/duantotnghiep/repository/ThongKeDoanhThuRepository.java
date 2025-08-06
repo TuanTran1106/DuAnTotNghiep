@@ -1,6 +1,5 @@
 package com.example.duantotnghiep.repository;
 
-import com.example.duantotnghiep.dto.DashboardThongKeDto;
 import com.example.duantotnghiep.dto.SanPhamBanChayDto;
 import com.example.duantotnghiep.dto.ThongKeDoanhThuDto;
 import com.example.duantotnghiep.entity.ThongKeDoanhThu;
@@ -10,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
