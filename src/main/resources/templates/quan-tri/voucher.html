@@ -638,14 +638,13 @@
                     <td><strong th:text="${voucher.tenVoucher}"></strong></td>
                     <td th:text="${voucher.moTa}"></td>
                     <td>
-                        <span th:if="${voucher.kieuGiam}" class="badge badge-primary">Phần trăm</span>
-                        <span th:unless="${voucher.kieuGiam}" class="badge badge-secondary">Tiền mặt</span>
+                        <span th:text="${voucher.kieuGiam} ? 'Phần trăm' : 'Tiền mặt'"></span>
                     </td>
-                    <td th:text="${voucher.mucGiam}"></td>
+                    <td>  <span th:text="${voucher.kieuGiam} ? ${voucher.mucGiam} + ' %' : ${#numbers.formatDecimal(voucher.mucGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span></td>
                     <td th:text="${voucher.soLuong}"></td>
                     <td th:text="${voucher.soLuongCon}"></td>
-                    <td th:text="${#temporals.format(voucher.ngayBatDau, 'dd/MM/yyyy')}"></td>
-                    <td th:text="${#temporals.format(voucher.ngayKetThuc, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${voucher.ngayBatDau != null ? #temporals.format(voucher.ngayBatDau, 'dd/MM/yyyy') : ''}"></td>
+                    <td th:text="${voucher.ngayKetThuc != null ? #temporals.format(voucher.ngayKetThuc, 'dd/MM/yyyy') : ''}"></td>
                     <td th:text="${voucher.dieuKienToiThieu}"></td>
                     <td>
                         <select class="status-select" th:attr="onchange=|updateTrangThai(this, '${voucher.id}')|">

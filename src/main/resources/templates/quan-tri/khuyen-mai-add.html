@@ -290,9 +290,21 @@
     </div>
 
     <div class="form-body">
+        <!-- Hiển thị thông báo lỗi -->
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <span th:text="${error}"></span>
+        </div>
+        
+        <!-- Hiển thị thông báo thành công -->
+        <div th:if="${success}" class="alert alert-success">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        
         <div class="form-note">
             <i class="fa-solid fa-info-circle"></i>
-            Vui lòng điền đầy đủ thông tin bắt buộc để tạo tài khoản nhân viên mới.
+            Vui lòng điền đầy đủ thông tin bắt buộc để tạo khuyến mãi mới. Ngày kết thúc phải là tương lai.
         </div>
 
         <form th:action="@{/khuyen-mai/save}" th:object="${khuyenMai}" method="post" id="updateForm">
@@ -401,6 +413,7 @@
                        min="0"
                        step="0.01"
                        required />
+                <span id="donVi" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666; font-weight: 600;">VND</span>
             </div>
 
             <div class="form-group">
@@ -434,7 +447,47 @@
 </div>
 
 <script>
-    document.getElementById('employeeForm').addEventListener('submit', function(e) {
+    document.getElementById('updateForm').addEventListener('submit', function(e) {
+        // Validation ngày
+        const ngayBatDau = document.getElementById('ngayBatDau').value;
+        const ngayKetThuc = document.getElementById('ngayKetThuc').value;
+        const today = new Date().toISOString().split('T')[0]; // Lấy ngày hôm nay
+        
+        let hasError = false;
+        let errorMessage = '';
+        
+        // Kiểm tra ngày bắt đầu không được là quá khứ
+        if (ngayBatDau && ngayBatDau < today) {
+            errorMessage += 'Ngày bắt đầu không được là quá khứ. ';
+            document.getElementById('ngayBatDau').style.borderColor = '#dc3545';
+            hasError = true;
+        } else if (ngayBatDau) {
+            document.getElementById('ngayBatDau').style.borderColor = '#28a745';
+        }
+        
+        // Kiểm tra ngày kết thúc không được là quá khứ
+        if (ngayKetThuc && ngayKetThuc < today) {
+            errorMessage += 'Ngày kết thúc không được là quá khứ. ';
+            document.getElementById('ngayKetThuc').style.borderColor = '#dc3545';
+            hasError = true;
+        } else if (ngayKetThuc) {
+            document.getElementById('ngayKetThuc').style.borderColor = '#28a745';
+        }
+        
+        // Kiểm tra ngày bắt đầu phải trước ngày kết thúc
+        if (ngayBatDau && ngayKetThuc && ngayBatDau > ngayKetThuc) {
+            errorMessage += 'Ngày bắt đầu phải trước ngày kết thúc. ';
+            document.getElementById('ngayBatDau').style.borderColor = '#dc3545';
+            document.getElementById('ngayKetThuc').style.borderColor = '#dc3545';
+            hasError = true;
+        }
+        
+        if (hasError) {
+            e.preventDefault();
+            alert('Lỗi validation: ' + errorMessage);
+            return false;
+        }
+        
         const submitBtn = document.getElementById('submitBtn');
         const btnText = submitBtn.querySelector('.btn-text');
         const loading = submitBtn.querySelector('.loading');
@@ -445,7 +498,59 @@
         submitBtn.disabled = true;
     });
 
-    // Validation
+    // Validation real-time cho ngày sử dụng API
+    function validateDates() {
+        const ngayBatDau = document.getElementById('ngayBatDau').value;
+        const ngayKetThuc = document.getElementById('ngayKetThuc').value;
+        
+        if (!ngayBatDau && !ngayKetThuc) return;
+        
+        fetch('/khuyen-mai/api/validate-dates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ngayBatDau: ngayBatDau,
+                ngayKetThuc: ngayKetThuc
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Reset styles
+            document.getElementById('ngayBatDau').style.borderColor = '#28a745';
+            document.getElementById('ngayKetThuc').style.borderColor = '#28a745';
+            
+            if (!data.valid) {
+                const errors = data.errors;
+                
+                if (errors.ngayBatDau) {
+                    document.getElementById('ngayBatDau').style.borderColor = '#dc3545';
+                    document.getElementById('ngayBatDau').setCustomValidity(errors.ngayBatDau);
+                } else {
+                    document.getElementById('ngayBatDau').setCustomValidity('');
+                }
+                
+                if (errors.ngayKetThuc) {
+                    document.getElementById('ngayKetThuc').style.borderColor = '#dc3545';
+                    document.getElementById('ngayKetThuc').setCustomValidity(errors.ngayKetThuc);
+                } else {
+                    document.getElementById('ngayKetThuc').setCustomValidity('');
+                }
+            } else {
+                document.getElementById('ngayBatDau').setCustomValidity('');
+                document.getElementById('ngayKetThuc').setCustomValidity('');
+            }
+        })
+        .catch(error => {
+            console.error('Error validating dates:', error);
+        });
+    }
+    
+    document.getElementById('ngayBatDau').addEventListener('change', validateDates);
+    document.getElementById('ngayKetThuc').addEventListener('change', validateDates);
+
+    // Validation cho các trường khác
     document.querySelectorAll('.form-input, .form-select').forEach(input => {
         input.addEventListener('blur', function() {
             if (this.hasAttribute('required') && !this.value.trim()) {
@@ -463,6 +568,40 @@
                 this.style.boxShadow = '0 0 0 3px rgba(25, 118, 210, 0.1)';
             }
         });
+    });
+    
+    // Set min date cho input ngày
+    window.addEventListener('load', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('ngayBatDau').setAttribute('min', today);
+        document.getElementById('ngayKetThuc').setAttribute('min', today);
+
+        // Set đơn vị ban đầu theo kiểu giảm
+        updateDonVi();
+    });
+
+    // Thay đổi đơn vị theo kiểu giảm
+    function updateDonVi() {
+        const kieuGiam = document.getElementById('kieuGiam').value;
+        const donVi = document.getElementById('donVi');
+
+        if (kieuGiam === 'true') {
+            donVi.textContent = 'VND';
+        } else {
+            donVi.textContent = '%';
+        }
+    }
+
+    // Lắng nghe sự thay đổi kiểu giảm
+    document.getElementById('kieuGiam').addEventListener('change', updateDonVi);
+
+    // Tự động set số lượng còn lại khi nhập số lượng (ẩn trường)
+    document.getElementById('soLuong').addEventListener('input', function() {
+        const soLuong = this.value;
+        const soLuongCon = document.querySelector('input[name="soLuongCon"]');
+        if (soLuong && !isNaN(soLuong)) {
+            soLuongCon.value = soLuong;
+        }
     });
 </script>
 
