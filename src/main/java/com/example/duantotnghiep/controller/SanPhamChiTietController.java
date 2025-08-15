@@ -23,14 +23,14 @@ public class SanPhamChiTietController {
     public String list(Model model) {
         List<SanPhamChiTiet> list = sanPhamChiTietRepository.findAll();
         model.addAttribute("listChiTiet", list);
-        return "quantri/san-pham-chi-tiet";
+        return "quan-tri/san-pham-chi-tiet";
     }
 
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("sanPhamChiTiet", new SanPhamChiTiet());
         model.addAttribute("sanPhamList", sanPhamRepository.findAll());
-        return "quantri/san-pham-chi-tiet-add";
+        return "quan-tri/san-pham-chi-tiet-add";
     }
 
     @PostMapping("/add")
@@ -48,7 +48,7 @@ public class SanPhamChiTietController {
             || chiTiet.getGia_ban() == null ) {
             model.addAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
             model.addAttribute("sanPhamList", sanPhamRepository.findAll());
-            return "quantri/san-pham-chi-tiet-add";
+            return "quan-tri/san-pham-chi-tiet-add";
         }
         sanPhamChiTietRepository.save(chiTiet);
         return "redirect:/san-pham-chi-tiet";
@@ -62,7 +62,7 @@ public class SanPhamChiTietController {
         }
         model.addAttribute("sanPhamChiTiet", chiTiet);
         model.addAttribute("sanPhamList", sanPhamRepository.findAll());
-        return "quantri/san-pham-chi-tiet-add";
+        return "quan-tri/san-pham-chi-tiet-add";
     }
 
     @PostMapping("/edit/{id}")

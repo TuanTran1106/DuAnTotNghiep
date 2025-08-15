@@ -1,27 +1,19 @@
 package com.example.duantotnghiep.controller;
 
 import com.example.duantotnghiep.dto.DashboardThongKeDto;
-import com.example.duantotnghiep.dto.ThongKeDoanhThuDto;
-import com.example.duantotnghiep.entity.ThongKeDoanhThu;
 import com.example.duantotnghiep.service.ThongKeDoanhThuService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.List;
-import java.util.stream.Collectors;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/quan-tri/thong-ke-doanh-thu")

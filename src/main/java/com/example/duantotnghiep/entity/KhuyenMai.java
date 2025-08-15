@@ -10,6 +10,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "khuyen_mai")
@@ -72,5 +73,14 @@ public class KhuyenMai {
         }
         return ngayKetThuc.isAfter(ngayBatDau);
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "san_pham_chi_tiet_khuyen_mai",
+            joinColumns = @JoinColumn(name = "id_khuyen_mai"),
+            inverseJoinColumns = @JoinColumn(name = "id_san_pham_chi_tiet")
+    )
+    private List<SanPhamChiTiet> sanPhamChiTiets;
+
 }
 

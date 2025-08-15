@@ -71,4 +71,6 @@ public class SanPham {
     @Transient
     private List<SanPhamChiTiet> chiTietList;
 
+
+
 }

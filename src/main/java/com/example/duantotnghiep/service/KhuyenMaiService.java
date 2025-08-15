@@ -9,7 +9,7 @@ import java.util.List;
 public interface KhuyenMaiService {
     List<KhuyenMai> getAllKhuyenMai();
     PageResponse<KhuyenMai> getAllKhuyenMaiWithPagination(int page, int size);
-    KhuyenMai saveKhuyenMai(KhuyenMai khuyenMai);
+    KhuyenMai saveKhuyenMai(KhuyenMai khuyenMai, List<Integer> spctIds);
     KhuyenMai getKhuyenMaiById(int id);
     List<KhuyenMai> searchKhuyenMai(String keyword);
     PageResponse<KhuyenMai> searchKhuyenMaiWithPagination(String keyword, int page, int size);

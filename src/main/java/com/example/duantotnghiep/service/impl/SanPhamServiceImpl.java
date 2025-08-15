@@ -119,4 +119,8 @@ public class SanPhamServiceImpl implements SanPhamService {
     public List<SanPhamChiTiet> getChiTietBySanPhamId(Integer sanPhamId) {
         return sanPhamChiTietRepository.findBySanPham_Id(sanPhamId);
     }
+    @Override
+    public List<SanPham> getSanPhamsByIds(List<Integer> ids) {
+        return sanPhamRepository.findAllById(ids);
+    }
 } 

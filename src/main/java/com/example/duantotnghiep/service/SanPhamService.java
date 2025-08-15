@@ -9,6 +9,7 @@ import java.util.List;
 public interface SanPhamService {
     List<SanPham> getAllSanPham();
     SanPham getSanPhamById(Integer id);
+    List<SanPham> getSanPhamsByIds(List<Integer> ids);
     SanPham addSanPham(SanPham sanPham);
     SanPham updateSanPham(Integer id, SanPham sanPham);
     void deleteSanPham(Integer id);
@@ -24,4 +25,5 @@ public interface SanPhamService {
     Page<SanPham> findByDanhMucIdAndThuongHieuId(Integer danhMucId, Integer thuongHieuId, Pageable pageable);
     Page<SanPham> findByDanhMucId(Integer danhMucId, Pageable pageable);
     Page<SanPham> findByThuongHieuId(Integer thuongHieuId, Pageable pageable);
+
 } 
