@@ -31,7 +31,7 @@
                 <td th:text="${ct.kichThuoc}"></td>
                 <td th:text="${ct.chatLieu}"></td>
                 <td th:text="${ct.soLuong}"></td>
-                <td th:text="${ct.gia_ban}"></td>
+                <td class="text-end fw-bold text-success" th:text="${ct.gia_ban != null ? #numbers.formatDecimal(ct.gia_ban, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : ''}"></td>
                 <td th:text="${ct.trang_thai == 1 ? 'Kích hoạt' : 'Không kích hoạt'}"></td>
                 <td>
                     <a th:href="@{'/san-pham-chi-tiet/edit/' + ${ct.id}}" class="btn btn-warning btn-sm">Sửa</a>

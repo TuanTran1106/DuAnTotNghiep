@@ -65,12 +65,7 @@ public class SanPham {
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
 
-    @Column(name = "deleted")
-    private Boolean deleted = false;
-
     @Transient
     private List<SanPhamChiTiet> chiTietList;
-
-
 
 }
