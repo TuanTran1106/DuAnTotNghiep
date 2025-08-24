@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "san_pham_chi_tiet")
@@ -39,4 +40,6 @@ public class SanPhamChiTiet {
     @Column(name = "gia_ban")
     private BigDecimal gia_ban;
 
+    @ManyToMany(mappedBy = "sanPhamChiTiets")
+    private List<KhuyenMai> khuyenMais;
 }

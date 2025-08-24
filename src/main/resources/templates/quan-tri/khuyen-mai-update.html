@@ -358,6 +358,37 @@
             gap: 15px;
             justify-content: center;
         }
+        .product-options {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 200px;       /* Giới hạn chiều cao */
+            overflow-y: auto;        /* Cuộn khi danh sách dài */
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .option-item input[type="checkbox"] {
+            accent-color: #007bff; /* Màu khi chọn */
+            width: 16px;
+            height: 16px;
+        }
+
+        .option-item:hover {
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
     </style>
 </head>
 <body>
@@ -449,6 +480,22 @@
                            class="form-input"
                            required />
                 </div>
+            <div class="form-group">
+                <label class="form-label">
+                    Chọn sản phẩm chi tiết áp dụng <span class="required">*</span>
+                </label>
+                <div class="product-options">
+                    <th:block th:each="spct : ${listSpct}">
+                        <label class="option-item">
+                            <input type="checkbox" name="spctIds"
+                                   th:value="${spct.id}"
+                                   th:checked="${khuyenMai.sanPhamChiTiets.contains(spct)}">
+                            <span th:text="${spct.sanPham.tenSanPham}"></span>
+                        </label>
+                    </th:block>
+                </div>
+            </div>
+
 
 
             <div class="form-row">

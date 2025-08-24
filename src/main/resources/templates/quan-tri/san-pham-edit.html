@@ -1,220 +1,398 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <title>Sửa Sản phẩm</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <meta charset="UTF-8">
+    <title>Sửa Sản Phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body, input, textarea, select, button {
-            font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            background: #f8f9fa;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+        }
+        .variant-section {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+        }
+        .btn-edit {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .btn-edit:hover {
+            background: linear-gradient(45deg, #0056b3, #004085);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
-<body style="background: #f8f9fa;">
-<div class="container py-4">
-    <!-- Hiển thị thông báo thành công/thất bại -->
-    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <span th:text="${message}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h3 class="mb-4">Sửa Sản phẩm</h3>
-            <form th:action="@{'/san-pham/edit/' + ${sanPhamEditDto.sanPham.id}}" th:object="${sanPhamEditDto}" method="post" enctype="multipart/form-data">
-                <!-- Thông tin sản phẩm -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Mã sản phẩm:</label>
-                        <input type="text" th:field="*{sanPham.maSanPham}" class="form-control" readonly />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Tên sản phẩm:</label>
-                        <input type="text" th:field="*{sanPham.tenSanPham}" class="form-control" required />
-                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.tenSanPham')}" th:errors="*{sanPham.tenSanPham}"></div>
-                    </div>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-primary">
+                        <i class="bi bi-pencil-square"></i> Sửa Sản Phẩm
+                    </h2>
+                    <a href="/san-pham" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Giá nhập:</label>
-                        <input type="number" th:field="*{sanPham.giaNhap}" class="form-control" required />
-                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.giaNhap')}" th:errors="*{sanPham.giaNhap}"></div>
+
+                <form th:action="@{/san-pham/edit}" th:object="${sanPhamEditDto}" method="post" enctype="multipart/form-data" id="editForm">
+                    <input type="hidden" th:field="*{sanPham.id}" />
+                    
+                    <!-- Thông tin cơ bản -->
+                    <div class="form-section">
+                        <h4 class="section-title">
+                            <i class="bi bi-info-circle"></i> Thông tin cơ bản
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" th:field="*{sanPham.tenSanPham}" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Mã sản phẩm</label>
+                                <input type="text" class="form-control" th:field="*{sanPham.maSanPham}" readonly />
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                                <select class="form-select" th:field="*{sanPham.danhMuc.id}" required>
+                                    <option value="">Chọn danh mục</option>
+                                    <option th:each="dm : ${danhMucList}" 
+                                            th:value="${dm.id}" 
+                                            th:text="${dm.tenDanhMuc}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Thương hiệu <span class="text-danger">*</span></label>
+                                <select class="form-select" th:field="*{sanPham.thuongHieu.id}" required>
+                                    <option value="">Chọn thương hiệu</option>
+                                    <option th:each="th : ${thuongHieuList}" 
+                                            th:value="${th.id}" 
+                                            th:text="${th.tenThuongHieu}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Giá nhập <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" th:field="*{sanPham.giaNhap}" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Trạng thái</label>
+                                <select class="form-select" th:field="*{sanPham.trangThai}">
+                                    <option value="true">Kích hoạt</option>
+                                    <option value="false">Không kích hoạt</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Mô tả</label>
+                                <textarea class="form-control" rows="3" th:field="*{sanPham.moTa}"></textarea>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Trạng thái:</label>
-                        <select th:field="*{sanPham.trangThai}" class="form-select">
-                            <option value="true">Kích hoạt</option>
-                            <option value="false">Không kích hoạt</option>
-                        </select>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.trangThai')}" th:errors="*{sanPham.trangThai}"></div>
+
+                    <!-- Hình ảnh sản phẩm -->
+                    <div class="form-section">
+                        <h4 class="section-title">
+                            <i class="bi bi-image"></i> Hình ảnh sản phẩm
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Ảnh hiện tại</label>
+                                <div class="image-preview">
+                                    <img th:if="${sanPhamEditDto.sanPham.hinhAnh != null and sanPhamEditDto.sanPham.hinhAnh != ''}" 
+                                         th:src="@{'/uploads/' + ${sanPhamEditDto.sanPham.hinhAnh}}" 
+                                         alt="Ảnh sản phẩm"
+                                         onerror="this.src='/uploads/default.jpg'" />
+                                    <div th:if="${sanPhamEditDto.sanPham.hinhAnh == null or sanPhamEditDto.sanPham.hinhAnh == ''}" 
+                                         class="text-muted">
+                                        <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                        <br>Chưa có ảnh
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Cập nhật ảnh</label>
+                                <div class="mb-3">
+                                    <input type="file" class="form-control" name="imageFile" accept="image/*" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Hoặc chọn ảnh có sẵn:</label>
+                                    <select class="form-select" name="selectedImage">
+                                        <option value="">Chọn ảnh có sẵn</option>
+                                        <option value="dongho5.jpg">Đồng hồ 5</option>
+                                        <option value="Orient.jpg">Orient</option>
+                                        <option value="citizen.jpg">Citizen</option>
+                                        <option value="seiko.jpg">Seiko</option>
+                                        <option value="daniel-wellington.jpg">Daniel Wellington</option>
+                                        <option value="casio.jpg">Casio</option>
+                                        <option value="citizen-2.jpg">Citizen 2</option>
+                                        <option value="seiko2.jpg">Seiko 2</option>
+                                        <option value="daniel-wellington-2.png">Daniel Wellington 2</option>
+                                        <option value="casio2.jpg">Casio 2</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Mô tả:</label>
-                    <textarea th:field="*{sanPham.moTa}" class="form-control"></textarea>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Danh mục:</label>
-                        <select th:field="*{sanPham.danhMuc.id}" class="form-select" required>
-                            <option th:each="dm : ${danhMucList}" th:value="${dm.id}" th:text="${dm.tenDanhMuc}"></option>
-                        </select>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.danhMuc')}" th:errors="*{sanPham.danhMuc}"></div>
+
+                    <!-- Chi tiết hiện tại -->
+                    <div class="form-section" th:if="${chiTiet != null}">
+                        <h4 class="section-title">
+                            <i class="bi bi-gear"></i> Chi tiết hiện tại
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Giá bán</label>
+                                <input type="number" class="form-control" th:field="*{giaBan}" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Số lượng</label>
+                                <input type="number" class="form-control" th:field="*{soLuong}" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Màu sắc</label>
+                                <select class="form-select" th:field="*{mauSac}">
+                                    <option value="">Chọn màu sắc</option>
+                                    <option th:each="mau : ${mauSacList}" th:value="${mau}" th:text="${mau}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Kích thước</label>
+                                <select class="form-select" th:field="*{kichThuoc}">
+                                    <option value="">Chọn kích thước</option>
+                                    <option th:each="size : ${kichThuocList}" th:value="${size}" th:text="${size}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Chất liệu</label>
+                                <select class="form-select" th:field="*{chatLieu}">
+                                    <option value="">Chọn chất liệu</option>
+                                    <option th:each="chat : ${chatLieuList}" th:value="${chat}" th:text="${chat}"></option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Thương hiệu:</label>
-                        <select th:field="*{sanPham.thuongHieu.id}" class="form-select" required>
-                            <option th:each="th : ${thuongHieuList}" th:value="${th.id}" th:text="${th.tenThuongHieu}"></option>
-                        </select>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.thuongHieu')}" th:errors="*{sanPham.thuongHieu}"></div>
+
+                    <!-- Thông báo không có chi tiết -->
+                    <div class="form-section" th:if="${chiTiet == null}">
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Chưa có chi tiết sản phẩm</strong><br>
+                            <small>Bạn có thể thêm chi tiết mới bên dưới</small>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Ảnh hiện tại:</label>
-                    <img th:if="${sanPhamEditDto.sanPham.hinhAnh != null}" th:src="@{'/uploads/' + ${sanPhamEditDto.sanPham.hinhAnh}}" style="max-width:120px; max-height:120px; margin-bottom:10px; display:block;" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Chọn ảnh mới:</label>
-                    <input type="file" id="fileInput" name="file" class="form-control" onchange="previewImage(event)">
-                    <img id="preview" src="#" alt="Preview" style="display:none; max-width:120px; margin-top:10px;"/>
-                    <button type="button" class="btn btn-secondary mt-2" onclick="openImageModal()">Chọn ảnh có sẵn</button>
-                    <input type="hidden" name="selectedImage" id="selectedImage" />
-                </div>
-                <!-- Modal chọn ảnh có sẵn -->
-                <div class="modal fade" id="imageModal" tabindex="-1">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Chọn ảnh có sẵn</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                      </div>
-                      <div class="modal-body" id="image-list" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+
+                    <!-- Thêm chi tiết mới -->
+                    <div class="form-section">
+                        <h4 class="section-title">
+                            <i class="bi bi-plus-circle"></i> Thêm chi tiết mới
+                        </h4>
+                        <div id="variants-container">
+                            <div class="variant-section" th:each="variant, iterStat : *{variants}">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0 text-primary">Chi tiết ${iterStat.index + 1}</h6>
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-variant" onclick="removeVariant(this)">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Giá bán <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" th:field="*{variants[__${iterStat.index}__].giaBan}" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" th:field="*{variants[__${iterStat.index}__].soLuong}" required />
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Màu sắc</label>
+                                        <select class="form-select" th:field="*{variants[__${iterStat.index}__].mauSac}">
+                                            <option value="">Chọn màu sắc</option>
+                                            <option th:each="mau : ${mauSacList}" th:value="${mau}" th:text="${mau}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Kích thước</label>
+                                        <select class="form-select" th:field="*{variants[__${iterStat.index}__].kichThuoc}">
+                                            <option value="">Chọn kích thước</option>
+                                            <option th:each="size : ${kichThuocList}" th:value="${size}" th:text="${size}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Chất liệu</label>
+                                        <select class="form-select" th:field="*{variants[__${iterStat.index}__].chatLieu}">
+                                            <option value="">Chọn chất liệu</option>
+                                            <option th:each="chat : ${chatLieuList}" th:value="${chat}" th:text="${chat}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success" onclick="addVariant()">
+                            <i class="bi bi-plus-circle"></i> Thêm chi tiết
+                        </button>
                     </div>
-                  </div>
-                </div>
-            <!-- Chi tiết sản phẩm -->
-            <h5 class="mt-4 mb-2">Chi tiết sản phẩm</h5>
-            <table class="table table-bordered align-middle text-center shadow-sm">
-                <thead class="table-light">
-                    <tr>
-                        <th>Màu sắc</th>
-                        <th>Kích thước</th>
-                        <th>Chất liệu</th>
-                        <th>Số lượng</th>
-                        <th>Giá bán</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="chiTietTableBody">
-                    <tr th:each="ct, i : ${sanPhamEditDto.chiTietList}">
-                        <td><input type="text" th:name="'chiTietList[' + ${i.index} + '].mauSac'" th:value="${ct.mauSac}" class="form-control" required/></td>
-                        <td><input type="text" th:name="'chiTietList[' + ${i.index} + '].kichThuoc'" th:value="${ct.kichThuoc}" class="form-control" required/></td>
-                        <td><input type="text" th:name="'chiTietList[' + ${i.index} + '].chatLieu'" th:value="${ct.chatLieu}" class="form-control" required/></td>
-                        <td><input type="number" th:name="'chiTietList[' + ${i.index} + '].soLuong'" th:value="${ct.soLuong}" class="form-control" min="0" required/></td>
-                        <td><input type="number" th:name="'chiTietList[' + ${i.index} + '].gia_ban'" th:value="${ct.gia_ban}" class="form-control" min="0" step="0.01" required/></td>
-                        <td>
-                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Xóa</button>
-                        </td>
-                        <input type="hidden" th:name="'chiTietList[' + ${i.index} + '].id'" th:value="${ct.id}" />
-                    </tr>
-                </tbody>
-            </table>
-            <button type="button" class="btn btn-success mb-3" onclick="addRow()">+ Thêm chi tiết</button>
-            <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu</button>
-                <a th:href="@{/san-pham}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Quay lại</a>
+
+                    <!-- Nút lưu -->
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-check-circle"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-function openImageModal() {
-    fetch('/san-pham/list-images')
-        .then(res => res.json())
-        .then(files => {
-            const list = document.getElementById('image-list');
-            list.innerHTML = '';
-            files.forEach(file => {
-                const img = document.createElement('img');
-                img.src = '/uploads/' + file;
-                img.style.width = '80px';
-                img.style.height = '80px';
-                img.style.objectFit = 'cover';
-                img.style.cursor = 'pointer';
-                img.onclick = function() {
-                    document.getElementById('preview').src = img.src;
-                    document.getElementById('preview').style.display = 'block';
-                    document.getElementById('selectedImage').value = file;
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
-                    modal.hide();
-                };
-                list.appendChild(img);
+
+    <script>
+        let variantIndex = 0;
+
+        // Form validation
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang lưu...';
+            submitBtn.disabled = true;
+            
+            // Validate required fields
+            const requiredFields = document.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
             });
-            var modal = new bootstrap.Modal(document.getElementById('imageModal'));
-            modal.show();
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return false;
+            }
+            
+            // Confirm before submit
+            if (!confirm('Bạn có chắc chắn muốn lưu thay đổi?')) {
+                e.preventDefault();
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return false;
+            }
         });
-}
-function previewImage(event) {
-    var input = event.target;
-    var preview = document.getElementById('preview');
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
+
+        function addVariant() {
+            const container = document.getElementById('variants-container');
+            const variantSection = document.createElement('div');
+            variantSection.className = 'variant-section';
+            variantSection.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0 text-primary">Chi tiết ${variantIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-variant" onclick="removeVariant(this)">
+                        <i class="bi bi-trash"></i> Xóa
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Giá bán <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" name="variants[${variantIndex}].giaBan" required min="0" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" name="variants[${variantIndex}].soLuong" required min="0" />
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Màu sắc</label>
+                        <select class="form-select" name="variants[${variantIndex}].mauSac">
+                            <option value="">Chọn màu sắc</option>
+                            <option th:each="mau : ${mauSacList}" th:value="${mau}" th:text="${mau}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Kích thước</label>
+                        <select class="form-select" name="variants[${variantIndex}].kichThuoc">
+                            <option value="">Chọn kích thước</option>
+                            <option th:each="size : ${kichThuocList}" th:value="${size}" th:text="${size}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Chất liệu</label>
+                        <select class="form-select" name="variants[${variantIndex}].chatLieu">
+                            <option value="">Chọn chất liệu</option>
+                            <option th:each="chat : ${chatLieuList}" th:value="${chat}" th:text="${chat}"></option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            container.appendChild(variantSection);
+            variantIndex++;
         }
-        reader.readAsDataURL(input.files[0]);
-    } else {
-        preview.src = '#';
-        preview.style.display = 'none';
-    }
-}
-// Nếu chọn ảnh có sẵn, cũng preview luôn
-function setSelectedImage(fileName) {
-    document.getElementById('selectedImage').value = fileName;
-    var preview = document.getElementById('preview');
-    preview.src = '/uploads/' + fileName;
-    preview.style.display = 'block';
-}
-function showMessage(msg, type = 'success') {
-    var alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger') + ' alert-dismissible fade show';
-    alertDiv.role = 'alert';
-    alertDiv.innerHTML = '<span>' + msg + '</span>' +
-        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-    document.querySelector('.container').prepend(alertDiv);
-    setTimeout(function() { alertDiv.remove(); }, 3000);
-}
-function removeRow(btn) {
-    var row = btn.closest('tr');
-    row.parentNode.removeChild(row);
-    showMessage('Đã xóa chi tiết sản phẩm!', 'success');
-}
-function addRow() {
-    var tbody = document.getElementById('chiTietTableBody');
-    var rowCount = tbody.rows.length;
-    var row = tbody.insertRow();
-    row.innerHTML = `
-        <td><input type="text" name="chiTietList[${rowCount}].mauSac" class="form-control" required/></td>
-        <td><input type="text" name="chiTietList[${rowCount}].kichThuoc" class="form-control" required/></td>
-        <td><input type="text" name="chiTietList[${rowCount}].chatLieu" class="form-control" required/></td>
-        <td><input type="number" name="chiTietList[${rowCount}].soLuong" class="form-control" min="0" required/></td>
-        <td><input type="number" name="chiTietList[${rowCount}].gia_ban" class="form-control" min="0" step="0.01" required/></td>
-        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Xóa</button></td>
-    `;
-    showMessage('Đã thêm dòng chi tiết mới!', 'success');
-}
-</script>
-<script>
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-        new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-</script>
+
+        function removeVariant(button) {
+            if (confirm('Bạn có chắc chắn muốn xóa chi tiết này?')) {
+                button.closest('.variant-section').remove();
+            }
+        }
+
+        // Image preview
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </body>
 </html>

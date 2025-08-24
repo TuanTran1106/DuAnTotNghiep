@@ -2,7 +2,8 @@ package com.example.duantotnghiep.controller;
 
 import com.example.duantotnghiep.dto.PageResponse;
 import com.example.duantotnghiep.entity.KhuyenMai;
-import com.example.duantotnghiep.entity.Voucher;
+import com.example.duantotnghiep.entity.SanPham;
+import com.example.duantotnghiep.repository.SanPhamChiTietRepository;
 import com.example.duantotnghiep.service.KhuyenMaiService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -23,6 +25,9 @@ import java.util.Map;
 public class KhuyenMaiController {
     @Autowired
     private KhuyenMaiService khuyenMaiService;
+
+    @Autowired
+    private SanPhamChiTietRepository spctRepository;
 
     @GetMapping
     public String listKhuyenMai(
@@ -43,11 +48,19 @@ public class KhuyenMaiController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("khuyenMai", new KhuyenMai());
+        model.addAttribute("listSpct", spctRepository.findAll());
         return "quan-tri/khuyen-mai-add";
+    }
+    @PostMapping("/create")
+    public String createKhuyenMai(@ModelAttribute KhuyenMai khuyenMai,
+                                  @RequestParam("spctIds") List<Integer> spctIds) {
+        khuyenMaiService.saveKhuyenMai(khuyenMai, spctIds);
+        return "redirect:/khuyenmai";
     }
     
     @PostMapping("/save")
-    public String saveKhuyenMai(@Valid @ModelAttribute("khuyenMai") KhuyenMai khuyenMai, 
+    public String saveKhuyenMai(@Valid @ModelAttribute("khuyenMai") KhuyenMai khuyenMai,
+                                @RequestParam("spctIds") List<Integer> spctIds,
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes) {
 
@@ -82,9 +95,14 @@ public class KhuyenMaiController {
         if (khuyenMai.getId() == null) { // Thêm mới
             khuyenMai.setNgayTao(LocalDateTime.now());
         }
+        if (khuyenMai.getId() == null) {
+            khuyenMai.setNgayTao(LocalDateTime.now());
+        }
+
+
         
         try {
-            khuyenMaiService.saveKhuyenMai(khuyenMai);
+            khuyenMaiService.saveKhuyenMai(khuyenMai, spctIds);
             redirectAttributes.addFlashAttribute("success", "Khuyến mãi đã được lưu thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi lưu khuyến mãi: " + e.getMessage());
@@ -108,6 +126,7 @@ public class KhuyenMaiController {
     @GetMapping("/update/{id}")
     public String showEditForm(@PathVariable int id, Model model) {
         model.addAttribute("khuyenMai", khuyenMaiService.getKhuyenMaiById(id));
+        model.addAttribute("listSpct", spctRepository.findAll());
         return "/quan-tri/khuyen-mai-update";
     }
 

@@ -16,61 +16,61 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h3 class="mb-4">Thêm Sản phẩm</h3>
-            <form th:action="@{/san-pham/add}" method="post" th:object="${sanPham}" enctype="multipart/form-data">
+            <form th:action="@{/san-pham/add}" method="post" th:object="${sanPhamAddDto}" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Mã sản phẩm:</label>
-                        <input type="text" th:field="*{maSanPham}" class="form-control" readonly placeholder="Sẽ tự sinh khi lưu" />
+                        <input type="text" th:field="*{sanPham.maSanPham}" class="form-control" readonly placeholder="Sẽ tự sinh khi lưu" />
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Tên sản phẩm:</label>
-                        <input type="text" th:field="*{tenSanPham}" class="form-control" required />
-                        <div class="text-danger small" th:if="${#fields.hasErrors('tenSanPham')}" th:errors="*{tenSanPham}"></div>
+                        <input type="text" th:field="*{sanPham.tenSanPham}" class="form-control" required />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.tenSanPham')}" th:errors="*{sanPham.tenSanPham}"></div>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Giá nhập:</label>
-                        <input type="number" th:field="*{giaNhap}" class="form-control" required />
-                        <div class="text-danger small" th:if="${#fields.hasErrors('giaNhap')}" th:errors="*{giaNhap}"></div>
+                        <input type="number" th:field="*{sanPham.giaNhap}" class="form-control" required />
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.giaNhap')}" th:errors="*{sanPham.giaNhap}"></div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Trạng thái:</label>
-                        <select th:field="*{trangThai}" class="form-select">
+                        <select th:field="*{sanPham.trangThai}" class="form-select">
         <option value="true">Kích hoạt</option>
         <option value="false">Không kích hoạt</option>
       </select>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('trangThai')}" th:errors="*{trangThai}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.trangThai')}" th:errors="*{sanPham.trangThai}"></div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Mô tả:</label>
-                    <textarea th:field="*{moTa}" class="form-control"></textarea>
+                    <textarea th:field="*{sanPham.moTa}" class="form-control"></textarea>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Danh mục:</label>
                         <div class="input-group">
-                            <select th:field="*{danhMuc.id}" class="form-select" required>
+                            <select th:field="*{sanPham.danhMuc.id}" class="form-select" required>
                                 <option th:each="dm : ${danhMucList}" th:value="${dm.id}" th:text="${dm.tenDanhMuc}"></option>
                             </select>
                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addDanhMucModal">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </div>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('danhMuc')}" th:errors="*{danhMuc}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.danhMuc')}" th:errors="*{sanPham.danhMuc}"></div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Thương hiệu:</label>
                         <div class="input-group">
-                            <select th:field="*{thuongHieu.id}" class="form-select" required>
+                            <select th:field="*{sanPham.thuongHieu.id}" class="form-select" required>
                                 <option th:each="th : ${thuongHieuList}" th:value="${th.id}" th:text="${th.tenThuongHieu}"></option>
                             </select>
                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addThuongHieuModal">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </div>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('thuongHieu')}" th:errors="*{thuongHieu}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sanPham.thuongHieu')}" th:errors="*{sanPham.thuongHieu}"></div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -98,15 +98,39 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <label class="form-label">Màu sắc:</label>
-                                <input type="text" name="variants[0].mauSac" class="form-control" required />
+                                <div class="input-group">
+                                                                    <select name="variants[0].mauSac" class="form-select mau-sac-select" required>
+                                    <option value="">Chọn màu sắc</option>
+                                    <option th:each="mau : ${mauSacList}" th:value="${mau}" th:text="${mau}"></option>
+                                </select>
+                                    <button type="button" class="btn btn-outline-primary" onclick="addNewMauSac(this)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Kích thước:</label>
-                                <input type="text" name="variants[0].kichThuoc" class="form-control" required />
+                                <div class="input-group">
+                                                                    <select name="variants[0].kichThuoc" class="form-select kich-thuoc-select" required>
+                                    <option value="">Chọn kích thước</option>
+                                    <option th:each="kich : ${kichThuocList}" th:value="${kich}" th:text="${kich}"></option>
+                                </select>
+                                    <button type="button" class="btn btn-outline-primary" onclick="addNewKichThuoc(this)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">Chất liệu:</label>
-                                <input type="text" name="variants[0].chatLieu" class="form-control" required />
+                                <div class="input-group">
+                                                                    <select name="variants[0].chatLieu" class="form-select chat-lieu-select" required>
+                                    <option value="">Chọn chất liệu</option>
+                                    <option th:each="chat : ${chatLieuList}" th:value="${chat}" th:text="${chat}"></option>
+                                </select>
+                                    <button type="button" class="btn btn-outline-primary" onclick="addNewChatLieu(this)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">Số lượng:</label>
@@ -296,15 +320,36 @@ function addVariant() {
         <div class="row">
             <div class="col-md-3">
                 <label class="form-label">Màu sắc:</label>
-                <input type="text" name="variants[${variantCount}].mauSac" class="form-control" required />
+                <div class="input-group">
+                    <select name="variants[${variantCount}].mauSac" class="form-select mau-sac-select" required>
+                        <option value="">Chọn màu sắc</option>
+                    </select>
+                    <button type="button" class="btn btn-outline-primary" onclick="addNewMauSac(this)">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
             </div>
             <div class="col-md-3">
                 <label class="form-label">Kích thước:</label>
-                <input type="text" name="variants[${variantCount}].kichThuoc" class="form-control" required />
+                <div class="input-group">
+                    <select name="variants[${variantCount}].kichThuoc" class="form-select kich-thuoc-select" required>
+                        <option value="">Chọn kích thước</option>
+                    </select>
+                    <button type="button" class="btn btn-outline-primary" onclick="addNewKichThuoc(this)">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
             </div>
             <div class="col-md-2">
                 <label class="form-label">Chất liệu:</label>
-                <input type="text" name="variants[${variantCount}].chatLieu" class="form-control" required />
+                <div class="input-group">
+                    <select name="variants[${variantCount}].chatLieu" class="form-select chat-lieu-select" required>
+                        <option value="">Chọn chất liệu</option>
+                    </select>
+                    <button type="button" class="btn btn-outline-primary" onclick="addNewChatLieu(this)">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
             </div>
             <div class="col-md-2">
                 <label class="form-label">Số lượng:</label>
@@ -319,6 +364,9 @@ function addVariant() {
     
     container.appendChild(newVariant);
     variantCount++;
+    
+    // Populate dropdowns với dữ liệu từ database
+    populateDropdowns(newVariant);
     
     // Hiển thị nút xóa cho biến thể đầu tiên nếu có nhiều hơn 1 biến thể
     updateDeleteButtons();
@@ -375,6 +423,130 @@ function reindexVariants() {
     });
     
     variantCount = variants.length;
+}
+
+// Hàm thêm màu sắc mới
+function addNewMauSac(button) {
+    const inputGroup = button.closest('.input-group');
+    const select = inputGroup.querySelector('.mau-sac-select');
+    const newColor = prompt('Nhập tên màu sắc mới:');
+    
+    if (newColor && newColor.trim() !== '') {
+        // Kiểm tra xem màu đã tồn tại chưa
+        const existingOptions = Array.from(select.options).map(option => option.value);
+        if (existingOptions.includes(newColor.trim())) {
+            alert('Màu sắc này đã tồn tại!');
+            return;
+        }
+        
+        // Thêm option mới vào tất cả các select màu sắc
+        const allMauSacSelects = document.querySelectorAll('.mau-sac-select');
+        allMauSacSelects.forEach(selectElement => {
+            const option = document.createElement('option');
+            option.value = newColor.trim();
+            option.textContent = newColor.trim();
+            selectElement.appendChild(option);
+        });
+        
+        // Chọn màu mới vừa thêm
+        select.value = newColor.trim();
+    }
+}
+
+// Hàm thêm kích thước mới
+function addNewKichThuoc(button) {
+    const inputGroup = button.closest('.input-group');
+    const select = inputGroup.querySelector('.kich-thuoc-select');
+    const newSize = prompt('Nhập kích thước mới:');
+    
+    if (newSize && newSize.trim() !== '') {
+        // Kiểm tra xem kích thước đã tồn tại chưa
+        const existingOptions = Array.from(select.options).map(option => option.value);
+        if (existingOptions.includes(newSize.trim())) {
+            alert('Kích thước này đã tồn tại!');
+            return;
+        }
+        
+        // Thêm option mới vào tất cả các select kích thước
+        const allKichThuocSelects = document.querySelectorAll('.kich-thuoc-select');
+        allKichThuocSelects.forEach(selectElement => {
+            const option = document.createElement('option');
+            option.value = newSize.trim();
+            option.textContent = newSize.trim();
+            selectElement.appendChild(option);
+        });
+        
+        // Chọn kích thước mới vừa thêm
+        select.value = newSize.trim();
+    }
+}
+
+// Hàm thêm chất liệu mới
+function addNewChatLieu(button) {
+    const inputGroup = button.closest('.input-group');
+    const select = inputGroup.querySelector('.chat-lieu-select');
+    const newMaterial = prompt('Nhập chất liệu mới:');
+    
+    if (newMaterial && newMaterial.trim() !== '') {
+        // Kiểm tra xem chất liệu đã tồn tại chưa
+        const existingOptions = Array.from(select.options).map(option => option.value);
+        if (existingOptions.includes(newMaterial.trim())) {
+            alert('Chất liệu này đã tồn tại!');
+            return;
+        }
+        
+        // Thêm option mới vào tất cả các select chất liệu
+        const allChatLieuSelects = document.querySelectorAll('.chat-lieu-select');
+        allChatLieuSelects.forEach(selectElement => {
+            const option = document.createElement('option');
+            option.value = newMaterial.trim();
+            option.textContent = newMaterial.trim();
+            selectElement.appendChild(option);
+        });
+        
+        // Chọn chất liệu mới vừa thêm
+        select.value = newMaterial.trim();
+    }
+}
+
+// Hàm populate dropdowns với dữ liệu từ database
+function populateDropdowns(variantElement) {
+    // Lấy dữ liệu từ biến thể đầu tiên (đã có sẵn dữ liệu từ Thymeleaf)
+    const firstVariant = document.querySelector('.variant-item');
+    if (!firstVariant) return;
+    
+    const mauSacSelect = firstVariant.querySelector('.mau-sac-select');
+    const kichThuocSelect = firstVariant.querySelector('.kich-thuoc-select');
+    const chatLieuSelect = firstVariant.querySelector('.chat-lieu-select');
+    
+    // Clone options từ dropdown đầu tiên sang dropdown mới
+    const newMauSacSelect = variantElement.querySelector('.mau-sac-select');
+    const newKichThuocSelect = variantElement.querySelector('.kich-thuoc-select');
+    const newChatLieuSelect = variantElement.querySelector('.chat-lieu-select');
+    
+    // Clone màu sắc
+    Array.from(mauSacSelect.options).forEach(option => {
+        if (option.value !== '') {
+            const newOption = option.cloneNode(true);
+            newMauSacSelect.appendChild(newOption);
+        }
+    });
+    
+    // Clone kích thước
+    Array.from(kichThuocSelect.options).forEach(option => {
+        if (option.value !== '') {
+            const newOption = option.cloneNode(true);
+            newKichThuocSelect.appendChild(newOption);
+        }
+    });
+    
+    // Clone chất liệu
+    Array.from(chatLieuSelect.options).forEach(option => {
+        if (option.value !== '') {
+            const newOption = option.cloneNode(true);
+            newChatLieuSelect.appendChild(newOption);
+        }
+    });
 }
 </script>
   </body>

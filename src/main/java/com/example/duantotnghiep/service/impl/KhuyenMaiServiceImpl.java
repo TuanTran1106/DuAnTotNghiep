@@ -2,7 +2,9 @@ package com.example.duantotnghiep.service.impl;
 
 import com.example.duantotnghiep.dto.PageResponse;
 import com.example.duantotnghiep.entity.KhuyenMai;
+import com.example.duantotnghiep.entity.SanPhamChiTiet;
 import com.example.duantotnghiep.repository.KhuyenMaiRepository;
+import com.example.duantotnghiep.repository.SanPhamChiTietRepository;
 import com.example.duantotnghiep.service.KhuyenMaiService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,10 @@ import java.util.List;
 public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
+
+
+    @Autowired
+    private SanPhamChiTietRepository spctRepository;
 
     @Override
     public List<KhuyenMai> getAllKhuyenMai() {
@@ -40,9 +46,12 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     }
 
     @Override
-    public KhuyenMai saveKhuyenMai(KhuyenMai khuyenMai) {
+    public KhuyenMai saveKhuyenMai(KhuyenMai khuyenMai, List<Integer> spctIds) {
         // Business validation
         validateKhuyenMai(khuyenMai);
+
+        List<SanPhamChiTiet> spcts = spctRepository.findAllById(spctIds);
+        khuyenMai.setSanPhamChiTiets(spcts);
         
         khuyenMaiRepository.save(khuyenMai);
         khuyenMai.setMaKhuyenMai("KM0" + khuyenMai.getId());
