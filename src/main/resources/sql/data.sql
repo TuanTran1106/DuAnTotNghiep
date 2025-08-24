@@ -250,7 +250,12 @@ INSERT INTO trang_thai_don_hang (ten_trang_thai) VALUES
                                                      (N'Đang chuẩn bị hàng'),
                                                      (N'Đang giao'),
                                                      (N'Đã giao'),
-                                                     (N'Đã hủy');
+                                                     (N'Đã hủy'),
+                                                     (N'Đã thanh toán - Chờ xác nhận'),
+                                                     (N'Đã thanh toán - Đang chuẩn bị hàng'),
+                                                     (N'Đã thanh toán - Đang giao'),
+                                                     (N'Yêu cầu hoàn'),
+                                                     (N'Yêu cầu hủy');
 
 INSERT INTO phuong_thuc_thanh_toan (ten_phuong_thuc) VALUES
                                                          (N'Thanh toán khi nhận hàng'),

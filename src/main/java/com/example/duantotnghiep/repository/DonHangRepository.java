@@ -2,14 +2,13 @@ package com.example.duantotnghiep.repository;
 
 import com.example.duantotnghiep.dto.DonHangChiTietDto;
 import com.example.duantotnghiep.dto.DonHangDto;
-import com.example.duantotnghiep.dto.ThongKeDoanhThuDto;
 import com.example.duantotnghiep.entity.DonHang;
+import com.example.duantotnghiep.entity.TrangThaiDonHang;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -120,5 +119,11 @@ public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
             "WHERE dh.id = :orderId " +
             "GROUP BY dh.id, dh.maDonHang, dh.ngayMua, nd.hoTen, nd.sdt, ttdh.tenTrangThai, pttt.tenPhuongThuc, nv.hoTen, v.maVoucher, v.tenVoucher, v.id, v.kieuGiam, v.mucGiam, v.dieuKienToiThieu, dc.diaChi, dc.phuongXa, dc.quanHuyen, dc.thanhPho")
     DonHangDto getOrderById(@Param("orderId") Integer orderId);
+
+    // Tìm kiếm đơn hàng theo ngày tạo
+    @Query("SELECT dh FROM DonHang dh WHERE DATE_FORMAT(dh.ngayTao, '%Y-%m-%d') = :ngay")
+    List<DonHang> findByNgayTaoContaining(@Param("ngay") String ngay);
+
+
 
 }

@@ -4,23 +4,23 @@ import com.example.duantotnghiep.dto.DonHangChiTietDto;
 import com.example.duantotnghiep.dto.DonHangDto;
 import com.example.duantotnghiep.entity.DonHang;
 import com.example.duantotnghiep.entity.TrangThaiDonHang;
-import com.example.duantotnghiep.repository.*;
+import com.example.duantotnghiep.repository.DonHangRepository;
+import com.example.duantotnghiep.repository.TrangThaiDonHangRepository;
 import com.example.duantotnghiep.service.DonHangService;
-
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.DocumentException;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -44,33 +44,58 @@ public class DonHangServiceImpl implements DonHangService {
         return donHangRepository.getOrderProducts(orderId);
     }
 
+    private static final Map<String, String> TRANG_THAI_CHUYEN_TIEP = Map.of(
+            "Chờ xác nhận", "Đang chuẩn bị hàng",
+            "Đang chuẩn bị hàng", "Đang giao",
+            "Đang giao", "Đã giao",
+            "Đã thanh toán - Chờ xác nhận", "Đã thanh toán - Đang chuẩn bị hàng",
+            "Đã thanh toán - Đang chuẩn bị hàng", "Đã thanh toán - Đang giao",
+            "Đã thanh toán - Đang giao", "Đã giao"
+    );
+
+
     @Override
     public boolean nextOrderStatus(Integer orderId) {
+        Logger log = LoggerFactory.getLogger(getClass());
+
         DonHang donHang = donHangRepository.findById(orderId).orElse(null);
-        if (donHang == null) return false;
+        if (donHang == null) {
+            log.error("Không tìm thấy đơn hàng với ID: {}", orderId);
+            return false;
+        }
+
         TrangThaiDonHang current = donHang.getTrangThaiDonHang();
-        if (current == null) return false;
-        var allStatus = trangThaiDonHangRepository.findAll();
-        allStatus.sort((a, b) -> a.getId() - b.getId());
-        int idx = -1;
-        for (int i = 0; i < allStatus.size(); i++) {
-            if (allStatus.get(i).getId().equals(current.getId())) {
-                idx = i;
-                break;
-            }
+        if (current == null) {
+            log.error("Đơn hàng {} không có trạng thái được gán", orderId);
+            return false;
         }
-        if (idx == -1) return false;
-        if (idx < allStatus.size() - 1) {
-            TrangThaiDonHang next = allStatus.get(idx + 1);
-            if ("Đã hủy".equalsIgnoreCase(next.getTenTrangThai())) {
-                return false;
-            }
-            donHang.setTrangThaiDonHang(next);
+
+        String currentName = current.getTenTrangThai();
+        String nextName = TRANG_THAI_CHUYEN_TIEP.get(currentName);
+        if (nextName == null) {
+            log.warn("Không tìm thấy trạng thái kế tiếp phù hợp cho '{}'", currentName);
+            return false;
+        }
+
+        // Tìm trạng thái tiếp theo trong DB
+        TrangThaiDonHang next = trangThaiDonHangRepository.findByTenTrangThaiIgnoreCase(nextName);
+        if (next == null) {
+            log.error("Không tìm thấy trạng thái '{}' trong DB", nextName);
+            return false;
+        }
+
+        // Cập nhật
+        donHang.setTrangThaiDonHang(next);
+        try {
             donHangRepository.save(donHang);
+            log.info("Đơn hàng {} đã được cập nhật trạng thái thành: {}", orderId, next.getTenTrangThai());
             return true;
+        } catch (Exception e) {
+            log.error("Lỗi khi lưu đơn hàng {}: {}", orderId, e.getMessage());
+            return false;
         }
-        return false;
     }
+
 
     @Override
     public Long countByTrangThai(String tenTrangThai) {

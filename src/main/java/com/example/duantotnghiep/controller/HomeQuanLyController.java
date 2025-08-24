@@ -1,17 +1,12 @@
 package com.example.duantotnghiep.controller;
 
 
-import com.example.duantotnghiep.dto.DonHangChiTietDto;
-import com.example.duantotnghiep.dto.DonHangDto;
 import com.example.duantotnghiep.service.DonHangService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/quan-ly")

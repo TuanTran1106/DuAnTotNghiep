@@ -422,13 +422,6 @@
             </div>
 
             <div class="menu-item">
-                <a href="#" class="menu-link" data-url="https://reddit.com" data-title="Hỗ trợ">
-                    <i class="fas fa-question-circle"></i>
-                    <span>Hỗ trợ</span>
-                </a>
-            </div>
-
-            <div class="menu-item">
                 <a href="#" class="menu-link" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Đăng xuất</span>
@@ -596,7 +589,7 @@
         if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
             alert('Đăng xuất thành công!');
             // Có thể redirect đến trang login
-            // window.location.href = '/login';
+            window.location.href = '/login';
         }
     }
 

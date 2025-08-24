@@ -2,7 +2,6 @@ package com.example.duantotnghiep.service;
 
 import com.example.duantotnghiep.dto.DonHangChiTietDto;
 import com.example.duantotnghiep.dto.DonHangDto;
-import com.example.duantotnghiep.entity.DonHang;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -16,6 +15,7 @@ public interface DonHangService {
     List<DonHangChiTietDto> getOrderProducts(Integer orderId);
 
     boolean nextOrderStatus(Integer orderId);
+
 
     // trang chu
     Long countByTrangThai(String tenTrangThai);
