@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "khuyen_mai")
@@ -39,12 +40,10 @@ public class KhuyenMai {
     private LocalDateTime ngayTao;
 
     @NotNull(message = "Ngày bắt đầu không được để trống")
-    @FutureOrPresent(message = "Ngày bắt đầu phải là hiện tại hoặc tương lai")
     @Column(name = "ngay_bat_dau")
     private LocalDate ngayBatDau;
 
     @NotNull(message = "Ngày kết thúc không được để trống")
-    @Future(message = "Ngày kết thúc phải là tương lai")
     @Column(name = "ngay_ket_thuc")
     private LocalDate ngayKetThuc;
 
@@ -66,12 +65,12 @@ public class KhuyenMai {
     private Integer trangThai;
     
 
-    @AssertTrue(message = "Ngày kết thúc phải sau ngày bắt đầu")
-    public boolean isNgayKetThucAfterNgayBatDau() {
+    @AssertTrue(message = "Ngày kết thúc phải không trước ngày bắt đầu")
+    public boolean isNgayKetThucSauHoacBangNgayBatDau() {
         if (ngayBatDau == null || ngayKetThuc == null) {
             return true; // Skip validation if either date is null
         }
-        return ngayKetThuc.isAfter(ngayBatDau);
+        return !ngayKetThuc.isBefore(ngayBatDau);
     }
 
     @ManyToMany

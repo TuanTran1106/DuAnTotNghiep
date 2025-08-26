@@ -310,7 +310,35 @@
             border-radius: 4px;
         }
 
+        /* Hiển thị ngày theo định dạng Việt Nam */
+        input[type="date"] {
+            position: relative;
+            font-family: 'Inter', Arial, sans-serif;
+        }
 
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Hiển thị giá trị ngày theo định dạng dd-MM-yyyy với data-display */
+        input[type="date"]:not([value=""]) {
+            color: transparent;
+        }
+
+        input[type="date"]:not([value=""])::after {
+            content: attr(data-display);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #333;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -376,24 +404,13 @@
                           placeholder="Nhập mô tả"></textarea>
             </div>
 
-            <!--            <div class="form-row">-->
-            <!--                <div class="form-group">-->
-            <!--                    <label for="ngayTao" class="form-label">-->
-            <!--                        Ngày Tạo <span class="required">*</span>-->
-            <!--                    </label>-->
-            <!--                    <input type="datetime-local"-->
-            <!--                           id="ngayTao"-->
-            <!--                           th:field="*{ngayTao}"-->
-            <!--                           class="form-input"-->
-            <!--                           readonly />-->
-            <!--                </div>-->
             <div class="form-group">
                 <label for="ngayBatDau" class="form-label">
                     Ngày bắt đầu <span class="required">*</span>
                 </label>
                 <input type="date"
                        id="ngayBatDau"
-                       th:value="${khuyenMai.ngayBatDau != null ? #temporals.format(khuyenMai.ngayBatDau, 'yyyy-MM-dd') : ''}"
+                       th:value="${khuyenMai.ngayBatDau != null ? #temporals.format(khuyenMai.ngayBatDau, 'dd-MM-yyyy') : ''}"
                        name="ngayBatDau"
                        class="form-input"
                        required />
@@ -404,7 +421,7 @@
                 </label>
                 <input type="date"
                        id="ngayKetThuc"
-                       th:value="${khuyenMai.ngayKetThuc != null ? #temporals.format(khuyenMai.ngayKetThuc, 'yyyy-MM-dd') : ''}"
+                       th:value="${khuyenMai.ngayKetThuc != null ? #temporals.format(khuyenMai.ngayKetThuc, 'dd-MM-yyyy') : ''}"
                        name="ngayKetThuc"
                        class="form-input"
                        required />
@@ -460,7 +477,7 @@
                        min="0"
                        step="0.01"
                        required />
-                <span id="donVi" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666; font-weight: 600;">VND</span>
+                <span id="donVi" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666; font-weight: 600;"></span>
             </div>
 
             <div class="form-group">
@@ -620,23 +637,80 @@
     // Set min date cho input ngày
     window.addEventListener('load', function() {
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('ngayBatDau').setAttribute('min', today);
-        document.getElementById('ngayKetThuc').setAttribute('min', today);
+        const ngayBatDauEl = document.getElementById('ngayBatDau') || document.getElementById('ngayBatDauDisplay');
+        const ngayKetThucEl = document.getElementById('ngayKetThuc') || document.getElementById('ngayKetThucDisplay');
+        if (ngayBatDauEl) ngayBatDauEl.setAttribute('min', today);
+        if (ngayKetThucEl) ngayKetThucEl.setAttribute('min', today);
 
         // Set đơn vị ban đầu theo kiểu giảm
         updateDonVi();
+
+        // Khởi tạo data-display nếu có giá trị sẵn
+        [ngayBatDauEl, ngayKetThucEl].forEach(function(el){
+            if (el && el.value) {
+                const d = new Date(el.value);
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                el.setAttribute('data-display', `${day}-${month}-${year}`);
+            }
+        });
     });
+
+    // Thêm event listener để ngăn chặn chọn ngày quá khứ và cập nhật hiển thị
+    (document.getElementById('ngayBatDau') || document.getElementById('ngayBatDauDisplay'))
+        .addEventListener('change', function() {
+            const selectedDate = this.value;
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (selectedDate < today) {
+                alert('Không thể chọn ngày trong quá khứ!');
+                this.value = today;
+            }
+            
+            // Đặt min cho ngày kết thúc = ngày bắt đầu
+            const endEl = document.getElementById('ngayKetThuc') || document.getElementById('ngayKetThucDisplay');
+            if (endEl) {
+                endEl.setAttribute('min', this.value);
+                if (endEl.value && endEl.value < this.value) {
+                    endEl.value = this.value;
+                }
+            }
+
+            if (this.value) {
+                const date = new Date(this.value);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                this.setAttribute('data-display', `${day}-${month}-${year}`);
+            }
+        });
+
+    (document.getElementById('ngayKetThuc') || document.getElementById('ngayKetThucDisplay'))
+        .addEventListener('change', function() {
+            const selectedDate = this.value;
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (selectedDate < today) {
+                alert('Không thể chọn ngày trong quá khứ!');
+                this.value = today;
+            }
+            
+            if (this.value) {
+                const date = new Date(this.value);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                this.setAttribute('data-display', `${day}-${month}-${year}`);
+            }
+        });
 
     // Thay đổi đơn vị theo kiểu giảm
     function updateDonVi() {
         const kieuGiam = document.getElementById('kieuGiam').value;
         const donVi = document.getElementById('donVi');
 
-        if (kieuGiam === 'true') {
-            donVi.textContent = 'VND';
-        } else {
-            donVi.textContent = '%';
-        }
+
     }
 
     // Lắng nghe sự thay đổi kiểu giảm
@@ -651,6 +725,5 @@
         }
     });
 </script>
-
 </body>
 </html>

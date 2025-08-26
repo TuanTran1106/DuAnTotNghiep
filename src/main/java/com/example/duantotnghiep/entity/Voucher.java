@@ -51,12 +51,12 @@ public class Voucher {
     private Integer soLuongCon;
 
     @NotNull(message = "Ngày bắt đầu không được để trống")
-    @FutureOrPresent(message = "Ngày bắt đầu phải là hiện tại hoặc tương lai")
+//    @FutureOrPresent(message = "Ngày bắt đầu phải là hiện tại hoặc tương lai")
     @Column(name = "ngay_bat_dau")
     private LocalDate ngayBatDau;
 
     @NotNull(message = "Ngày kết thúc không được để trống")
-    @Future(message = "Ngày kết thúc phải là tương lai")
+//    @Future(message = "Ngày kết thúc phải là tương lai")
     @Column(name = "ngay_ket_thuc")
     private LocalDate ngayKetThuc;
 
@@ -70,11 +70,11 @@ public class Voucher {
     /**
      * Custom validation method để kiểm tra ngày kết thúc phải sau ngày bắt đầu
      */
-    @AssertTrue(message = "Ngày kết thúc phải sau ngày bắt đầu")
-    public boolean isNgayKetThucAfterNgayBatDau() {
+    @AssertTrue(message = "Ngày kết thúc phải không trước ngày bắt đầu")
+    public boolean isNgayKetThucSauHoacBangNgayBatDau() {
         if (ngayBatDau == null || ngayKetThuc == null) {
             return true; // Skip validation if either date is null
         }
-        return ngayKetThuc.isAfter(ngayBatDau);
+        return !ngayKetThuc.isBefore(ngayBatDau);
     }
 }

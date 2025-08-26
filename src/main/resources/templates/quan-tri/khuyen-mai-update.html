@@ -389,6 +389,50 @@
             border-radius: 4px;
         }
 
+        /* Hiển thị ngày theo định dạng Việt Nam */
+        input[type="date"] {
+            position: relative;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        /* Tùy chỉnh hiển thị ngày */
+        input[type="date"]::before {
+            content: attr(placeholder);
+            color: #999;
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        input[type="date"]:focus::before,
+        input[type="date"]:valid::before {
+            display: none;
+        }
+
+        /* Hiển thị ngày theo định dạng dd/mm/yyyy */
+        input[type="date"]:not([value=""]) {
+            color: transparent;
+        }
+
+        input[type="date"]:not([value=""])::after {
+            content: attr(data-display);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #333;
+            pointer-events: none;
+        }
+
     </style>
 </head>
 <body>
@@ -465,8 +509,10 @@
                     <input type="date"
                            id="ngayBatDau"
                            th:value="${khuyenMai.ngayBatDau != null ? #temporals.format(khuyenMai.ngayBatDau, 'yyyy-MM-dd') : ''}"
+                           th:data-display="${khuyenMai.ngayBatDau != null ? #temporals.format(khuyenMai.ngayBatDau, 'dd/MM/yyyy') : ''}"
                            name="ngayBatDau"
                            class="form-input"
+                           placeholder="dd-mm-yyyy"
                            required />
                 </div>
                 <div class="form-group">
@@ -476,8 +522,10 @@
                     <input type="date"
                            id="ngayKetThuc"
                            th:value="${khuyenMai.ngayKetThuc != null ? #temporals.format(khuyenMai.ngayKetThuc, 'yyyy-MM-dd') : ''}"
+                           th:data-display="${khuyenMai.ngayKetThuc != null ? #temporals.format(khuyenMai.ngayKetThuc, 'dd/MM/yyyy') : ''}"
                            name="ngayKetThuc"
                            class="form-input"
+                           placeholder="dd-mm-yyyy"
                            required />
                 </div>
             <div class="form-group">
@@ -648,6 +696,62 @@
                     input.value = draftData[key];
                 }
             });
+        }
+
+        // Set min date cho input ngày
+        const today = new Date().toISOString().split('T')[0];
+        const startEl = document.getElementById('ngayBatDau') || document.getElementById('ngayBatDauDisplay');
+        const endEl = document.getElementById('ngayKetThuc') || document.getElementById('ngayKetThucDisplay');
+        if (startEl) startEl.setAttribute('min', today);
+        if (endEl) endEl.setAttribute('min', today);
+        if (startEl && startEl.value && endEl) {
+            endEl.setAttribute('min', startEl.value);
+        }
+    });
+
+    // Thêm event listener để ngăn chặn chọn ngày quá khứ và cập nhật hiển thị
+    (document.getElementById('ngayBatDau') || document.getElementById('ngayBatDauDisplay')).addEventListener('change', function() {
+        const selectedDate = this.value;
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (selectedDate < today) {
+            alert('Không thể chọn ngày trong quá khứ!');
+            this.value = today;
+        }
+        
+        // Cập nhật hiển thị ngày theo định dạng Việt Nam dd-MM-yyyy
+        if (this.value) {
+            const date = new Date(this.value);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            this.setAttribute('data-display', `${day}/${month}/${year}`);
+            const endEl = document.getElementById('ngayKetThuc') || document.getElementById('ngayKetThucDisplay');
+            if (endEl) {
+                endEl.setAttribute('min', this.value);
+                if (endEl.value && endEl.value < this.value) {
+                    endEl.value = this.value;
+                }
+            }
+        }
+    });
+
+    (document.getElementById('ngayKetThuc') || document.getElementById('ngayKetThucDisplay')).addEventListener('change', function() {
+        const selectedDate = this.value;
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (selectedDate < today) {
+            alert('Không thể chọn ngày trong quá khứ!');
+            this.value = today;
+        }
+        
+        // Cập nhật hiển thị ngày theo định dạng Việt Nam dd-MM-yyyy
+        if (this.value) {
+            const date = new Date(this.value);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            this.setAttribute('data-display', `${day}-${month}-${year}`);
         }
     });
 

@@ -66,10 +66,10 @@ public class VoucherController {
             return "redirect:/voucher/add";
         }
         
-        // Validation: Kiểm tra ngày bắt đầu phải trước ngày kết thúc
+        // Validation: Cho phép bằng nhau; chỉ lỗi nếu bắt đầu sau kết thúc
         if (voucher.getNgayBatDau() != null && voucher.getNgayKetThuc() != null && 
             voucher.getNgayBatDau().isAfter(voucher.getNgayKetThuc())) {
-            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu phải trước ngày kết thúc.");
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được sau ngày kết thúc.");
             return "redirect:/voucher/add";
         }
         
@@ -168,8 +168,8 @@ public class VoucherController {
                 if (ngayBatDauStr != null && !ngayBatDauStr.isEmpty()) {
                     try {
                         LocalDate ngayBatDau = LocalDate.parse(ngayBatDauStr);
-                        if (ngayKetThuc.isBefore(ngayBatDau) || ngayKetThuc.isEqual(ngayBatDau)) {
-                            errors.put("ngayKetThuc", "Ngày kết thúc phải sau ngày bắt đầu");
+                        if (ngayKetThuc.isBefore(ngayBatDau)) {
+                            errors.put("ngayKetThuc", "Ngày kết thúc không được trước ngày bắt đầu");
                         }
                     } catch (Exception e) {
                         // Ignore if ngayBatDau is invalid

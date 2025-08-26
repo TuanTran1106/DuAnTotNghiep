@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,12 +56,12 @@ public class KhuyenMaiController {
     public String createKhuyenMai(@ModelAttribute KhuyenMai khuyenMai,
                                   @RequestParam("spctIds") List<Integer> spctIds) {
         khuyenMaiService.saveKhuyenMai(khuyenMai, spctIds);
-        return "redirect:/khuyenmai";
+        return "redirect:/khuyen-mai";
     }
     
     @PostMapping("/save")
     public String saveKhuyenMai(@Valid @ModelAttribute("khuyenMai") KhuyenMai khuyenMai,
-                                @RequestParam("spctIds") List<Integer> spctIds,
+                                @RequestParam(value = "spctIds", required = false) List<Integer> spctIds,
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes) {
 
@@ -70,32 +71,50 @@ public class KhuyenMaiController {
                 errorMessage.append(error.getDefaultMessage()).append(" ");
             });
             redirectAttributes.addFlashAttribute("error", errorMessage.toString().trim());
+            if (khuyenMai.getId() != null) {
+                return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+            }
             return "redirect:/khuyen-mai/add";
         }
         
 
         if (khuyenMai.getNgayKetThuc() != null && khuyenMai.getNgayKetThuc().isBefore(LocalDate.now())) {
             redirectAttributes.addFlashAttribute("error", "Ngày kết thúc không được là quá khứ. Vui lòng chọn ngày trong tương lai.");
+            if (khuyenMai.getId() != null) {
+                return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+            }
             return "redirect:/khuyen-mai/add";
         }
         
 
         if (khuyenMai.getNgayBatDau() != null && khuyenMai.getNgayKetThuc() != null && 
             khuyenMai.getNgayBatDau().isAfter(khuyenMai.getNgayKetThuc())) {
-            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu phải trước ngày kết thúc.");
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được sau ngày kết thúc.");
+            if (khuyenMai.getId() != null) {
+                return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+            }
             return "redirect:/khuyen-mai/add";
         }
         
         // Validation: Kiểm tra ngày bắt đầu không được là quá khứ
         if (khuyenMai.getNgayBatDau() != null && khuyenMai.getNgayBatDau().isBefore(LocalDate.now())) {
             redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
+            if (khuyenMai.getId() != null) {
+                return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+            }
+            return "redirect:/khuyen-mai/add";
+        }
+
+        // Bắt buộc chọn ít nhất 1 sản phẩm áp dụng
+        if (spctIds == null || spctIds.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng chọn ít nhất một sản phẩm chi tiết áp dụng.");
+            if (khuyenMai.getId() != null) {
+                return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+            }
             return "redirect:/khuyen-mai/add";
         }
         
         if (khuyenMai.getId() == null) { // Thêm mới
-            khuyenMai.setNgayTao(LocalDateTime.now());
-        }
-        if (khuyenMai.getId() == null) {
             khuyenMai.setNgayTao(LocalDateTime.now());
         }
 
@@ -106,6 +125,10 @@ public class KhuyenMaiController {
             redirectAttributes.addFlashAttribute("success", "Khuyến mãi đã được lưu thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi lưu khuyến mãi: " + e.getMessage());
+            if (khuyenMai.getId() != null) {
+                return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+            }
+            return "redirect:/khuyen-mai/add";
         }
         
         return "redirect:/khuyen-mai";
@@ -185,15 +208,14 @@ public class KhuyenMaiController {
                     errors.put("ngayKetThuc", "Ngày kết thúc không được là quá khứ");
                 }
                 
-
                 if (ngayBatDauStr != null && !ngayBatDauStr.isEmpty()) {
                     try {
                         LocalDate ngayBatDau = LocalDate.parse(ngayBatDauStr);
-                        if (ngayKetThuc.isBefore(ngayBatDau) || ngayKetThuc.isEqual(ngayBatDau)) {
-                            errors.put("ngayKetThuc", "Ngày kết thúc phải sau ngày bắt đầu");
+                        if (ngayKetThuc.isBefore(ngayBatDau)) {
+                            errors.put("ngayKetThuc", "Ngày kết thúc không được trước ngày bắt đầu");
                         }
                     } catch (Exception e) {
-
+                        // ignore, đã có lỗi ở trên nếu parse thất bại
                     }
                 }
             } catch (Exception e) {
