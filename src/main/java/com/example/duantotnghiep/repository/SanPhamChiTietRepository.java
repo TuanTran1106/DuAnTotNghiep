@@ -3,12 +3,8 @@ package com.example.duantotnghiep.repository;
 import com.example.duantotnghiep.entity.SanPhamChiTiet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-<<<<<<< HEAD
 import org.springframework.data.repository.query.Param;
-=======
->>>>>>> 177b67dd98e1d0c0a7b736386eb093a477cc90df
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +15,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query("SELECT s FROM SanPhamChiTiet s WHERE s.sanPham.id = ?1 ORDER BY s.id DESC")
     List<SanPhamChiTiet> findBySanPham_Id(Integer sanPhamId);
-<<<<<<< HEAD
+
     
     // Tìm kiếm sản phẩm theo tên hoặc mã
     @Query("SELECT spct FROM SanPhamChiTiet spct WHERE " +
@@ -33,7 +29,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     
     // Tìm kiếm sản phẩm còn hàng
     List<SanPhamChiTiet> findBySoLuongGreaterThan(Integer soLuong);
-=======
+
 
     @Query("SELECT s FROM SanPhamChiTiet s WHERE s.sanPham.id = ?1 AND s.gia_ban > 0 AND s.soLuong > 0 ORDER BY s.id DESC")
     List<SanPhamChiTiet> findValidBySanPham_Id(Integer sanPhamId);
@@ -46,5 +42,5 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query("SELECT DISTINCT s.chatLieu FROM SanPhamChiTiet s WHERE s.chatLieu IS NOT NULL AND s.chatLieu != '' ORDER BY s.chatLieu")
     List<String> findAllDistinctChatLieu();
->>>>>>> 177b67dd98e1d0c0a7b736386eb093a477cc90df
+
 }

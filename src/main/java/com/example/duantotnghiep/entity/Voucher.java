@@ -50,7 +50,6 @@ public class Voucher {
     @Column(name = "so_luong_con")
     private Integer soLuongCon;
 
-    @NotNull(message = "Ngày bắt đầu không được để trống")
 //    @FutureOrPresent(message = "Ngày bắt đầu phải là hiện tại hoặc tương lai")
     @Column(name = "ngay_bat_dau")
     private LocalDate ngayBatDau;
