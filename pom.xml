@@ -79,6 +79,12 @@
 			<artifactId>itextpdf</artifactId>
 			<version>5.5.13.3</version>
 		</dependency>
+
+		<!-- Spring Security for password encoding -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

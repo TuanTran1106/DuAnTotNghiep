@@ -22,4 +22,6 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
     Page<NhanVien> findAll(Pageable pageable);
 
     Optional<NhanVien> findByEmailAndMatKhau(String email, String matKhau);
+    
+    Optional<NhanVien> findByEmail(String email);
 }

@@ -86,6 +86,13 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+        
+        .optional {
+            color: #666;
+            font-weight: 400;
+            font-size: 12px;
+            text-transform: none;
+        }
 
         .form-input {
             width: 100%;
@@ -430,6 +437,17 @@
                            placeholder="Nhập địa chỉ email"
                            required />
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="matKhau" class="form-label">
+                    Mật Khẩu <span class="optional">(để trống nếu không thay đổi)</span>
+                </label>
+                <input type="password"
+                       id="matKhau"
+                       th:field="*{matKhau}"
+                       class="form-input"
+                       placeholder="Nhập mật khẩu mới (nếu muốn thay đổi)" />
             </div>
 
             <div class="form-group">
