@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +16,10 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Query("SELECT s FROM SanPhamChiTiet s WHERE s.sanPham.id = ?1 ORDER BY s.id DESC")
     List<SanPhamChiTiet> findBySanPham_Id(Integer sanPhamId);
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 5e8b44e42a7984e84c62e410b5308c86b0515b8f
     // Tìm kiếm sản phẩm theo tên hoặc mã
     @Query("SELECT spct FROM SanPhamChiTiet spct WHERE " +
            "LOWER(spct.sanPham.tenSanPham) LIKE LOWER(CONCAT('%', :tuKhoa, '%')) OR " +
@@ -42,4 +45,8 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query("SELECT DISTINCT s.chatLieu FROM SanPhamChiTiet s WHERE s.chatLieu IS NOT NULL AND s.chatLieu != '' ORDER BY s.chatLieu")
     List<String> findAllDistinctChatLieu();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5e8b44e42a7984e84c62e410b5308c86b0515b8f
 }

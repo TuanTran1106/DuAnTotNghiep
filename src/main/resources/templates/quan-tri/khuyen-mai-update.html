@@ -389,49 +389,7 @@
             border-radius: 4px;
         }
 
-        /* Hiển thị ngày theo định dạng Việt Nam */
-        input[type="date"] {
-            position: relative;
-        }
 
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-        }
-
-        /* Tùy chỉnh hiển thị ngày */
-        input[type="date"]::before {
-            content: attr(placeholder);
-            color: #999;
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-        }
-
-        input[type="date"]:focus::before,
-        input[type="date"]:valid::before {
-            display: none;
-        }
-
-        /* Hiển thị ngày theo định dạng dd/mm/yyyy */
-        input[type="date"]:not([value=""]) {
-            color: transparent;
-        }
-
-        input[type="date"]:not([value=""])::after {
-            content: attr(data-display);
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #333;
-            pointer-events: none;
-        }
 
     </style>
 </head>
@@ -513,7 +471,9 @@
                            name="ngayBatDau"
                            class="form-input"
                            placeholder="dd-mm-yyyy"
-                           required />
+                           required
+                           readonly
+                           style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;" />
                 </div>
                 <div class="form-group">
                     <label for="ngayKetThuc" class="form-label">

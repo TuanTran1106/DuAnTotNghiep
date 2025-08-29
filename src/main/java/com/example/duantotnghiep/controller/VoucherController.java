@@ -73,9 +73,11 @@ public class VoucherController {
             return "redirect:/voucher/add";
         }
         
-        // Validation: Kiểm tra ngày bắt đầu không được là quá khứ
-        if (voucher.getNgayBatDau() != null && voucher.getNgayBatDau().isBefore(LocalDate.now())) {
-            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
+        // Bỏ kiểm tra ngày bắt đầu phải là hiện tại hoặc tương lai
+
+        // Bắt buộc chọn ngày bắt đầu khi tạo mới
+        if (voucher.getId() == null && voucher.getNgayBatDau() == null) {
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được để trống.");
             return "redirect:/voucher/add";
         }
         
@@ -143,15 +145,15 @@ public class VoucherController {
         
         String ngayBatDauStr = request.get("ngayBatDau");
         String ngayKetThucStr = request.get("ngayKetThuc");
+        String idStr = request.get("id");
+        boolean isCreate = (idStr == null || idStr.isBlank());
         
         LocalDate today = LocalDate.now();
         
         if (ngayBatDauStr != null && !ngayBatDauStr.isEmpty()) {
             try {
                 LocalDate ngayBatDau = LocalDate.parse(ngayBatDauStr);
-                if (ngayBatDau.isBefore(today)) {
-                    errors.put("ngayBatDau", "Ngày bắt đầu không được là quá khứ");
-                }
+                // Bỏ kiểm tra ngày bắt đầu phải là hiện tại hoặc tương lai
             } catch (Exception e) {
                 errors.put("ngayBatDau", "Ngày bắt đầu không hợp lệ");
             }

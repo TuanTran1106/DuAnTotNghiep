@@ -452,12 +452,8 @@
         let hasError = false;
         let errorMessage = '';
         
-        // Kiểm tra ngày bắt đầu không được là quá khứ
-        if (ngayBatDau && ngayBatDau < today) {
-            errorMessage += 'Ngày bắt đầu không được là quá khứ. ';
-            document.getElementById('ngayBatDau').style.borderColor = '#dc3545';
-            hasError = true;
-        } else if (ngayBatDau) {
+        // Bỏ kiểm tra ngày bắt đầu phải là hôm nay hoặc tương lai
+        if (ngayBatDau) {
             document.getElementById('ngayBatDau').style.borderColor = '#28a745';
         }
         
@@ -569,7 +565,7 @@
     // Set min date cho input ngày
     window.addEventListener('load', function() {
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('ngayBatDau').setAttribute('min', today);
+        // Bỏ min cho ngày bắt đầu theo yêu cầu
         document.getElementById('ngayKetThuc').setAttribute('min', today);
         
 

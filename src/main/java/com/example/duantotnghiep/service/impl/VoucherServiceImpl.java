@@ -54,9 +54,23 @@ public class VoucherServiceImpl implements VoucherService {
     private void validateVoucher(Voucher voucher) {
         LocalDate today = LocalDate.now();
         
-        // Kiểm tra ngày bắt đầu không được là quá khứ
-        if (voucher.getNgayBatDau() != null && voucher.getNgayBatDau().isBefore(today)) {
-            throw new IllegalArgumentException("Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
+        // Không cho phép sửa ngày bắt đầu khi cập nhật
+        if (voucher.getId() != null && voucher.getNgayBatDau() != null) {
+            Voucher existing = voucherRepository.findById(voucher.getId()).orElse(null);
+            if (existing != null) {
+                LocalDate oldStart = existing.getNgayBatDau();
+                LocalDate newStart = voucher.getNgayBatDau();
+                boolean changed = (oldStart == null && newStart != null) ||
+                        (oldStart != null && !oldStart.isEqual(newStart));
+                if (changed) {
+                    throw new IllegalArgumentException("Không được chỉnh sửa ngày bắt đầu khi cập nhật voucher.");
+                }
+            }
+        }
+
+        // Bắt buộc ngày bắt đầu khi tạo mới
+        if (voucher.getId() == null && voucher.getNgayBatDau() == null) {
+            throw new IllegalArgumentException("Ngày bắt đầu không được để trống.");
         }
         
         // Kiểm tra ngày kết thúc không được là quá khứ

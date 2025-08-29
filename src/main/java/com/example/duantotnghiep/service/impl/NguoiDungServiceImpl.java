@@ -2,7 +2,9 @@ package com.example.duantotnghiep.service.impl;
 
 import com.example.duantotnghiep.dto.PageResponse;
 import com.example.duantotnghiep.entity.NguoiDung;
+import com.example.duantotnghiep.entity.PhanQuyen;
 import com.example.duantotnghiep.repository.NguoiDungRepository;
+import com.example.duantotnghiep.repository.PhanQuyenRepository;
 import com.example.duantotnghiep.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,13 +12,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class NguoiDungServiceImpl implements NguoiDungService {
     @Autowired
     private NguoiDungRepository nguoiDungRepository;
+    
+    @Autowired
+    private PhanQuyenRepository phanQuyenRepository;
 
     @Override
     public List<NguoiDung> getAllNguoiDung() {
@@ -39,6 +44,21 @@ public class NguoiDungServiceImpl implements NguoiDungService {
 
     @Override
     public NguoiDung saveNguoiDung(NguoiDung nguoiDung) {
+        // Set ngày tạo nếu là người dùng mới
+        if (nguoiDung.getId() == null) {
+            nguoiDung.setNgayTao(LocalDateTime.now());
+            
+            // Set role mặc định cho người dùng mới (khách hàng)
+            if (nguoiDung.getPhanQuyen() == null) {
+                PhanQuyen defaultRole = phanQuyenRepository.findByRoleName("khach_hang").orElse(null);
+                if (defaultRole != null) {
+                    nguoiDung.setPhanQuyen(defaultRole);
+                }
+            }
+        } else {
+            nguoiDung.setNgaySua(LocalDateTime.now());
+        }
+        
         return nguoiDungRepository.save(nguoiDung);
     }
 

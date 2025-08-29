@@ -64,9 +64,18 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     private void validateKhuyenMai(KhuyenMai khuyenMai) {
         LocalDate today = LocalDate.now();
         
-        // Kiểm tra ngày bắt đầu không được là quá khứ
-        if (khuyenMai.getNgayBatDau() != null && khuyenMai.getNgayBatDau().isBefore(today)) {
-            throw new IllegalArgumentException("Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
+        // Không cho phép sửa ngày bắt đầu khi cập nhật
+        if (khuyenMai.getId() != null && khuyenMai.getNgayBatDau() != null) {
+            KhuyenMai existing = khuyenMaiRepository.findById(khuyenMai.getId()).orElse(null);
+            if (existing != null) {
+                LocalDate oldStart = existing.getNgayBatDau();
+                LocalDate newStart = khuyenMai.getNgayBatDau();
+                boolean changed = (oldStart == null && newStart != null) ||
+                        (oldStart != null && !oldStart.isEqual(newStart));
+                if (changed) {
+                    throw new IllegalArgumentException("Không được chỉnh sửa ngày bắt đầu khi cập nhật khuyến mãi.");
+                }
+            }
         }
         
         // Kiểm tra ngày kết thúc không được là quá khứ
