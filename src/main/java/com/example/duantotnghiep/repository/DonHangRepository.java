@@ -124,6 +124,9 @@ public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
     @Query("SELECT dh FROM DonHang dh WHERE DATE_FORMAT(dh.ngayTao, '%Y-%m-%d') = :ngay")
     List<DonHang> findByNgayTaoContaining(@Param("ngay") String ngay);
 
+    @Query("SELECT COALESCE(MAX(dh.id), 0) FROM DonHang dh")
+    Integer findLatestOrderId();
+
 
 
 }

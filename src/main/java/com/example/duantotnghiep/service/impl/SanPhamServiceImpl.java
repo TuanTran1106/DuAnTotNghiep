@@ -2,8 +2,10 @@ package com.example.duantotnghiep.service.impl;
 
 import com.example.duantotnghiep.entity.SanPham;
 import com.example.duantotnghiep.entity.SanPhamChiTiet;
+import com.example.duantotnghiep.entity.ChiTietDonHang;
 import com.example.duantotnghiep.repository.SanPhamChiTietRepository;
 import com.example.duantotnghiep.repository.SanPhamRepository;
+import com.example.duantotnghiep.repository.ChiTietDonHangRepository;
 import com.example.duantotnghiep.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SanPhamServiceImpl implements SanPhamService {
@@ -19,6 +24,8 @@ public class SanPhamServiceImpl implements SanPhamService {
     private SanPhamRepository sanPhamRepository;
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
+    @Autowired
+    private ChiTietDonHangRepository chiTietDonHangRepository;
 
     @Override
     public List<SanPham> getAllSanPham() {
@@ -122,5 +129,30 @@ public class SanPhamServiceImpl implements SanPhamService {
     @Override
     public List<SanPham> getSanPhamsByIds(List<Integer> ids) {
         return sanPhamRepository.findAllById(ids);
+    }
+
+    @Override
+    public List<Integer> recommendByAlsoBought(Integer productId, int limit) {
+        List<ChiTietDonHang> all = new ArrayList<>();
+        chiTietDonHangRepository.findAll().forEach(all::add);
+        List<Integer> orderIds = all.stream()
+                .filter(ct -> ct.getSanPhamChiTiet() != null && ct.getSanPhamChiTiet().getSanPham() != null &&
+                        ct.getSanPhamChiTiet().getSanPham().getId().equals(productId))
+                .map(ct -> ct.getDonHang().getId())
+                .distinct()
+                .toList();
+
+        Map<Integer, Long> counts = all.stream()
+                .filter(ct -> ct.getDonHang() != null && orderIds.contains(ct.getDonHang().getId()))
+                .filter(ct -> ct.getSanPhamChiTiet() != null && ct.getSanPhamChiTiet().getSanPham() != null)
+                .map(ct -> ct.getSanPhamChiTiet().getSanPham().getId())
+                .filter(id -> !id.equals(productId))
+                .collect(Collectors.groupingBy(id -> id, Collectors.counting()));
+
+        return counts.entrySet().stream()
+                .sorted((a, b) -> Long.compare(b.getValue(), a.getValue()))
+                .limit(Math.max(1, limit))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 } 

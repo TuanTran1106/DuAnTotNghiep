@@ -6,5 +6,48 @@
 </head>
 <body>
 
+<script>
+  // Lightweight tracking snippet
+  (function(){
+    function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){const r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16);});}
+    const SESSION_KEY = 'ci_session_id';
+    let sid = localStorage.getItem(SESSION_KEY);
+    if(!sid){ sid = uuid(); localStorage.setItem(SESSION_KEY, sid); }
+
+    const userId = (window.CURRENT_USER_ID || null);
+
+    function send(eventType, data){
+      try{
+        const payload = Object.assign({ sessionId: sid, userId: userId, eventType: eventType, pagePath: location.pathname }, data||{});
+        navigator.sendBeacon('/api/track', new Blob([JSON.stringify(payload)], {type: 'application/json'}));
+      }catch(e){
+        fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
+      }
+    }
+
+    // page view
+    send('page_view', {});
+
+    // dwell time
+    let start = Date.now();
+    window.addEventListener('beforeunload', function(){
+      const dur = Date.now() - start;
+      send('dwell', { durationMs: dur });
+    });
+
+    // helper to mark product views: call window.trackProductView(productId)
+    window.trackProductView = function(productId){
+      if(!productId) return;
+      send('product_view', { productId: productId });
+    }
+  })();
+</script>
+
+<div style="position:fixed;top:8px;right:8px;z-index:2000;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:6px 10px;font-family:Segoe UI,Arial,sans-serif;">
+  <span>Language:</span>
+  <a href="?lang=vi" style="margin-left:6px;">VI</a>
+  |
+  <a href="?lang=en" style="margin-left:6px;">EN</a>
+  </div>
 </body>
 </html>

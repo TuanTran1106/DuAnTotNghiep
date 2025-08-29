@@ -50,6 +50,16 @@
             </select>
         </div>
         <div class="col-auto" th:if="${filterType == 'week'}">
+            <label for="month" class="form-label">Chọn tháng</label>
+            <select class="form-control" id="month" name="month" onchange="this.form.submit()" th:data-selected="${month}">
+                <option value="" th:selected="${month == null}">Cả năm</option>
+                <option th:each="m : ${#numbers.sequence(1, 12)}"
+                        th:value="${m}"
+                        th:text="'Tháng ' + ${m}"
+                        th:selected="${month != null and month == m}"></option>
+            </select>
+        </div>
+        <div class="col-auto" th:if="${filterType == 'week'}">
             <label for="week" class="form-label">Chọn tuần</label>
             <select class="form-control" id="week" name="week" onchange="this.form.submit()" th:data-selected="${week}">
                 <option value="" th:selected="${week == null}">Tuần hiện tại</option>
@@ -198,6 +208,19 @@
 
             // Hàm chuẩn hóa định dạng ngày
             function normalizeDateString(dateStr) {
+                if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                    const [year, month, day] = dateStr.split('-');
+                    const date = new Date(year, month - 1, day);
+                    if (isNaN(date.getTime())) {
+                        console.error('Invalid date:', dateStr);
+                        return null;
+                    }
+                    return date.toLocaleDateString('vi-VN', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                }
                 const date = new Date(dateStr);
                 if (isNaN(date.getTime())) {
                     console.error('Invalid date:', dateStr);
@@ -210,23 +233,26 @@
                 });
             }
 
-            // Hàm tạo labels cho tuần (7 ngày)
+            // Hàm tạo labels cho tuần (ISO-8601, tuần bắt đầu từ Thứ 2)
             function generateWeekLabels(year, week) {
                 const labels = [];
-                const firstDayOfYear = new Date(year, 0, 1);
-                const dayOfWeek = firstDayOfYear.getDay();
-                const firstMondayOfYear = new Date(year, 0, 1 + (dayOfWeek === 0 ? 1 : 8 - dayOfWeek));
-                const firstDayOfTargetWeek = new Date(firstMondayOfYear);
-                firstDayOfTargetWeek.setDate(firstMondayOfYear.getDate() + (week - 1) * 7);
+                // ISO tuần 1 là tuần có ngày 4/1
+                const jan4Utc = new Date(Date.UTC(year, 0, 4));
+                const jan4IsoDow = jan4Utc.getUTCDay() === 0 ? 7 : jan4Utc.getUTCDay(); // 1..7 (Mon..Sun)
+                // Thứ 2 của tuần 1
+                const mondayWeek1Utc = new Date(jan4Utc);
+                mondayWeek1Utc.setUTCDate(jan4Utc.getUTCDate() - (jan4IsoDow - 1));
 
+                // Thứ 2 của tuần cần lấy
+                const mondayTargetUtc = new Date(mondayWeek1Utc);
+                mondayTargetUtc.setUTCDate(mondayWeek1Utc.getUTCDate() + (week - 1) * 7);
+
+                // Sinh 7 ngày của tuần
                 for (let i = 0; i < 7; i++) {
-                    const date = new Date(firstDayOfTargetWeek);
-                    date.setDate(firstDayOfTargetWeek.getDate() + i);
-                    labels.push(date.toLocaleDateString('vi-VN', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                    }));
+                    const d = new Date(mondayTargetUtc);
+                    d.setUTCDate(mondayTargetUtc.getUTCDate() + i);
+                    const [y, m, day] = d.toISOString().split('T')[0].split('-');
+                    labels.push(`${day}/${m}/${y}`);
                 }
                 return labels;
             }
@@ -252,15 +278,19 @@
 
             if (filterType === 'week' && selectedYear && selectedWeek) {
                 labels = generateWeekLabels(selectedYear, selectedWeek);
-                doanhThuData = new Array(7).fill(0);
+                doanhThuData = new Array(labels.length).fill(0);
 
                 thongKeList.forEach(item => {
+                    console.log('Raw item:', JSON.stringify(item));
                     if (item.thoiGian) {
                         const itemDate = normalizeDateString(item.thoiGian);
-                        console.log('Item Date:', itemDate, 'TongDoanhThu:', item.tongDoanhThu);
+                        console.log('Normalized itemDate:', itemDate, 'tongDoanhThu:', item.tongDoanhThu);
                         const index = labels.indexOf(itemDate);
+                        console.log('Label index:', index);
                         if (index !== -1) {
                             doanhThuData[index] = item.tongDoanhThu || 0;
+                        } else {
+                            console.warn('Date not found in labels:', itemDate);
                         }
                     }
                 });
@@ -269,12 +299,16 @@
                 doanhThuData = new Array(labels.length).fill(0);
 
                 thongKeList.forEach(item => {
+                    console.log('Raw item:', JSON.stringify(item));
                     if (item.thoiGian) {
                         const itemDate = normalizeDateString(item.thoiGian);
-                        console.log('Item Date:', itemDate, 'TongDoanhThu:', item.tongDoanhThu);
+                        console.log('Normalized itemDate:', itemDate, 'tongDoanhThu:', item.tongDoanhThu);
                         const index = labels.indexOf(itemDate);
+                        console.log('Label index:', index);
                         if (index !== -1) {
                             doanhThuData[index] = item.tongDoanhThu || 0;
+                        } else {
+                            console.warn('Date not found in labels:', itemDate);
                         }
                     }
                 });
@@ -397,30 +431,78 @@
                 console.log('Chart created successfully');
             }
 
-            // Cập nhật số tuần dựa trên năm
+            // Cập nhật danh sách tuần theo ISO, có thể lọc theo tháng
             const yearSelect = document.getElementById('year');
             const weekSelect = document.getElementById('week');
+            const monthSelect = document.getElementById('month');
 
             function updateWeekOptions() {
                 const year = parseInt(yearSelect.value);
+                const month = parseInt(monthSelect ? monthSelect.value : '');
                 if (!year) return;
 
-                const lastDayOfYear = new Date(year, 11, 31);
-                const weekCount = Math.ceil((lastDayOfYear.getDate() - new Date(year, 0, 1).getDate() + 1) / 7) + 1;
+                function getMondayOfISOWeek1(y) {
+                    const jan4Utc = new Date(Date.UTC(y, 0, 4));
+                    const isoDow = jan4Utc.getUTCDay() === 0 ? 7 : jan4Utc.getUTCDay();
+                    const monday = new Date(jan4Utc);
+                    monday.setUTCDate(jan4Utc.getUTCDate() - (isoDow - 1));
+                    return monday;
+                }
 
+                function getRangeOfISOWeek(y, w) {
+                    const mondayWeek1 = getMondayOfISOWeek1(y);
+                    const monday = new Date(mondayWeek1);
+                    monday.setUTCDate(mondayWeek1.getUTCDate() + (w - 1) * 7);
+                    const sunday = new Date(monday);
+                    sunday.setUTCDate(monday.getUTCDate() + 6);
+                    return { monday, sunday };
+                }
+
+                // Tính tổng số tuần trong năm y theo ISO: tuần của 28/12 thuộc tuần cuối cùng của năm
+                function getISOWeeksInYear(y) {
+                    const dec28 = new Date(Date.UTC(y, 11, 28));
+                    const jan4 = new Date(Date.UTC(y, 0, 4));
+                    const mondayWeek1 = getMondayOfISOWeek1(y);
+                    const diffDays = Math.floor((dec28 - mondayWeek1) / (24 * 3600 * 1000));
+                    return Math.floor(diffDays / 7) + 1;
+                }
+
+                const totalWeeks = getISOWeeksInYear(year);
+                const selectedWeek = weekSelect.dataset.selected;
                 weekSelect.innerHTML = '<option value="">Tuần hiện tại</option>';
-                for (let i = 1; i <= weekCount; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.text = `Tuần ${i}`;
-                    if (weekSelect.dataset.selected == i) {
-                        option.selected = true;
+
+                for (let w = 1; w <= totalWeeks; w++) {
+                    const { monday, sunday } = getRangeOfISOWeek(year, w);
+                    // Lọc theo tháng nếu có: nếu bất kỳ ngày trong khoảng thuộc tháng đã chọn (1..12)
+                    if (!isNaN(month)) {
+                        const m1 = monday.getUTCMonth() + 1;
+                        const m2 = sunday.getUTCMonth() + 1;
+                        if (m1 !== month && m2 !== month) {
+                            // kiểm tra nếu khoảng giao với tháng bằng cách duyệt từng ngày (an toàn)
+                            let intersects = false;
+                            for (let i = 0; i < 7; i++) {
+                                const d = new Date(monday);
+                                d.setUTCDate(monday.getUTCDate() + i);
+                                if ((d.getUTCMonth() + 1) === month) { intersects = true; break; }
+                            }
+                            if (!intersects) continue;
+                        }
                     }
+
+                    const md = monday.toISOString().split('T')[0].split('-');
+                    const sd = sunday.toISOString().split('T')[0].split('-');
+                    const label = `Tuần ${w} (${md[2]}/${md[1]} - ${sd[2]}/${sd[1]})`;
+
+                    const option = document.createElement('option');
+                    option.value = w;
+                    option.text = label;
+                    if (selectedWeek && parseInt(selectedWeek) === w) option.selected = true;
                     weekSelect.appendChild(option);
                 }
             }
 
             yearSelect.addEventListener('change', updateWeekOptions);
+            if (monthSelect) monthSelect.addEventListener('change', updateWeekOptions);
             if (yearSelect.value) {
                 updateWeekOptions();
             }

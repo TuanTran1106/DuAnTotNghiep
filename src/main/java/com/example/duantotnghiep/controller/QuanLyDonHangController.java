@@ -37,6 +37,12 @@ public class QuanLyDonHangController {
         return "quan-tri/quan-ly-don-hang";
     }
 
+    @GetMapping("/quan-ly/api/don-hang/latest-id")
+    @ResponseBody
+    public Integer getLatestOrderId() {
+        return donHangService.getLatestOrderId();
+    }
+
     @GetMapping("/quan-ly/api/don-hang/{id}/san-pham")
     @ResponseBody
     public List<DonHangChiTietDto> getOrderProducts(@PathVariable Integer id) {

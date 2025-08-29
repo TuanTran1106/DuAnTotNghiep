@@ -162,6 +162,12 @@ public class DonHangServiceImpl implements DonHangService {
         return baos;
     }
 
+    @Override
+    public Integer getLatestOrderId() {
+        Integer latest = donHangRepository.findLatestOrderId();
+        return latest != null ? latest : 0;
+    }
+
     private String formatDateTime(java.time.LocalDateTime dateTime) {
         if (dateTime == null) return "";
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

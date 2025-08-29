@@ -26,4 +26,7 @@ public interface SanPhamService {
     Page<SanPham> findByDanhMucId(Integer danhMucId, Pageable pageable);
     Page<SanPham> findByThuongHieuId(Integer thuongHieuId, Pageable pageable);
 
+    // Gợi ý sản phẩm theo lịch sử mua hàng: trả về ID sản phẩm được mua cùng nhiều nhất
+    List<Integer> recommendByAlsoBought(Integer productId, int limit);
+
 } 
