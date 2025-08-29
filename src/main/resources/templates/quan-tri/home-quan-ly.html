@@ -612,6 +612,247 @@
             mainContent.classList.add('expanded');
         }
     });
+
+    // ===== Thông báo tiếng nói khi có đơn hàng mới =====
+    (function() {
+        const toggleContainer = document.createElement('div');
+        toggleContainer.style.position = 'fixed';
+        toggleContainer.style.right = '20px';
+        toggleContainer.style.bottom = '20px';
+        toggleContainer.style.zIndex = '2000';
+        toggleContainer.style.background = 'white';
+        toggleContainer.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        toggleContainer.style.borderRadius = '12px';
+        toggleContainer.style.padding = '10px 14px';
+        toggleContainer.style.display = 'flex';
+        toggleContainer.style.alignItems = 'center';
+        toggleContainer.style.gap = '8px';
+
+        const label = document.createElement('span');
+        label.textContent = 'Âm báo đơn mới';
+        label.style.fontFamily = "Segoe UI, Tahoma, sans-serif";
+        label.style.fontSize = '14px';
+        label.style.color = '#2c3e50';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = 'voiceNotifyToggle';
+        checkbox.style.transform = 'scale(1.2)';
+
+        const bell = document.createElement('i');
+        bell.className = 'fas fa-bell';
+        bell.style.color = '#f39c12';
+
+        toggleContainer.appendChild(bell);
+        toggleContainer.appendChild(label);
+        toggleContainer.appendChild(checkbox);
+        document.body.appendChild(toggleContainer);
+
+        let latestId = 0;
+        let pollingTimer = null;
+
+        function speak(text) {
+            try {
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'vi-VN';
+                utter.rate = 1.0;
+                window.speechSynthesis.speak(utter);
+            } catch (e) {
+                console.warn('Speech synthesis not available', e);
+            }
+        }
+
+        // Web Audio chime ("tinh tinh")
+        let audioCtx = null;
+        let compressor = null;
+        async function ensureAudio() {
+            try {
+                if (!audioCtx) {
+                    const Ctx = window.AudioContext || window.webkitAudioContext;
+                    if (!Ctx) return null;
+                    audioCtx = new Ctx();
+                    // compressor tuned for stronger loudness
+                    compressor = audioCtx.createDynamicsCompressor();
+                    try {
+                        compressor.threshold.setValueAtTime(-20, audioCtx.currentTime);
+                        compressor.knee.setValueAtTime(24, audioCtx.currentTime);
+                        compressor.ratio.setValueAtTime(8, audioCtx.currentTime);
+                        compressor.attack.setValueAtTime(0.004, audioCtx.currentTime);
+                        compressor.release.setValueAtTime(0.2, audioCtx.currentTime);
+                    } catch(_) {}
+                    compressor.connect(audioCtx.destination);
+                }
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+                return audioCtx;
+            } catch (e) { return null; }
+        }
+
+        function playBeep(frequency, durationMs, startTime, gainPeak = 0.35, endFrequency = null) {
+            if (!audioCtx) return;
+            // Base soft sine tone
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(frequency, startTime);
+            if (endFrequency && typeof endFrequency === 'number') {
+                // subtle upward glide for a pleasant "tinh"
+                osc1.frequency.linearRampToValueAtTime(endFrequency, startTime + durationMs / 1000);
+            }
+            gain1.gain.setValueAtTime(0.0001, startTime);
+            gain1.gain.exponentialRampToValueAtTime(gainPeak, startTime + 0.012);
+            gain1.gain.exponentialRampToValueAtTime(0.0001, startTime + durationMs / 1000);
+
+            // Add a gentle harmonic for bell-like timbre
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(frequency * 1.5, startTime); // perfect fifth
+            gain2.gain.setValueAtTime(0.0001, startTime);
+            gain2.gain.exponentialRampToValueAtTime(gainPeak * 0.25, startTime + 0.012);
+            gain2.gain.exponentialRampToValueAtTime(0.0001, startTime + durationMs / 1000);
+
+            const destination = compressor || audioCtx.destination;
+            osc1.connect(gain1).connect(destination);
+            osc2.connect(gain2).connect(destination);
+            osc1.start(startTime);
+            osc2.start(startTime);
+            const stopAt = startTime + durationMs / 1000 + 0.03;
+            osc1.stop(stopAt);
+            osc2.stop(stopAt);
+        }
+
+        // Bird-like short chirp: upward glide with gentle harmonic and band-pass color
+        function playChirp(startTime, baseFreq = 2200, durationMs = 160, glideHz = 1500, gainPeak = 0.85) {
+            if (!audioCtx) return;
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            // Optional noise for natural bird-like timbre
+            const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * (durationMs / 1000), audioCtx.sampleRate);
+            const data = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.6;
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = noiseBuffer;
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.setValueAtTime(0.0001, startTime);
+
+            osc1.type = 'sine';
+            osc2.type = 'sine';
+            filter.type = 'bandpass';
+
+            const endFreq = baseFreq + glideHz;
+            osc1.frequency.setValueAtTime(baseFreq, startTime);
+            osc1.frequency.exponentialRampToValueAtTime(Math.max(50, endFreq), startTime + durationMs / 1000);
+
+            osc2.frequency.setValueAtTime(baseFreq * 2.2, startTime);
+            osc2.frequency.exponentialRampToValueAtTime(Math.max(50, endFreq * 2.2), startTime + durationMs / 1000);
+
+            // Filter centers around moving frequency midpoint
+            const center = baseFreq + glideHz * 0.65;
+            filter.frequency.setValueAtTime(center, startTime);
+            filter.Q.setValueAtTime(6, startTime);
+
+            // Envelope
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.exponentialRampToValueAtTime(gainPeak, startTime + 0.006);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + durationMs / 1000);
+            // Noise envelope (shorter, to add attack only)
+            noiseGain.gain.exponentialRampToValueAtTime(gainPeak * 0.35, startTime + 0.004);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, startTime + (durationMs * 0.6) / 1000);
+
+            // Mix with lower level harmonic
+            const mix1 = audioCtx.createGain();
+            const mix2 = audioCtx.createGain();
+            mix1.gain.setValueAtTime(1.0, startTime);
+            mix2.gain.setValueAtTime(0.4, startTime);
+
+            osc1.connect(mix1);
+            osc2.connect(mix2);
+            const destination = compressor || audioCtx.destination;
+            mix1.connect(filter).connect(gain).connect(destination);
+            mix2.connect(filter).connect(gain);
+            noise.connect(noiseGain).connect(filter);
+
+            osc1.start(startTime);
+            osc2.start(startTime);
+            noise.start(startTime);
+            const stopAt = startTime + durationMs / 1000 + 0.03;
+            osc1.stop(stopAt);
+            osc2.stop(stopAt);
+            noise.stop(stopAt);
+        }
+
+        async function chime() {
+            const ctx = await ensureAudio();
+            if (!ctx) return;
+            const now = ctx.currentTime + 0.01;
+            // Bird chirp: sequence of 3 short chirps with slight pitch variance
+            const jitter = (v) => v * (0.92 + Math.random() * 0.16);
+            playChirp(now, jitter(2400), 170, jitter(1500), 0.9);
+            playChirp(now + 0.16, jitter(2600), 160, jitter(1600), 0.85);
+            playChirp(now + 0.32, jitter(2500), 180, jitter(1700), 0.9);
+        }
+
+        async function fetchLatestId() {
+            try {
+                const res = await fetch('/quan-ly/api/don-hang/latest-id', { cache: 'no-store' });
+                if (!res.ok) return null;
+                const id = await res.json();
+                return typeof id === 'number' ? id : parseInt(id);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function initLatestId() {
+            const id = await fetchLatestId();
+            if (id !== null) latestId = id;
+        }
+
+        async function poll() {
+            const id = await fetchLatestId();
+            if (id !== null && id > latestId) {
+                latestId = id;
+                chime();
+            }
+        }
+
+        function startPolling() {
+            if (pollingTimer) clearInterval(pollingTimer);
+            pollingTimer = setInterval(poll, 1000);
+        }
+
+        function stopPolling() {
+            if (pollingTimer) clearInterval(pollingTimer);
+            pollingTimer = null;
+        }
+
+        // Restore toggle state
+        const saved = localStorage.getItem('voiceNotifyEnabled');
+        const enabled = saved === 'true';
+        checkbox.checked = enabled;
+        if (enabled) {
+            initLatestId().then(startPolling);
+        }
+
+        checkbox.addEventListener('change', async () => {
+            const on = checkbox.checked;
+            localStorage.setItem('voiceNotifyEnabled', on ? 'true' : 'false');
+            if (on) {
+                await initLatestId();
+                startPolling();
+                speak('Đã bật âm báo đơn hàng mới.');
+            } else {
+                stopPolling();
+                speak('Đã tắt âm báo đơn hàng mới.');
+            }
+        });
+    })();
 </script>
 </body>
 </html>

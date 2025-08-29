@@ -1010,11 +1010,12 @@
                         const productName = product.tenSanPham || '---';
                         const productVariant = `${product.mauSac ? product.mauSac : ''}${product.kichThuoc ? ' - ' + product.kichThuoc : ''}`.trim() || '';
 
+                        // language=HTML
                         html += `
                         <tr>
                             <td style="text-align: center; font-weight: 600; color: #3498db;">${index + 1}</td>
                             <td>
-                                <img src="/static/${product.hinhAnh}" alt="Ảnh sản phẩm" class="product-image">
+                                <img src="/${product.hinhAnh}" alt="Ảnh sản phẩm"  class="product-image">
                             </td>
                             <td>
                                 <div class="product-info">
