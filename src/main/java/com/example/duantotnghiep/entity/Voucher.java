@@ -21,6 +21,7 @@ public class Voucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Mã voucher không được để trống")
     @Column(name = "ma_voucher")
     private String maVoucher;
 
@@ -50,7 +51,7 @@ public class Voucher {
     @Column(name = "so_luong_con")
     private Integer soLuongCon;
 
-//    @FutureOrPresent(message = "Ngày bắt đầu phải là hiện tại hoặc tương lai")
+    //    @FutureOrPresent(message = "Ngày bắt đầu phải là hiện tại hoặc tương lai")
     @Column(name = "ngay_bat_dau")
     private LocalDate ngayBatDau;
 
@@ -65,7 +66,7 @@ public class Voucher {
 
     @Column(name = "trang_thai")
     private Boolean trangThai;
-    
+
     /**
      * Custom validation method để kiểm tra ngày kết thúc phải sau ngày bắt đầu
      */

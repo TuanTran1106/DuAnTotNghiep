@@ -60,10 +60,15 @@ public class KhuyenMaiController {
     }
     
     @PostMapping("/save")
-    public String saveKhuyenMai(@Valid @ModelAttribute("khuyenMai") KhuyenMai khuyenMai,
+    public String saveKhuyenMai(@ModelAttribute("khuyenMai") KhuyenMai khuyenMai,
                                 @RequestParam(value = "spctIds", required = false) List<Integer> spctIds,
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes) {
+
+        // Set giá trị mặc định cho maKhuyenMai nếu là tạo mới
+        if (khuyenMai.getId() == null && (khuyenMai.getMaKhuyenMai() == null || khuyenMai.getMaKhuyenMai().trim().isEmpty())) {
+            khuyenMai.setMaKhuyenMai("TEMP_KM");
+        }
 
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
@@ -96,13 +101,16 @@ public class KhuyenMaiController {
             return "redirect:/khuyen-mai/add";
         }
         
-        // Validation: Kiểm tra ngày bắt đầu không được là quá khứ
-        if (khuyenMai.getNgayBatDau() != null && khuyenMai.getNgayBatDau().isBefore(LocalDate.now())) {
-            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
-            if (khuyenMai.getId() != null) {
-                return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+        // Kiểm tra ngày bắt đầu khi TẠO MỚI (không cho chọn quá khứ)
+        if (khuyenMai.getId() == null) {
+            if (khuyenMai.getNgayBatDau() == null) {
+                redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được để trống.");
+                return "redirect:/khuyen-mai/add";
             }
-            return "redirect:/khuyen-mai/add";
+            if (khuyenMai.getNgayBatDau().isBefore(LocalDate.now())) {
+                redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
+                return "redirect:/khuyen-mai/add";
+            }
         }
 
         // Bắt buộc chọn ít nhất 1 sản phẩm áp dụng
@@ -114,9 +122,7 @@ public class KhuyenMaiController {
             return "redirect:/khuyen-mai/add";
         }
         
-        if (khuyenMai.getId() == null) { // Thêm mới
-            khuyenMai.setNgayTao(LocalDateTime.now());
-        }
+        // Ngày tạo sẽ được tự động set trong service
 
 
         
@@ -148,9 +154,57 @@ public class KhuyenMaiController {
 
     @GetMapping("/update/{id}")
     public String showEditForm(@PathVariable int id, Model model) {
-        model.addAttribute("khuyenMai", khuyenMaiService.getKhuyenMaiById(id));
+        KhuyenMai khuyenMai = khuyenMaiService.getKhuyenMaiById(id);
+        if (khuyenMai == null) {
+            return "redirect:/khuyen-mai";
+        }
+        model.addAttribute("khuyenMai", khuyenMai);
         model.addAttribute("listSpct", spctRepository.findAll());
         return "/quan-tri/khuyen-mai-update";
+    }
+    
+    @PostMapping("/update")
+    public String updateKhuyenMai(@Valid @ModelAttribute("khuyenMai") KhuyenMai khuyenMai,
+                                  @RequestParam(value = "spctIds", required = false) List<Integer> spctIds,
+                                  BindingResult bindingResult,
+                                  RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(error -> {
+                errorMessage.append(error.getDefaultMessage()).append(" ");
+            });
+            redirectAttributes.addFlashAttribute("error", errorMessage.toString().trim());
+            return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+        }
+        
+        // Custom validation logic
+        if (khuyenMai.getNgayKetThuc() != null && khuyenMai.getNgayKetThuc().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("error", "Ngày kết thúc không được là quá khứ. Vui lòng chọn ngày trong tương lai.");
+            return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+        }
+        
+        if (khuyenMai.getNgayBatDau() != null && khuyenMai.getNgayKetThuc() != null && 
+            khuyenMai.getNgayBatDau().isAfter(khuyenMai.getNgayKetThuc())) {
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được sau ngày kết thúc.");
+            return "redirect:/khuyenMai/update/" + khuyenMai.getId();
+        }
+        
+        // Bỏ validation ngày bắt đầu khi UPDATE (giữ nguyên ngày cũ)
+        
+        if (spctIds == null || spctIds.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng chọn ít nhất một sản phẩm chi tiết áp dụng.");
+            return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+        }
+        
+        try {
+            khuyenMaiService.saveKhuyenMai(khuyenMai, spctIds);
+            redirectAttributes.addFlashAttribute("success", "Khuyến mãi đã được cập nhật thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi cập nhật khuyến mãi: " + e.getMessage());
+            return "redirect:/khuyen-mai/update/" + khuyenMai.getId();
+        }
+        
+        return "redirect:/khuyen-mai";
     }
 
     @GetMapping("/search")

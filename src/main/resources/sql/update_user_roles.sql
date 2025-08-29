@@ -19,3 +19,4 @@ UPDATE nguoi_dung SET role_id = 2 WHERE role_id IS NULL;
 -- Lưu ý: 
 -- role_id = 1: admin
 -- role_id = 2: khách_hang
+

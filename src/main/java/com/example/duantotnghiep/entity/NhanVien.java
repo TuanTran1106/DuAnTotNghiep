@@ -48,5 +48,9 @@ public class NhanVien {
 
     @Column(name = "ngay_sua")
     private LocalDateTime ngaySua;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private PhanQuyen phanQuyen;
 }
 

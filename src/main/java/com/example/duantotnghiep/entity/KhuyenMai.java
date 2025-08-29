@@ -24,6 +24,7 @@ public class KhuyenMai {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Mã khuyến mãi không được để trống")
     @Column(name = "ma_khuyen_mai")
     private String maKhuyenMai;
 

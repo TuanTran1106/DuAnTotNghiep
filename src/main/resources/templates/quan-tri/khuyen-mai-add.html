@@ -369,18 +369,23 @@
 
         <form th:action="@{/khuyen-mai/save}" th:object="${khuyenMai}" method="post" id="updateForm">
             <input type="hidden" th:field="*{id}" />
+            <!-- Hidden field để đảm bảo maKhuyenMai được gửi đi -->
+            <input type="hidden" th:field="*{maKhuyenMai}" value="TEMP_KM" />
 
-<!--            <div class="form-group">-->
-<!--                <label for="maKhuyenMai" class="form-label">-->
-<!--                    Mã khuyến mãi <span class="required">*</span>-->
-<!--                </label>-->
-<!--                <input type="text"-->
-<!--                       id="maKhuyenMai"-->
-<!--                       th:field="*{maKhuyenMai}"-->
-<!--                       class="form-input"-->
-<!--                       placeholder="Nhập mã khuyến mãi"-->
-<!--                       required />-->
-<!--            </div>-->
+            <div class="form-group">
+                <label for="maKhuyenMaiDisplay" class="form-label">
+                    Mã khuyến mãi <span class="required">*</span>
+                </label>
+                <input type="text"
+                       id="maKhuyenMaiDisplay"
+                       class="form-input"
+                       placeholder="Sẽ tự động sinh"
+                       readonly
+                       style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;" />
+                <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">
+                    <i class="fa-solid fa-info-circle"></i> Mã khuyến mãi sẽ được tự động sinh sau khi lưu
+                </small>
+            </div>
 
             <div class="form-group">
                 <label for="tenChuongTrinh" class="form-label">
@@ -520,7 +525,7 @@
         let hasError = false;
         let errorMessage = '';
         
-        // Kiểm tra ngày bắt đầu không được là quá khứ
+        // Kiểm tra ngày bắt đầu không được là quá khứ khi TẠO MỚI
         if (ngayBatDau && ngayBatDau < today) {
             errorMessage += 'Ngày bắt đầu không được là quá khứ. ';
             document.getElementById('ngayBatDau').style.borderColor = '#dc3545';

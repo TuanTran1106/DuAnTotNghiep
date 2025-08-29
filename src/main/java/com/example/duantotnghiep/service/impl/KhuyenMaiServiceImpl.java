@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -53,9 +54,23 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         List<SanPhamChiTiet> spcts = spctRepository.findAllById(spctIds);
         khuyenMai.setSanPhamChiTiets(spcts);
         
-        khuyenMaiRepository.save(khuyenMai);
-        khuyenMai.setMaKhuyenMai("KM0" + khuyenMai.getId());
-        return khuyenMaiRepository.save(khuyenMai);
+        if (khuyenMai.getId() == null) {
+            // Tạo mới - set ngày tạo và giá trị mặc định để pass validation
+            khuyenMai.setNgayTao(LocalDateTime.now());
+            khuyenMai.setMaKhuyenMai("TEMP_KM");
+            khuyenMai = khuyenMaiRepository.save(khuyenMai);
+            khuyenMai.setMaKhuyenMai("KM0" + khuyenMai.getId());
+            return khuyenMaiRepository.save(khuyenMai);
+        } else {
+            // Cập nhật - lấy mã khuyến mãi hiện tại từ database và cập nhật ngày tạo
+            KhuyenMai existing = khuyenMaiRepository.findById(khuyenMai.getId()).orElse(null);
+            if (existing != null && existing.getMaKhuyenMai() != null) {
+                khuyenMai.setMaKhuyenMai(existing.getMaKhuyenMai());
+            }
+            // Cập nhật ngày tạo khi update
+            khuyenMai.setNgayTao(LocalDateTime.now());
+            return khuyenMaiRepository.save(khuyenMai);
+        }
     }
     
     /**

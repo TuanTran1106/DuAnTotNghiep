@@ -56,7 +56,21 @@ public class NguoiDungServiceImpl implements NguoiDungService {
                 }
             }
         } else {
-            nguoiDung.setNgaySua(LocalDateTime.now());
+            // Khi update, lấy thông tin người dùng hiện tại từ database
+            NguoiDung existingNguoiDung = nguoiDungRepository.findById(nguoiDung.getId()).orElse(null);
+            if (existingNguoiDung != null) {
+                // Giữ nguyên ngày tạo ban đầu
+                nguoiDung.setNgayTao(existingNguoiDung.getNgayTao());
+                nguoiDung.setMatKhau(existingNguoiDung.getMatKhau());
+                
+                // Cập nhật ngày sửa
+                nguoiDung.setNgaySua(LocalDateTime.now());
+                
+                // Giữ nguyên role nếu không có thay đổi
+                if (nguoiDung.getPhanQuyen() == null) {
+                    nguoiDung.setPhanQuyen(existingNguoiDung.getPhanQuyen());
+                }
+            }
         }
         
         return nguoiDungRepository.save(nguoiDung);
@@ -96,6 +110,8 @@ public class NguoiDungServiceImpl implements NguoiDungService {
         NguoiDung nd = nguoiDungRepository.findById(id).orElse(null);
         if (nd == null) return false;
         nd.setTrangThai(trangThai);
+        nd.setNgaySua(LocalDateTime.now()); // Cập nhật ngày sửa khi thay đổi trạng thái
+        // Giữ nguyên các thông tin khác
         nguoiDungRepository.save(nd);
         return true;
     }

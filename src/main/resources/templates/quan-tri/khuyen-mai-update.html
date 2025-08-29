@@ -412,8 +412,9 @@
             Vui lòng kiểm tra kỹ thông tin trước khi lưu thay đổi.
         </div>
 
-        <form th:action="@{/khuyen-mai/save}" th:object="${khuyenMai}" method="post" id="updateForm">
+        <form th:action="@{/khuyen-mai/update}" th:object="${khuyenMai}" method="post" id="updateForm">
             <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{maKhuyenMai}" />
 
             <div class="form-group">
                 <label for="maKhuyenMai" class="form-label">

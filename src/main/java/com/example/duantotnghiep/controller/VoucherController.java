@@ -47,9 +47,14 @@ public class VoucherController {
     }
     
     @PostMapping("/save")
-    public String saveVoucher(@Valid @ModelAttribute("voucher") Voucher voucher, 
+    public String saveVoucher(@ModelAttribute("voucher") Voucher voucher, 
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
+        // Set giá trị mặc định cho maVoucher nếu là tạo mới
+        if (voucher.getId() == null && (voucher.getMaVoucher() == null || voucher.getMaVoucher().trim().isEmpty())) {
+            voucher.setMaVoucher("TEMP_VOUCHER");
+        }
+        
         // Kiểm tra Bean Validation errors
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
@@ -57,28 +62,46 @@ public class VoucherController {
                 errorMessage.append(error.getDefaultMessage()).append(" ");
             });
             redirectAttributes.addFlashAttribute("error", errorMessage.toString().trim());
-            return "redirect:/voucher/add";
+            
+            // Redirect về form tương ứng (add hoặc update)
+            if (voucher.getId() != null) {
+                return "redirect:/voucher/update/" + voucher.getId();
+            } else {
+                return "redirect:/voucher/add";
+            }
         }
         
         // Custom validation logic
         if (voucher.getNgayKetThuc() != null && voucher.getNgayKetThuc().isBefore(LocalDate.now())) {
             redirectAttributes.addFlashAttribute("error", "Ngày kết thúc không được là quá khứ. Vui lòng chọn ngày trong tương lai.");
-            return "redirect:/voucher/add";
+            if (voucher.getId() != null) {
+                return "redirect:/voucher/update/" + voucher.getId();
+            } else {
+                return "redirect:/voucher/add";
+            }
         }
         
         // Validation: Cho phép bằng nhau; chỉ lỗi nếu bắt đầu sau kết thúc
         if (voucher.getNgayBatDau() != null && voucher.getNgayKetThuc() != null && 
             voucher.getNgayBatDau().isAfter(voucher.getNgayKetThuc())) {
             redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được sau ngày kết thúc.");
-            return "redirect:/voucher/add";
+            if (voucher.getId() != null) {
+                return "redirect:/voucher/update/" + voucher.getId();
+            } else {
+                return "redirect:/voucher/add";
+            }
         }
         
-        // Bỏ kiểm tra ngày bắt đầu phải là hiện tại hoặc tương lai
-
-        // Bắt buộc chọn ngày bắt đầu khi tạo mới
-        if (voucher.getId() == null && voucher.getNgayBatDau() == null) {
-            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được để trống.");
-            return "redirect:/voucher/add";
+        // Kiểm tra ngày bắt đầu khi TẠO MỚI (không cho chọn quá khứ)
+        if (voucher.getId() == null) {
+            if (voucher.getNgayBatDau() == null) {
+                redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được để trống.");
+                return "redirect:/voucher/add";
+            }
+            if (voucher.getNgayBatDau().isBefore(LocalDate.now())) {
+                redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được là quá khứ. Vui lòng chọn ngày từ hôm nay trở đi.");
+                return "redirect:/voucher/add";
+            }
         }
         
         try {
@@ -86,6 +109,11 @@ public class VoucherController {
             redirectAttributes.addFlashAttribute("success", "Voucher đã được lưu thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi lưu voucher: " + e.getMessage());
+            if (voucher.getId() != null) {
+                return "redirect:/voucher/update/" + voucher.getId();
+            } else {
+                return "redirect:/voucher/add";
+            }
         }
         
         return "redirect:/voucher";
@@ -105,8 +133,50 @@ public class VoucherController {
 
     @GetMapping("/update/{id}")
     public String showEditForm(@PathVariable int id, Model model) {
-        model.addAttribute("voucher", voucherService.getVoucherById(id));
+        Voucher voucher = voucherService.getVoucherById(id);
+        if (voucher == null) {
+            return "redirect:/voucher";
+        }
+        model.addAttribute("voucher", voucher);
         return "/quan-tri/voucher-update";
+    }
+    
+    @PostMapping("/update")
+    public String updateVoucher(@Valid @ModelAttribute("voucher") Voucher voucher, 
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
+        // Kiểm tra Bean Validation errors
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(error -> {
+                errorMessage.append(error.getDefaultMessage()).append(" ");
+            });
+            redirectAttributes.addFlashAttribute("error", errorMessage.toString().trim());
+            return "redirect:/voucher/update/" + voucher.getId();
+        }
+        
+        // Custom validation logic
+        if (voucher.getNgayKetThuc() != null && voucher.getNgayKetThuc().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("error", "Ngày kết thúc không được là quá khứ. Vui lòng chọn ngày trong tương lai.");
+            return "redirect:/voucher/update/" + voucher.getId();
+        }
+        
+        // Validation: Cho phép bằng nhau; chỉ lỗi nếu bắt đầu sau kết thúc
+        if (voucher.getNgayBatDau() != null && voucher.getNgayKetThuc() != null && 
+            voucher.getNgayBatDau().isAfter(voucher.getNgayKetThuc())) {
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được sau ngày kết thúc.");
+            return "redirect:/voucher/update/" + voucher.getId();
+        }
+        
+        try {
+            voucherService.saveVoucher(voucher);
+            redirectAttributes.addFlashAttribute("success", "Voucher đã được cập nhật thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi cập nhật voucher: " + e.getMessage());
+            return "redirect:/voucher/update/" + voucher.getId();
+        }
+        
+        return "redirect:/voucher";
     }
 
     @GetMapping("/search")

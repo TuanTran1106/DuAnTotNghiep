@@ -43,9 +43,20 @@ public class VoucherServiceImpl implements VoucherService {
         // Business validation
         validateVoucher(voucher);
         
-        voucherRepository.save(voucher);
-        voucher.setMaVoucher("VOUCHER0" + voucher.getId());
-        return voucherRepository.save(voucher);
+        if (voucher.getId() == null) {
+            // Tạo mới - set giá trị mặc định để pass validation
+            voucher.setMaVoucher("TEMP_VOUCHER");
+            voucher = voucherRepository.save(voucher);
+            voucher.setMaVoucher("VOUCHER0" + voucher.getId());
+            return voucherRepository.save(voucher);
+        } else {
+            // Cập nhật - lấy mã voucher hiện tại từ database
+            Voucher existing = voucherRepository.findById(voucher.getId()).orElse(null);
+            if (existing != null && existing.getMaVoucher() != null) {
+                voucher.setMaVoucher(existing.getMaVoucher());
+            }
+            return voucherRepository.save(voucher);
+        }
     }
     
     /**

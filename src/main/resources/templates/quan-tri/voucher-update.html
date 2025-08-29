@@ -387,8 +387,9 @@
         </div>
 
 
-        <form th:action="@{/voucher/save}" th:object="${voucher}" method="post" id="updateForm">
+        <form th:action="@{/voucher/update}" th:object="${voucher}" method="post" id="updateForm">
             <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{maVoucher}" />
 
             <div class="form-row">
                 <div class="form-group">
@@ -401,6 +402,19 @@
                            class="form-input"
                            placeholder="Nhập tên voucher"
                            required />
+                </div>
+
+                <div class="form-group">
+                    <label for="maVoucher" class="form-label">
+                        Mã Voucher <span class="required">*</span>
+                    </label>
+                    <input type="text"
+                           id="maVoucher"
+                           th:field="*{maVoucher}"
+                           class="form-input"
+                           placeholder="Nhập mã voucher"
+                           required readonly 
+                           style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;" />
                 </div>
 
                 <div class="form-group">
